@@ -1,6 +1,6 @@
 /**
  * Pure injectable xAI / Grok socratic hint resolver.
- * No Convex imports — safe for unit tests and fixture mock wiring.
+ * No Convex imports — unit-tested with mocked fetch (no live key).
  */
 
 import {
@@ -8,6 +8,7 @@ import {
   type GrokHintRequest,
   type GrokHintResponse,
 } from "../grokPrompt";
+import { hintLeaksAnswer } from "./hintLeak";
 
 export type { GrokHintRequest, GrokHintResponse };
 
@@ -33,6 +34,8 @@ export function extractChatContent(json: unknown): string | null {
 export async function resolveSocraticHint(opts: {
   request: GrokHintRequest;
   staticFallbackText: string;
+  /** Correct evidence sentence texts — used only for leak filtering, never sent to the model as “the answer”. */
+  correctEvidenceTexts?: string[];
   apiKey: string | undefined;
   model?: string;
   timeoutMs?: number;
@@ -79,6 +82,15 @@ export async function resolveSocraticHint(opts: {
     const json: unknown = await response.json();
     const text = extractChatContent(json);
     if (!text) {
+      return staticResult;
+    }
+
+    if (
+      hintLeaksAnswer(text, {
+        choiceTexts: opts.request.choiceTexts,
+        correctEvidenceTexts: opts.correctEvidenceTexts ?? [],
+      })
+    ) {
       return staticResult;
     }
 

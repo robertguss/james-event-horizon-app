@@ -151,4 +151,27 @@ describe("resolveSocraticHint", () => {
     });
     expect(result).toEqual({ text: FALLBACK, source: "static" });
   });
+
+  it('falls back to static when mock body is "The answer is B"', async () => {
+    const fetchImpl = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        choices: [{ message: { content: "The answer is B" } }],
+      }),
+    });
+    const result = await resolveSocraticHint({
+      request: {
+        ...request,
+        choiceTexts: [
+          "Maya builds a new rover on Earth.",
+          "A dust storm pauses Maya’s drive on Mars, then she continues.",
+        ],
+      },
+      staticFallbackText: FALLBACK,
+      correctEvidenceTexts: ["Then a wall of dust rose in the distance."],
+      apiKey: "test-key",
+      fetchImpl,
+    });
+    expect(result).toEqual({ text: FALLBACK, source: "static" });
+  });
 });

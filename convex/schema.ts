@@ -26,4 +26,30 @@ export default defineSchema({
     createdAt: v.number(),
     updatedAt: v.number(),
   }).index("by_parentId", ["parentId"]),
+
+  /**
+   * Minimal attempt row for authenticated hint requests (morning).
+   * Full attempt lifecycle / scoring stays on the fixture adapter overnight.
+   */
+  attempts: defineTable({
+    kidId: v.id("kids"),
+    /** Mission slug (e.g. mission_01_mars_dust) until full missions table lands. */
+    missionId: v.string(),
+    status: v.union(v.literal("active"), v.literal("completed")),
+    hintsByQuestionKey: v.record(v.string(), v.number()),
+    startedAt: v.number(),
+  })
+    .index("by_kidId", ["kidId"])
+    .index("by_kid_mission", ["kidId", "missionId"]),
+
+  hintEvents: defineTable({
+    attemptId: v.id("attempts"),
+    questionKey: v.string(),
+    step: v.number(),
+    source: v.union(v.literal("static"), v.literal("grok")),
+    text: v.string(),
+    createdAt: v.number(),
+  })
+    .index("by_attemptId", ["attemptId"])
+    .index("by_attempt_question", ["attemptId", "questionKey"]),
 });

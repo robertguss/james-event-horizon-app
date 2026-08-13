@@ -48,8 +48,8 @@ export const convexAdapter: EhData = {
       return morningOnly();
     },
     async requestHint() {
-      // Morning: call api.hints.getSocraticHint then persist hintEvents.
-      // Overnight: do not implement live Convex — use fixtureAdapter.
+      // Morning (not wired overnight): api.hintRequests.requestHint({ attemptId, questionKey }).
+      // Server loads question; xAI is internalAction only. Fixture path stays static.
       return morningOnly();
     },
     async complete() {

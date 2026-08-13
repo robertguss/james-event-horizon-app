@@ -26,6 +26,10 @@ import {
 } from "../pure/bhGate";
 import { reduceComplete, reduceHint, reduceSubmit } from "../pure/attempt";
 import { levelForXp, xpFloorForLevel } from "../pure/level";
+import {
+  computeWeakSkillTags,
+  skillTagForQuestionType,
+} from "../pure/skillTags";
 import { localDateString } from "../pure/streak";
 import type {
   Attempt,
@@ -36,6 +40,7 @@ import type {
   MissionDetail,
   MissionLockReason,
   MissionSummary,
+  QuestionResult,
   XpLedgerEntry,
 } from "../types";
 
@@ -48,6 +53,7 @@ type Store = {
   missionsCompleted: Map<string, number>;
   /** BH completion timestamps (ms) per kid — weekly cap window. */
   bhCompletions: Map<string, number[]>;
+  reminderEnabled: boolean;
   /** Injectable clock for weekly-cap tests. */
   nowMs?: number;
 };
@@ -108,7 +114,7 @@ function syncKidUnlocks(kid: EhKid, missionsCompleted = 0): EhKid {
   };
 }
 
-function emptyStore(): Store {
+function emptyStore(reminderEnabled = false): Store {
   return {
     pin: FIXTURE_PARENT_PIN,
     kids: new Map(),
@@ -117,6 +123,7 @@ function emptyStore(): Store {
     hintEvents: [],
     missionsCompleted: new Map(),
     bhCompletions: new Map(),
+    reminderEnabled,
   };
 }
 
@@ -141,20 +148,23 @@ export type ResetFixtureOptions = {
   missionsCompleted?: number;
   bhCompletionTimestampsMs?: number[];
   nowMs?: number;
+  /** Parent reminder flag (default false). */
+  reminderEnabled?: boolean;
 };
 
 /** Reset in-memory fixture state (tests / level-up demos / onboarding). */
 export function resetFixture(options: ResetFixtureOptions = {}): void {
+  const reminderEnabled = options.reminderEnabled ?? false;
   const seed = options.seedDefaultKid !== false;
   if (!seed) {
-    globalStore.__ehFixtureStore = emptyStore();
+    globalStore.__ehFixtureStore = emptyStore(reminderEnabled);
     if (options.nowMs !== undefined) {
       globalStore.__ehFixtureStore.nowMs = options.nowMs;
     }
     return;
   }
   // Seed clock before first kid create so blackHoleUnlockedAt is deterministic.
-  const store = emptyStore();
+  const store = emptyStore(reminderEnabled);
   if (options.nowMs !== undefined) {
     store.nowMs = options.nowMs;
   }
@@ -598,20 +608,49 @@ export const fixtureAdapter: EhData = {
       }
       getStore().pin = pin;
     },
-    async progress(kidId) {
+    async getParentStats(kidId) {
       const store = getStore();
       const kid = store.kids.get(kidId);
       if (!kid) {
         throw new Error("Kid not found");
       }
+      const synced = syncKidUnlocks(
+        kid,
+        store.missionsCompleted.get(kidId) ?? 0,
+      );
+      const kidAttempts = [...store.attempts.values()].filter(
+        (attempt) => attempt.kidId === kidId,
+      );
       return {
-        kidId: kid.id,
-        displayName: kid.displayName,
-        xp: kid.xp,
-        level: kid.level,
-        streakDays: kid.streakDays,
+        kidId: synced.id,
+        displayName: synced.displayName,
+        xp: synced.xp,
+        level: synced.level,
+        streakDays: synced.streakDays,
         missionsCompleted: store.missionsCompleted.get(kidId) ?? 0,
+        weakSkillTags: computeWeakSkillTags(kidAttempts, missionById),
+        reminderEnabled: store.reminderEnabled,
       };
+    },
+    async updateKidName(kidId, displayName) {
+      const store = getStore();
+      const kid = store.kids.get(kidId);
+      if (!kid) {
+        throw new Error("Kid not found");
+      }
+      const trimmed = displayName.trim();
+      if (trimmed.length < 1 || trimmed.length > 40) {
+        throw new Error("Display name must be 1–40 characters");
+      }
+      const next = syncKidUnlocks(
+        { ...kid, displayName: trimmed },
+        store.missionsCompleted.get(kidId) ?? 0,
+      );
+      store.kids.set(kidId, next);
+      return next;
+    },
+    async setReminderEnabled(enabled) {
+      getStore().reminderEnabled = enabled;
     },
   },
   setup: {
@@ -629,6 +668,81 @@ export const fixtureAdapter: EhData = {
   },
 };
 
+export type SeedFixtureWrongAnswersOptions = {
+  skillTag: string;
+  count?: number;
+  kidId?: string;
+  missionId?: string;
+};
+
+/** Test helper: seed incorrect results for a skillTag (no XP / mission bumps). */
+export function seedFixtureWrongAnswers(
+  options: SeedFixtureWrongAnswersOptions,
+): void {
+  const store = getStore();
+  const kidId = options.kidId ?? FIXTURE_KID_ID;
+  const missionId = options.missionId ?? "mission_01_mars_dust";
+  const count = options.count ?? 2;
+
+  if (!store.kids.has(kidId)) {
+    throw new Error("Kid not found");
+  }
+  const mission = missionById(missionId);
+  if (!mission) {
+    throw new Error("Mission not found");
+  }
+
+  const matchingQuestions = mission.questions.filter(
+    (question) => skillTagForQuestionType(question.type) === options.skillTag,
+  );
+  if (matchingQuestions.length === 0) {
+    throw new Error(`No questions for skill tag ${options.skillTag}`);
+  }
+
+  let attempt: Attempt | undefined;
+  for (const existing of store.attempts.values()) {
+    if (existing.kidId === kidId && existing.missionId === missionId) {
+      attempt = existing;
+      break;
+    }
+  }
+
+  if (!attempt) {
+    attempt = {
+      id: nextId("att"),
+      kidId,
+      missionId,
+      status: "completed",
+      startedAt: now(),
+      completedAt: now(),
+      currentQuestionIndex: mission.questions.length,
+      questionResults: [],
+      currentHintsUsed: 0,
+      hintsByQuestionKey: {},
+      xpEarned: 0,
+      firstDailyBonus: false,
+    };
+    store.attempts.set(attempt.id, attempt);
+  }
+
+  const wrongs: QuestionResult[] = [];
+  for (let i = 0; i < count; i += 1) {
+    const question = matchingQuestions[i % matchingQuestions.length]!;
+    wrongs.push({
+      questionKey: question.id,
+      correct: false,
+      hintsUsed: 0,
+      xpAwarded: 0,
+    });
+  }
+
+  const next: Attempt = {
+    ...attempt,
+    questionResults: [...attempt.questionResults, ...wrongs],
+  };
+  store.attempts.set(next.id, next);
+}
+
 /** Test helper: expose ledger / hints without widening EhData. */
 export function getFixtureDebugState() {
   const store = getStore();
@@ -641,5 +755,6 @@ export function getFixtureDebugState() {
     bhCompletions: Object.fromEntries(
       [...store.bhCompletions.entries()].map(([k, v]) => [k, [...v]]),
     ),
+    reminderEnabled: store.reminderEnabled,
   };
 }

@@ -188,14 +188,19 @@ export type CompleteResult = {
   newSectorStamps: string[];
 };
 
-export type ParentProgress = {
+export type ParentStats = {
   kidId: string;
   displayName: string;
   xp: number;
   level: number;
   streakDays: number;
   missionsCompleted: number;
+  weakSkillTags: string[];
+  reminderEnabled: boolean;
 };
+
+/** @deprecated alias — prefer ParentStats */
+export type ParentProgress = ParentStats;
 
 export type EhSession = {
   parentId: string | null;
@@ -242,7 +247,9 @@ export type EhData = {
   parent: {
     verifyPin(pin: string): Promise<boolean>;
     setPin(pin: string): Promise<void>;
-    progress(kidId: string): Promise<ParentProgress>;
+    getParentStats(kidId: string): Promise<ParentStats>;
+    updateKidName(kidId: string, displayName: string): Promise<EhKid>;
+    setReminderEnabled(enabled: boolean): Promise<void>;
   };
   setup: {
     /** Create kid if needed + set parent PIN (fixture setPin / Convex completeOnboarding). */

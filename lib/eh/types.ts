@@ -70,6 +70,19 @@ export type QuestionResult = {
   xpAwarded: number;
 };
 
+/** First-call `complete()` snapshot — retries must return this unchanged. */
+export type CompletionSnapshot = {
+  xpBreakdown: {
+    questions: number;
+    exitTicket: number;
+    missionComplete: number;
+    firstDaily: number;
+    total: number;
+  };
+  leveledUp: boolean;
+  previousLevel: number;
+};
+
 export type Attempt = {
   id: string;
   kidId: string;
@@ -79,10 +92,14 @@ export type Attempt = {
   completedAt?: number;
   currentQuestionIndex: number;
   questionResults: QuestionResult[];
-  /** hints used on the current (unanswered) question */
+  /** hints used on the current (unanswered) question — mirror of hintsByQuestionKey */
   currentHintsUsed: number;
+  /** Per-question hint counts; never reset after a correct lock. */
+  hintsByQuestionKey: Record<string, number>;
   xpEarned: number;
   firstDailyBonus: boolean;
+  /** Set on first successful complete(); retry returns this snapshot. */
+  completionSnapshot?: CompletionSnapshot;
 };
 
 export type XpLedgerEntry = {

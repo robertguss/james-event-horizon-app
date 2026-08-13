@@ -7,14 +7,9 @@ import {
   getFixtureSession,
 } from "../auth/fixtureAuth";
 import { mission01 } from "../fixtures/mission01";
-import { glowIdsForHint, gradeAnswer } from "../pure/grade";
+import { reduceComplete, reduceHint, reduceSubmit } from "../pure/attempt";
 import { levelForXp } from "../pure/level";
-import { localDateString, nextStreakState } from "../pure/streak";
-import {
-  FIRST_DAILY_XP,
-  MISSION_COMPLETE_XP,
-  xpForCorrectAnswer,
-} from "../pure/xp";
+import { localDateString } from "../pure/streak";
 import type {
   Attempt,
   CompleteResult,
@@ -132,13 +127,6 @@ function appendLedger(entry: Omit<XpLedgerEntry, "id">): XpLedgerEntry {
   return full;
 }
 
-function applyXp(kid: EhKid, delta: number): EhKid {
-  const xp = kid.xp + delta;
-  const updated: EhKid = { ...kid, xp, level: levelForXp(xp) };
-  getStore().kids.set(kid.id, updated);
-  return updated;
-}
-
 export const fixtureAdapter: EhData = {
   mode: "fixture",
   auth: {
@@ -239,6 +227,7 @@ export const fixtureAdapter: EhData = {
         currentQuestionIndex: 0,
         questionResults: [],
         currentHintsUsed: 0,
+        hintsByQuestionKey: {},
         xpEarned: 0,
         firstDailyBonus: false,
       };
@@ -248,253 +237,93 @@ export const fixtureAdapter: EhData = {
     async submitAnswer(input) {
       const store = getStore();
       const attempt = getAttemptOrThrow(input.attemptId);
-      if (attempt.status !== "active") {
-        throw new Error("Attempt already completed");
-      }
       const mission = missionById(attempt.missionId);
       if (!mission) throw new Error("Mission not found");
 
-      const question = mission.questions.find(
-        (q) => q.id === input.questionKey,
-      );
-      if (!question) throw new Error("Question not found");
-
-      // Reject forged "correct" — grader ignores claimedCorrect
-      const graded = gradeAnswer({
-        question,
+      const reduced = reduceSubmit({
+        attempt,
+        mission,
+        questionKey: input.questionKey,
         evidenceId: input.evidenceId,
         choiceId: input.choiceId,
         claimedCorrect: input.claimedCorrect,
       });
-
-      if (!graded.correct) {
-        return {
-          correct: false,
-          xpAwarded: 0,
-          hintsUsed: attempt.currentHintsUsed,
-          feedback: graded.reason,
-          attempt,
-          nextQuestionIndex: attempt.currentQuestionIndex,
-        };
-      }
-
-      const hintsUsed = attempt.currentHintsUsed;
-      const xpAwarded = xpForCorrectAnswer({
-        xpKind: question.xpKind,
-        hintsUsed,
-      });
-
-      const result = {
-        questionKey: question.id,
-        correct: true,
-        hintsUsed,
-        evidenceId: input.evidenceId,
-        choiceId: input.choiceId,
-        xpAwarded,
-      };
-
-      const withoutPrior = attempt.questionResults.filter(
-        (r) => r.questionKey !== question.id,
-      );
-      const questionResults = [...withoutPrior, result];
-      const nextIndex = mission.questions.findIndex(
-        (q) =>
-          !questionResults.some((r) => r.questionKey === q.id && r.correct),
-      );
-
-      const updated: Attempt = {
-        ...attempt,
-        questionResults,
-        currentHintsUsed: 0,
-        currentQuestionIndex:
-          nextIndex === -1 ? mission.questions.length : nextIndex,
-        xpEarned: questionResults.reduce((sum, r) => sum + r.xpAwarded, 0),
-      };
-      store.attempts.set(updated.id, updated);
+      store.attempts.set(reduced.attempt.id, reduced.attempt);
 
       return {
-        correct: true,
-        xpAwarded,
-        hintsUsed,
-        feedback: graded.reason,
-        attempt: updated,
-        nextQuestionIndex: nextIndex === -1 ? null : nextIndex,
+        correct: reduced.correct,
+        xpAwarded: reduced.xpAwarded,
+        hintsUsed: reduced.hintsUsed,
+        feedback: reduced.feedback,
+        attempt: reduced.attempt,
+        nextQuestionIndex: reduced.nextQuestionIndex,
       };
     },
     async requestHint(input) {
       const store = getStore();
       const attempt = getAttemptOrThrow(input.attemptId);
-      if (attempt.status !== "active") {
-        throw new Error("Attempt already completed");
-      }
       const mission = missionById(attempt.missionId);
       if (!mission) throw new Error("Mission not found");
-      const question = mission.questions.find(
-        (q) => q.id === input.questionKey,
-      );
-      if (!question) throw new Error("Question not found");
 
-      const nextStep = Math.min(4, attempt.currentHintsUsed + 1);
-      const text = question.hints[nextStep - 1] ?? question.hints[3];
-      const updated: Attempt = {
-        ...attempt,
-        currentHintsUsed: nextStep,
-      };
-      store.attempts.set(updated.id, updated);
+      const reduced = reduceHint({
+        attempt,
+        mission,
+        questionKey: input.questionKey,
+      });
+      store.attempts.set(reduced.attempt.id, reduced.attempt);
 
       const event: HintEvent = {
         id: nextId("hint"),
         attemptId: attempt.id,
-        questionKey: question.id,
-        step: nextStep,
+        questionKey: input.questionKey,
+        step: reduced.step,
         source: "static",
-        text,
+        text: reduced.text,
         createdAt: Date.now(),
       };
       store.hintEvents.push(event);
 
       return {
-        step: nextStep,
-        text,
+        step: reduced.step,
+        text: reduced.text,
         source: "static" as const,
-        glowEvidenceIds: glowIdsForHint(question, nextStep),
-        attempt: updated,
+        glowEvidenceIds: reduced.glowEvidenceIds,
+        attempt: reduced.attempt,
       };
     },
     async complete(input): Promise<CompleteResult> {
       const store = getStore();
       const attempt = getAttemptOrThrow(input.attemptId);
-      if (attempt.status === "completed") {
-        const kid = store.kids.get(attempt.kidId);
-        if (!kid) throw new Error("Kid not found");
-        return {
-          attempt,
-          kid,
-          xpBreakdown: {
-            questions: 0,
-            exitTicket: 0,
-            missionComplete: 0,
-            firstDaily: 0,
-            total: attempt.xpEarned,
-          },
-          leveledUp: false,
-          previousLevel: kid.level,
-          ledger: store.ledger.filter((e) => e.attemptId === attempt.id),
-        };
-      }
-
       const mission = missionById(attempt.missionId);
       if (!mission) throw new Error("Mission not found");
 
-      const allCorrect = mission.questions.every((q) =>
-        attempt.questionResults.some(
-          (r) => r.questionKey === q.id && r.correct,
-        ),
-      );
-      if (!allCorrect) {
-        throw new Error("Mission incomplete — answer every question first");
-      }
-
-      let kid = store.kids.get(attempt.kidId);
+      const kid = store.kids.get(attempt.kidId);
       if (!kid) throw new Error("Kid not found");
-      const previousLevel = kid.level;
-      const today = localDateString();
-      const streak = nextStreakState({
-        lastMissionDate: kid.lastMissionDate,
-        streakDays: kid.streakDays,
-        today,
+
+      const reduced = reduceComplete({
+        attempt,
+        mission,
+        kid,
+        today: localDateString(),
       });
 
-      const questionsXp = attempt.questionResults
-        .filter((r) => {
-          const q = mission.questions.find((mq) => mq.id === r.questionKey);
-          return q?.xpKind === "question";
-        })
-        .reduce((sum, r) => sum + r.xpAwarded, 0);
-
-      const exitTicket = attempt.questionResults
-        .filter((r) => {
-          const q = mission.questions.find((mq) => mq.id === r.questionKey);
-          return q?.xpKind === "exit";
-        })
-        .reduce((sum, r) => sum + r.xpAwarded, 0);
-
-      // Award per-question XP to profile (was held on attempt until complete)
-      let balance = kid.xp;
-      for (const r of attempt.questionResults) {
-        const q = mission.questions.find((mq) => mq.id === r.questionKey);
-        if (!q || r.xpAwarded <= 0) continue;
-        balance += r.xpAwarded;
-        appendLedger({
-          kidId: kid.id,
-          attemptId: attempt.id,
-          reason: q.xpKind === "exit" ? "exit_ticket" : "question",
-          delta: r.xpAwarded,
-          balanceAfter: balance,
-          createdAt: Date.now(),
-        });
+      if (reduced.kind === "fresh") {
+        for (const delta of reduced.ledgerDeltas) {
+          appendLedger(delta);
+        }
+        store.kids.set(reduced.kid.id, reduced.kid);
+        store.attempts.set(reduced.attempt.id, reduced.attempt);
+        const completedCount =
+          (store.missionsCompleted.get(reduced.kid.id) ?? 0) + 1;
+        store.missionsCompleted.set(reduced.kid.id, completedCount);
       }
-      kid = applyXp(kid, attempt.xpEarned);
-
-      const missionComplete = MISSION_COMPLETE_XP;
-      kid = applyXp(kid, missionComplete);
-      appendLedger({
-        kidId: kid.id,
-        attemptId: attempt.id,
-        reason: "mission_complete",
-        delta: missionComplete,
-        balanceAfter: kid.xp,
-        createdAt: Date.now(),
-      });
-
-      let firstDaily = 0;
-      if (streak.isFirstDaily) {
-        firstDaily = FIRST_DAILY_XP;
-        kid = applyXp(kid, firstDaily);
-        appendLedger({
-          kidId: kid.id,
-          attemptId: attempt.id,
-          reason: "first_daily",
-          delta: firstDaily,
-          balanceAfter: kid.xp,
-          createdAt: Date.now(),
-        });
-      }
-
-      kid = {
-        ...kid,
-        streakDays: streak.streakDays,
-        lastMissionDate: streak.lastMissionDate,
-        level: levelForXp(kid.xp),
-      };
-      store.kids.set(kid.id, kid);
-
-      const total = questionsXp + exitTicket + missionComplete + firstDaily;
-      const completed: Attempt = {
-        ...attempt,
-        status: "completed",
-        completedAt: Date.now(),
-        xpEarned: total,
-        firstDailyBonus: firstDaily > 0,
-        currentQuestionIndex: mission.questions.length,
-      };
-      store.attempts.set(completed.id, completed);
-
-      const completedCount = (store.missionsCompleted.get(kid.id) ?? 0) + 1;
-      store.missionsCompleted.set(kid.id, completedCount);
 
       return {
-        attempt: completed,
-        kid,
-        xpBreakdown: {
-          questions: questionsXp,
-          exitTicket,
-          missionComplete,
-          firstDaily,
-          total,
-        },
-        leveledUp: kid.level > previousLevel,
-        previousLevel,
+        attempt: reduced.attempt,
+        kid: reduced.kid,
+        xpBreakdown: reduced.xpBreakdown,
+        leveledUp: reduced.leveledUp,
+        previousLevel: reduced.previousLevel,
         ledger: store.ledger.filter((e) => e.attemptId === attempt.id),
       };
     },

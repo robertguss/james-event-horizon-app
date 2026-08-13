@@ -96,6 +96,74 @@ describe("fixture Mission 1 E2E", () => {
     expect(ok.attempt.questionResults[0]?.hintsUsed).toBe(2);
   });
 
+  it("H2: freeze score once correct — re-submit stays 10 XP not 20", async () => {
+    const eh = getEhData();
+    const attempt = await eh.attempts.start(FIXTURE_KID_ID, mission01.id);
+
+    await eh.attempts.requestHint({
+      attemptId: attempt.id,
+      questionKey: "q1_locate_wall",
+    });
+    await eh.attempts.requestHint({
+      attemptId: attempt.id,
+      questionKey: "q1_locate_wall",
+    });
+
+    const ok = await eh.attempts.submitAnswer({
+      attemptId: attempt.id,
+      questionKey: "q1_locate_wall",
+      evidenceId: "s3",
+    });
+    expect(ok.xpAwarded).toBe(10);
+
+    const again = await eh.attempts.submitAnswer({
+      attemptId: attempt.id,
+      questionKey: "q1_locate_wall",
+      evidenceId: "s3",
+    });
+    expect(again.xpAwarded).toBe(10);
+    expect(again.attempt.questionResults[0]?.xpAwarded).toBe(10);
+    expect(again.attempt.xpEarned).toBe(10);
+  });
+
+  it("H1: complete() retry returns first-call snapshot (140 / level-up)", async () => {
+    const eh = getEhData();
+    await eh.auth.fixtureSignInAsParent?.();
+    const attempt = await eh.attempts.start(FIXTURE_KID_ID, mission01.id);
+
+    for (const answer of [
+      { questionKey: "q1_locate_wall", evidenceId: "s3" },
+      { questionKey: "q2_main_idea", choiceId: "B" },
+      { questionKey: "q3_vocab_grit", choiceId: "A" },
+      {
+        questionKey: "q4_infer_why_park",
+        choiceId: "B",
+        evidenceId: "s5",
+      },
+      { questionKey: "q5_exit_ticket", choiceId: "A" },
+    ] as const) {
+      await eh.attempts.submitAnswer({ attemptId: attempt.id, ...answer });
+    }
+
+    const first = await eh.attempts.complete({ attemptId: attempt.id });
+    expect(first.xpBreakdown.total).toBe(140);
+    expect(first.leveledUp).toBe(true);
+    expect(first.previousLevel).toBe(1);
+
+    const { ledger: ledgerAfterFirst } = getFixtureDebugState();
+    const ledgerLen = ledgerAfterFirst.length;
+
+    const second = await eh.attempts.complete({ attemptId: attempt.id });
+    expect(second.xpBreakdown).toEqual(first.xpBreakdown);
+    expect(second.leveledUp).toBe(first.leveledUp);
+    expect(second.previousLevel).toBe(first.previousLevel);
+    expect(second.kid.xp).toBe(first.kid.xp);
+    expect(second.kid.level).toBe(first.kid.level);
+
+    const { ledger: ledgerAfterSecond } = getFixtureDebugState();
+    expect(ledgerAfterSecond.length).toBe(ledgerLen);
+  });
+
   it("rejects forged correct without matching exact-set evidence", async () => {
     const eh = getEhData();
     const attempt = await eh.attempts.start(FIXTURE_KID_ID, mission01.id);

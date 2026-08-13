@@ -21,11 +21,11 @@ import {
 } from "../fixtures/missionsStub";
 import {
   blackHoleUnlocked,
-  canStartBlackHole,
   maybeStampBlackHoleUnlockedAt,
 } from "../pure/bhGate";
 import { reduceComplete, reduceHint, reduceSubmit } from "../pure/attempt";
 import { levelForXp, xpFloorForLevel } from "../pure/level";
+import { assertMissionPlayable, summarizeMission } from "../pure/missionLock";
 import {
   computeWeakSkillTags,
   skillTagForQuestionType,
@@ -38,8 +38,6 @@ import type {
   EhKid,
   HintEvent,
   MissionDetail,
-  MissionLockReason,
-  MissionSummary,
   QuestionResult,
   XpLedgerEntry,
 } from "../types";
@@ -229,72 +227,6 @@ function missionById(missionId: string): MissionDetail | null {
   return fixtureMissionById(missionId);
 }
 
-function lockCopy(reason: MissionLockReason): {
-  lockReason: MissionLockReason;
-  lockMessage: string;
-} {
-  switch (reason) {
-    case "coming_soon":
-      return {
-        lockReason: reason,
-        lockMessage: "Coming soon — chart more sectors first.",
-      };
-    case "black_hole_gate":
-      return {
-        lockReason: reason,
-        lockMessage: "Reach level 5 or a 5-day streak to open black holes.",
-      };
-    case "black_hole_weekly_cap":
-      return {
-        lockReason: reason,
-        lockMessage: "Black-hole mission used this week — come back later.",
-      };
-    default: {
-      const _exhaustive: never = reason;
-      return _exhaustive;
-    }
-  }
-}
-
-function summarizeMission(
-  mission: MissionDetail,
-  kid: EhKid | undefined,
-): MissionSummary {
-  const base = {
-    id: mission.id,
-    title: mission.title,
-    planet: mission.planet,
-    planetId: mission.planetId,
-    gradeBand: mission.gradeBand,
-    estimatedMinutes: mission.estimatedMinutes,
-    objective: mission.objective,
-    kind: mission.kind,
-  };
-
-  if (mission.kind === "stub") {
-    return { ...base, locked: true, ...lockCopy("coming_soon") };
-  }
-
-  if (mission.kind === "blackHole") {
-    const gate = canStartBlackHole({
-      level: kid?.level ?? 1,
-      streakDays: kid?.streakDays ?? 0,
-      bhCompletionTimestampsMs: kid
-        ? (getStore().bhCompletions.get(kid.id) ?? [])
-        : [],
-      nowMs: now(),
-    });
-    if (!gate.ok) {
-      const reason =
-        gate.reason === "gate" ? "black_hole_gate" : "black_hole_weekly_cap";
-      return { ...base, locked: true, ...lockCopy(reason) };
-    }
-    return { ...base, locked: false };
-  }
-
-  return { ...base, locked: false };
-}
-
 function getAttemptOrThrow(attemptId: string): Attempt {
   const attempt = getStore().attempts.get(attemptId);
   if (!attempt) throw new Error("Attempt not found");
@@ -311,27 +243,13 @@ function appendLedger(entry: Omit<XpLedgerEntry, "id">): XpLedgerEntry {
   return full;
 }
 
-function assertMissionPlayable(mission: MissionDetail, kid: EhKid): void {
-  if (mission.kind === "stub") {
-    throw new Error("Mission coming soon");
-  }
-  if (mission.kind === "blackHole") {
-    const gate = canStartBlackHole({
-      level: kid.level,
-      streakDays: kid.streakDays,
-      bhCompletionTimestampsMs: getStore().bhCompletions.get(kid.id) ?? [],
-      nowMs: now(),
-    });
-    if (!gate.ok) {
-      const { lockMessage } = lockCopy(
-        gate.reason === "gate" ? "black_hole_gate" : "black_hole_weekly_cap",
-      );
-      throw new Error(lockMessage);
-    }
-  }
-  if (mission.questions.length === 0) {
-    throw new Error("Mission coming soon");
-  }
+function playableOrThrow(mission: MissionDetail, kid: EhKid): void {
+  assertMissionPlayable({
+    mission,
+    kid,
+    bhCompletionTimestampsMs: getStore().bhCompletions.get(kid.id) ?? [],
+    nowMs: now(),
+  });
 }
 
 export const fixtureAdapter: EhData = {
@@ -400,7 +318,14 @@ export const fixtureAdapter: EhData = {
         ? syncKidUnlocks(kid, store.missionsCompleted.get(kid.id) ?? 0)
         : undefined;
       return ALL_FIXTURE_MISSIONS.map((mission) =>
-        summarizeMission(mission, synced),
+        summarizeMission({
+          mission,
+          kid: synced,
+          bhCompletionTimestampsMs: synced
+            ? (store.bhCompletions.get(synced.id) ?? [])
+            : [],
+          nowMs: now(),
+        }),
       );
     },
     async get(missionId) {
@@ -427,7 +352,7 @@ export const fixtureAdapter: EhData = {
       const mission = missionById(missionId);
       if (!mission) throw new Error("Mission not found");
 
-      assertMissionPlayable(
+      playableOrThrow(
         mission,
         syncKidUnlocks(kid, store.missionsCompleted.get(kidId) ?? 0),
       );
@@ -522,7 +447,7 @@ export const fixtureAdapter: EhData = {
       if (!kid) throw new Error("Kid not found");
 
       if (attempt.status !== "completed" && mission.kind === "blackHole") {
-        assertMissionPlayable(
+        playableOrThrow(
           mission,
           syncKidUnlocks(kid, store.missionsCompleted.get(kid.id) ?? 0),
         );

@@ -1,17 +1,21 @@
 /**
- * Server-side mission catalog for hint loading.
+ * Server-side mission catalog for hint loading + attempt scoring.
  * UI must not supply question prompts / choices / fallbacks.
+ * Detail pack lives in lib/eh/fixtures — Convex mission rows hold slug/lock/kind.
  */
 
-import { mission01 } from "../../lib/eh/fixtures/mission01";
+import {
+  ALL_FIXTURE_MISSIONS,
+  fixtureMissionById,
+} from "../../lib/eh/fixtures/missionsStub";
 import type { MissionDetail, MissionQuestion } from "../../lib/eh/types";
 
-const BY_ID: Record<string, MissionDetail> = {
-  [mission01.id]: mission01,
-};
-
 export function getMissionById(missionId: string): MissionDetail | null {
-  return BY_ID[missionId] ?? null;
+  return fixtureMissionById(missionId);
+}
+
+export function listCatalogMissions(): readonly MissionDetail[] {
+  return ALL_FIXTURE_MISSIONS;
 }
 
 export function getQuestion(

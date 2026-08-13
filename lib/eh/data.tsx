@@ -1,3 +1,4 @@
+import { useConvex } from "convex/react";
 import {
   createContext,
   useCallback,
@@ -8,10 +9,13 @@ import {
   type ReactNode,
 } from "react";
 
-import { convexAdapter } from "./adapters/convexAdapter";
+import {
+  createConvexAdapter,
+  type ConvexEhClient,
+} from "./adapters/convexAdapter";
 import { fixtureAdapter } from "./adapters/fixtureAdapter";
 import { FIXTURE_PARENT_PIN } from "./auth/fixtureAuth";
-import { getEhMode } from "./mode";
+import { getEhMode, hostedStackEnabled } from "./mode";
 import type {
   CompleteOnboardingInput,
   EhData,
@@ -34,6 +38,7 @@ export {
   resetFixture,
   seedFixtureWrongAnswers,
 } from "./adapters/fixtureAdapter";
+export { createConvexAdapter } from "./adapters/convexAdapter";
 export {
   assertEhModeBootable,
   getEhMode,
@@ -43,9 +48,32 @@ export {
   showFixturePinHint,
 } from "./mode";
 
-/** Sole factory for product data. UI imports only from this module. */
+/**
+ * Sole factory for product data outside React.
+ * Fixture mode returns the in-memory adapter. Convex mode requires
+ * createConvexAdapter(useConvex()) via EhProvider — do not call this
+ * for live I/O without an injected client.
+ */
 export function getEhData(): EhData {
-  return getEhMode() === "convex" ? convexAdapter : fixtureAdapter;
+  return getEhMode() === "convex"
+    ? createConvexAdapter({
+        query: async () => {
+          throw new Error(
+            "getEhData(convex): use useEh().data from EhProvider (injected Convex client)",
+          );
+        },
+        mutation: async () => {
+          throw new Error(
+            "getEhData(convex): use useEh().data from EhProvider (injected Convex client)",
+          );
+        },
+        action: async () => {
+          throw new Error(
+            "getEhData(convex): use useEh().data from EhProvider (injected Convex client)",
+          );
+        },
+      })
+    : fixtureAdapter;
 }
 
 type EhContextValue = {
@@ -65,8 +93,7 @@ type EhContextValue = {
 
 const EhContext = createContext<EhContextValue | null>(null);
 
-export function EhProvider({ children }: { children: ReactNode }) {
-  const data = useMemo(() => getEhData(), []);
+function useEhState(data: EhData): EhContextValue {
   const [ready, setReady] = useState(false);
   const [kid, setKid] = useState<EhKid | null>(null);
   const [missions, setMissions] = useState<MissionSummary[]>([]);
@@ -122,7 +149,7 @@ export function EhProvider({ children }: { children: ReactNode }) {
     [data],
   );
 
-  const value = useMemo(
+  return useMemo(
     () => ({
       mode: data.mode,
       ready,
@@ -145,8 +172,30 @@ export function EhProvider({ children }: { children: ReactNode }) {
       verifyPin,
     ],
   );
+}
 
+/** Fixture path — never calls useConvex (provider not mounted). */
+function FixtureEhProvider({ children }: { children: ReactNode }) {
+  const value = useEhState(fixtureAdapter);
   return <EhContext.Provider value={value}>{children}</EhContext.Provider>;
+}
+
+/** Hosted path — must render under ConvexProviderWithClerk. */
+function ConvexEhProvider({ children }: { children: ReactNode }) {
+  const convex = useConvex();
+  const data = useMemo(
+    () => createConvexAdapter(convex as unknown as ConvexEhClient),
+    [convex],
+  );
+  const value = useEhState(data);
+  return <EhContext.Provider value={value}>{children}</EhContext.Provider>;
+}
+
+export function EhProvider({ children }: { children: ReactNode }) {
+  if (hostedStackEnabled()) {
+    return <ConvexEhProvider>{children}</ConvexEhProvider>;
+  }
+  return <FixtureEhProvider>{children}</FixtureEhProvider>;
 }
 
 /** React access to EhData. Routes/components import this from `lib/eh/data` only. */

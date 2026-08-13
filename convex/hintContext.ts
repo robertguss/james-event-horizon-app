@@ -134,6 +134,7 @@ export const recordHintEvent = internalMutation({
         ...attempt.hintsByQuestionKey,
         [questionKey]: step,
       },
+      currentHintsUsed: step,
     });
 
     await ctx.db.insert("hintEvents", {

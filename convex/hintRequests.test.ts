@@ -34,6 +34,11 @@ describe("hintRequests.requestHint", () => {
         status: "active",
         hintsByQuestionKey: {},
         startedAt: Date.now(),
+        currentQuestionIndex: 0,
+        questionResults: [],
+        currentHintsUsed: 0,
+        xpEarned: 0,
+        firstDailyBonus: false,
       });
     });
 
@@ -61,6 +66,11 @@ describe("hintRequests.requestHint", () => {
         status: "active",
         hintsByQuestionKey: {},
         startedAt: Date.now(),
+        currentQuestionIndex: 0,
+        questionResults: [],
+        currentHintsUsed: 0,
+        xpEarned: 0,
+        firstDailyBonus: false,
       });
     });
 

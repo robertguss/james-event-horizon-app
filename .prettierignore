@@ -18,5 +18,3 @@ aube-lock.yaml
 app/routeTree.gen.ts
 *.tsbuildinfo
 validation-screenshots
-public/design-refs/*.jpeg
-docs/design-refs/*.jpeg

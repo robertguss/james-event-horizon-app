@@ -34,52 +34,54 @@ typography:
     fontFamily: Nunito
     fontSize: 40px
     fontWeight: 800
-    lineHeight: 1.2
+    lineHeight: 1.15
+    letterSpacing: -0.01em
   headline-lg:
     fontFamily: Nunito
-    fontSize: 32px
-    fontWeight: 700
-    lineHeight: 1.25
+    fontSize: 28px
+    fontWeight: 800
+    lineHeight: 1.2
   headline-md:
     fontFamily: Nunito
-    fontSize: 24px
+    fontSize: 22px
     fontWeight: 700
-    lineHeight: 1.3
+    lineHeight: 1.25
   body-lg:
     fontFamily: Nunito
     fontSize: 22px
-    fontWeight: 400
+    fontWeight: 600
     lineHeight: 1.65
   body-md:
     fontFamily: Nunito
     fontSize: 18px
-    fontWeight: 400
-    lineHeight: 1.5
+    fontWeight: 500
+    lineHeight: 1.55
   body-sm:
     fontFamily: Nunito
-    fontSize: 16px
-    fontWeight: 400
+    fontSize: 15px
+    fontWeight: 500
     lineHeight: 1.45
   label-lg:
     fontFamily: Nunito
     fontSize: 18px
-    fontWeight: 700
+    fontWeight: 800
     lineHeight: 1.2
   label-md:
     fontFamily: Nunito
-    fontSize: 16px
+    fontSize: 14px
     fontWeight: 700
     lineHeight: 1.2
   label-sm:
     fontFamily: Nunito
-    fontSize: 14px
-    fontWeight: 600
+    fontSize: 12px
+    fontWeight: 700
     lineHeight: 1.2
+    letterSpacing: 0.04em
   xp:
     fontFamily: Nunito
-    fontSize: 20px
+    fontSize: 16px
     fontWeight: 800
-    lineHeight: 1.1
+    lineHeight: 1
 rounded:
   sm: 12px
   md: 20px
@@ -108,10 +110,6 @@ components:
   button-primary-pressed:
     backgroundColor: "{colors.primary-pressed}"
     textColor: "{colors.on-primary}"
-    typography: "{typography.label-lg}"
-    rounded: "{rounded.full}"
-    padding: 16px
-    height: 56px
   button-secondary:
     backgroundColor: "{colors.secondary}"
     textColor: "{colors.on-secondary}"
@@ -120,15 +118,15 @@ components:
     padding: 16px
     height: 56px
   button-hint:
-    backgroundColor: "{colors.surface-elevated}"
-    textColor: "{colors.tertiary}"
+    backgroundColor: "{colors.tertiary}"
+    textColor: "{colors.on-tertiary}"
     typography: "{typography.label-md}"
     rounded: "{rounded.full}"
-    padding: 12px
+    padding: 14px
     height: 48px
   button-choice:
-    backgroundColor: "{colors.secondary}"
-    textColor: "{colors.on-secondary}"
+    backgroundColor: "{colors.surface-elevated}"
+    textColor: "{colors.on-surface}"
     typography: "{typography.body-md}"
     rounded: "{rounded.lg}"
     padding: 16px
@@ -136,28 +134,15 @@ components:
   button-choice-selected:
     backgroundColor: "{colors.highlight}"
     textColor: "{colors.on-primary}"
-    typography: "{typography.body-md}"
-    rounded: "{rounded.lg}"
-    padding: 16px
-    height: 56px
   button-choice-wrong:
-    backgroundColor: "{colors.error}"
-    textColor: "{colors.on-surface}"
-    typography: "{typography.body-md}"
-    rounded: "{rounded.lg}"
-    padding: 16px
-    height: 56px
+    backgroundColor: "{colors.surface-elevated}"
+    textColor: "{colors.error}"
   button-success:
     backgroundColor: "{colors.success}"
     textColor: "{colors.on-primary}"
-    typography: "{typography.label-lg}"
-    rounded: "{rounded.full}"
-    padding: 16px
-    height: 56px
   evidence-highlight:
     backgroundColor: "{colors.highlight-soft}"
     textColor: "{colors.on-reading}"
-    rounded: "{rounded.sm}"
   nebula-canvas:
     backgroundColor: "{colors.neutral}"
     textColor: "{colors.on-surface}"
@@ -165,28 +150,20 @@ components:
     backgroundColor: "{colors.surface}"
     textColor: "{colors.on-surface-muted}"
   reward-star:
-    backgroundColor: "{colors.tertiary}"
+    backgroundColor: "{colors.star}"
     textColor: "{colors.on-tertiary}"
-    rounded: "{rounded.full}"
   black-hole-ring:
     backgroundColor: "{colors.accretion}"
-    textColor: "{colors.on-surface}"
-    rounded: "{rounded.full}"
+    textColor: "{colors.on-tertiary}"
   black-hole-core:
     backgroundColor: "{colors.black-hole}"
     textColor: "{colors.on-surface}"
-    rounded: "{rounded.full}"
   glass-panel:
     backgroundColor: "{colors.surface-elevated}"
     textColor: "{colors.on-surface}"
-    rounded: "{rounded.xl}"
-    padding: 28px
   warning-chip:
     backgroundColor: "{colors.warning}"
     textColor: "{colors.on-tertiary}"
-    typography: "{typography.label-sm}"
-    rounded: "{rounded.full}"
-    padding: 8px
   reading-card:
     backgroundColor: "{colors.reading-panel}"
     textColor: "{colors.on-reading}"
@@ -199,66 +176,116 @@ components:
     typography: "{typography.label-md}"
     rounded: "{rounded.lg}"
     padding: 16px
+    height: 64px
   xp-badge:
-    backgroundColor: "{colors.tertiary-glow}"
-    textColor: "{colors.on-tertiary}"
+    backgroundColor: "{colors.surface-elevated}"
+    textColor: "{colors.tertiary}"
     typography: "{typography.xp}"
     rounded: "{rounded.full}"
-    padding: 8px
+    padding: 12px
 ---
+
+# Event Horizon — DESIGN.md
+
+Agent-facing visual identity for **Event Horizon** (subtitle: Read to explore). Follow [DESIGN.md](https://github.com/google-labs-code/design.md). Tokens above are normative; prose below explains how to apply them.
 
 ## Overview
 
-Toy-like stylized 3D space adventure for a son-facing reading game (grades 3–5). Soft, cinematic, premium-kid. Wonder and clarity over spectacle.
+Event Horizon is a **toy-like stylized 3D** space reading game for a child in grades 3–5. The emotional target is **wonder + clarity**: cozy spaceship adventure, never grimdark, never babyish clutter, never hard military sci-fi.
 
-The locked look is matte plastic / clay low-poly worlds in a pastel purple–magenta–deep-blue nebula, soft cinematic lighting with depth of field, and glassy jelly UI in teal and cream with gold star accents. Hub and rewards speak toy-3D; mission reading panels stay high-contrast cream so readability beats spectacle. Not grimdark, not flat comic, not busy adventure-map clutter.
+**Locked look (hub reference):** matte plastic / clay materials, faceted low-poly planets, soft cinematic lighting with depth of field, pastel purple–magenta–deep-blue nebula, young explorer often seen from behind on a glowing stone platform, and **glassy jelly UI** — large teal/cream pills with gold star accents and chunky 3D icons.
+
+Product constraints that shape the UI:
+
+- **Tablet-first PWA**; huge tap targets; mission screens stay **2D and readable** even if the hub is 3D.
+- Passages live on a cream **reading panel** — readability always beats spectacle.
+- Telescope = evidence scanner (circular reticle / soft teal highlight on a sentence).
+- Black holes are **friendly awe** (bright accretion ring), never horror void.
+- Short labels only: Missions, Hangar, Library, Academy, Scan, Hint, Level Up — no technobabble.
+
+Stack note: ship on Robert’s web-app-starter-kit (TanStack Start, Convex, Clerk, shadcn). Prefer mapping these tokens into CSS variables / Tailwind theme rather than inventing a second palette.
 
 ## Colors
 
-The canvas is dreamy purple/magenta nebula over deep space blue (`neutral`, `surface`, `nebula-pink`, `nebula-magenta`). Primary actions use teal (`primary` / `primary-pressed`); secondary surfaces and pills use cream (`secondary`); stars and XP accents use soft gold (`tertiary`, `tertiary-glow`, `star`).
+The world is a dreamy nebula; interactive chrome is **teal jelly** and **cream**; celebration is **soft gold**.
 
-Black holes use a luminous orange/magenta accretion ring (`accretion`) around a friendly dark core (`black-hole`) — awe, never void horror. Passage UI uses `reading-panel` / `on-reading` for high contrast. Evidence taps use soft teal glow (`highlight` / `highlight-soft`), not neon chaos. Semantic states: `success`, `warning`, `error`. Glass edges use `border-glass`.
+- **Primary (`#2EC4B6`):** Teal — primary actions (Launch, Scan, Check, hub Missions).
+- **Secondary (`#F5E6D3`):** Warm cream — secondary hub chips, reading-adjacent surfaces.
+- **Tertiary (`#F0C75E`):** Soft gold — XP, stars, Hint, reward sparkle (not the only CTA).
+- **Neutral / surface (`#1B1430`, `#241B3D`, `#2E2450`):** Deep space ink for canvas and elevated panels.
+- **Nebula accents (`#C77DFF`, `#E056A0`):** Background atmosphere only — never body text.
+- **Reading panel (`#FFF8F0` on `#1A1528` text):** High-contrast passage surface.
+- **Highlight (`#5EEAD4`):** Evidence / selected sentence glow (soft, not neon chaos).
+- **Accretion (`#FF8A4C`) + black-hole (`#0A0614`):** Reward / black-hole moments — cute ring, not void horror.
+- **Error (`#FF6B8A`):** Soft coral for wrong answers — always pair with icon/shape, never red-vs-green alone.
+
+Keep one strong action color per screen (usually primary teal). Gold is garnish and XP, not a competing CTA.
+
+Atmosphere tokens (`nebula-*`, `border-glass`, `tertiary-glow`) are for **backgrounds, gradients, and borders only** — never as text fill behind body copy.
 
 ## Typography
 
-Nunito throughout — friendly sans for kids. Passage text is `body-lg` (22px / 1.65) on the reading card. UI labels stay short and clear (“Scan,” “Hint,” not technobabble) via `label-*`. Headlines and hub titles use `display` / `headline-*`. XP and level numbers use the bold `xp` style.
+**Nunito** is the single family — rounded, friendly, excellent at large sizes for developing readers.
+
+- **Display / headlines:** Extra-bold for hub titles and Level Up moments.
+- **Body-lg (22px / 1.65):** Default **passage** size on tablet; never shrink passages to fit art.
+- **Body-md:** Choices, hints, supporting copy.
+- **Labels:** Bold/extra-bold short words on jelly buttons; avoid all-caps walls of text (small tracking on `label-sm` only).
+- **XP:** Extra-bold numerals next to star icons.
+
+Do not introduce a second display font for v1. Parent screens may reuse the same scale at slightly denser sizes.
 
 ## Layout
 
-Tablet-first PWA with generous margins (`margin` 24px, `gutter` 20px). Tap targets meet `tap-min` (48px). Mission flow centers a large reading card with side/bottom controls; hub places large corner chips (Missions, Hangar, Library, Academy). Panel padding is `panel-pad` (28px). Keep one job per screen: hub presence, then calm reading/scan, then short reward.
+Tablet-first, landscape-comfortable. Missions use a **single focal column**: reading card center, choices below, tools (Scan / Hint) in a thumb-friendly bottom band. Hub can be scenic full-bleed with corner jelly chips.
+
+- Base rhythm: **8px** scale (`sm`/`md`/`lg`…).
+- Minimum tap height: **48px** (`tap-min`); prefer 56px for primary actions.
+- Reading card internal padding: **28px** (`panel-pad`).
+- Safe margins ~24px from screen edges; avoid putting critical controls under notches / home indicators.
+- Prefer containment: passage + questions in one elevated card stack so the nebula stays background, not noise behind glyphs.
 
 ## Elevation & Depth
 
-Hub/home: soft cinematic lighting and shallow depth of field — hero ship/explorer sharp, distant nebula soft. Mission screens: flatten the background (muted nebula) so the cream reading card sits clearly above. Glass panels use translucent elevated surfaces (`surface-elevated` + `border-glass`) with soft shadows, not hard sci-fi HUD chrome. Optional light 3D only on map/home; question flow stays flat 2D.
+Depth comes from **cinematic lighting and layered translucency**, not heavy Material shadows.
+
+- Hub: real/fake 3D scene with shallow DoF; UI floats as glassy pills with soft bloom.
+- Missions: flatter. Soft shadow or 1px glass border (`border-glass`) under the reading card; keep the passage plane calm.
+- Selected evidence: soft teal wash (`highlight-soft`), not a harsh outline storm.
+- Rewards: brief bloom / star sparkle; one motion verb at a time.
+
+Honor `prefers-reduced-motion`: hard cuts, still nebula, no parallax requirement.
 
 ## Shapes
 
-Heavy corner radius: pills and CTAs at `rounded.full`; cards and choice rows at `rounded.lg` / `rounded.xl`. Telescope / scanner is circular. Big rounded jelly buttons and chunky 3D icons. No sharp military corners; no dense parchment map frames.
+Everything interactive is **highly rounded** — jelly language.
+
+- Pills / primary buttons: `rounded.full`.
+- Cards / choice rows: `rounded.lg`–`xl` (20–36px).
+- Telescope / scanner: circular reticle.
+- Avoid sharp 4px admin-tool radii on kid surfaces. Parent PIN screens may tighten slightly but stay in-family.
 
 ## Components
 
-- **Primary / secondary buttons** — large glassy jelly pills (teal primary, cream secondary); pressed state darkens teal.
-- **Hint** — quieter elevated chip with gold accent so kids can ask without crowding the answer path.
-- **Choices** — cream pills; selected = teal highlight; wrong = soft error blush, then ladder continues.
-- **Reading card** — cream/off-white elevated panel, large type, blank of busy art behind text.
-- **Evidence highlight** — soft teal glow on the tapped sentence.
-- **Hub chips** — Missions / Hangar / Library / Academy as large corner jelly buttons with gold stars / chunky icons.
-- **XP badge / reward star** — gold glow accents for unlocks.
-- **Black-hole ring + core** — friendly accretion ring language for gated missions and unlock moments.
-- **Glass panel / warning chip / nebula canvas** — shell chrome and status; muted canvas during reading.
+- **button-primary:** Teal jelly pill — Launch, Scan (confirm), Check. 56px tall, full radius.
+- **button-secondary:** Cream jelly — Library / Academy-style secondary hub actions.
+- **button-hint:** Gold jelly — Hint only; never the primary path.
+- **button-choice / selected:** Elevated dark glass rows; selected gains teal soft fill + check affordance.
+- **reading-card:** Cream panel, large Nunito body, generous padding; blank of chrome inside the text well.
+- **hub-chip:** Oversized corner jelly (Missions / Hangar / Library / Academy) with chunky icon + short label.
+- **xp-badge:** Pill with star + bold XP count.
+
+States: pressed = slightly darker teal; disabled = 40% opacity, still readable label. Wrong answer = coral icon + gentle shake (or static X if reduced motion) — never shame copy.
 
 ## Do's and Don'ts
 
-**Do**
-- Lead with wonder and clarity; keep mission text readable first.
-- Use matte plastic / clay toy-3D for hub, ship, rewards.
-- Keep labels short: Missions, Hangar, Library, Academy, Scan, Hint, Level Up.
-- Honor big taps, heavy radius, soft shadows, and `prefers-reduced-motion`.
-- Treat black holes as luminous awe (bright accretion ring), not horror.
-
-**Don't**
-- Flat comic ink outlines as the default (bake-off A is out).
-- Top-down parchment adventure map as the default (bake-off C is out).
-- Busy backgrounds behind passage text.
-- Horror black holes, military gore, franchise lookalikes, or watermarks.
-- Hard-edged sci-fi HUD, photoreal space, or neon chaos on evidence highlights.
+- Do keep mission text on the cream reading panel at ≥22px with airy line-height.
+- Don’t place passage text directly on nebula / busy 3D backgrounds.
+- Do use teal for the single primary action per view; gold for XP/Hint/celebration only.
+- Don’t mix flat comic ink outlines or parchment Zelda-map chrome into the default kid UI (those bake-offs are out).
+- Do keep black holes cute (eyes/smile optional) with a bright accretion ring — awe, not fear.
+- Don’t use franchise lookalikes, horror voids, military gore, or watermarks on gameplay art.
+- Do hit ~48–56px tap targets; thumb zones at the bottom on tablets.
+- Don’t rely on red/green alone for correctness — add icons/shapes.
+- Do map these tokens into the starter-kit theme; don’t invent a parallel palette in components.
+- Don’t generate runtime AI images per mission — prebake assets to match this identity.

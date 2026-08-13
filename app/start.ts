@@ -13,7 +13,13 @@ const csrfMiddleware = createCsrfMiddleware({
 export const startInstance = createStart(() => {
   return {
     requestMiddleware: hostedStackEnabled()
-      ? [csrfMiddleware, clerkMiddleware()]
+      ? [
+          csrfMiddleware,
+          clerkMiddleware({
+            secretKey: process.env["CLERK_SECRET_KEY"],
+            publishableKey: process.env["VITE_CLERK_PUBLISHABLE_KEY"],
+          }),
+        ]
       : [csrfMiddleware],
   };
 });

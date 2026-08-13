@@ -24,7 +24,7 @@ function SignupPage() {
         routing="path"
         signInUrl="/login"
         forceRedirectUrl={forceRedirectUrl}
-        fallbackRedirectUrl="/dashboard"
+        fallbackRedirectUrl="/hub"
       />
     </div>
   );

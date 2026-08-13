@@ -1,0 +1,25 @@
+{
+  "name": "Event Horizon",
+  "short_name": "Event Horizon",
+  "description": "Read to explore — space reading adventures for grades 3–5",
+  "start_url": "/hub",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#1B1430",
+  "theme_color": "#2EC4B6",
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

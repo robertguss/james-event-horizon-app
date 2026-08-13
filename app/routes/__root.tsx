@@ -12,6 +12,10 @@ import {
 } from "@tanstack/react-router";
 
 import { Button } from "@/components/ui/button";
+import { isMockDataMode } from "@/lib/event-horizon/data-mode";
+import { EventHorizonProvider } from "@/lib/event-horizon/EventHorizonProvider";
+import { MockAuthBridge } from "@/lib/event-horizon/MockAuthBridge";
+import { registerServiceWorker } from "@/lib/pwa";
 import { ConvexClientProvider } from "../ConvexClientProvider";
 import appCss from "../globals.css?url";
 
@@ -23,34 +27,66 @@ export const Route = createRootRoute({
         name: "viewport",
         content: "width=device-width, initial-scale=1",
       },
-      { title: "AI Starter Kit" },
+      { title: "Event Horizon" },
       {
         name: "description",
-        content:
-          "A modern, production-ready starter kit for building full-stack applications with TanStack Start, Convex, Clerk, TypeScript, and shadcn/ui.",
+        content: "Read to explore — space reading adventures for grades 3–5",
       },
+      { name: "theme-color", content: "#2EC4B6" },
+      { name: "apple-mobile-web-app-capable", content: "yes" },
+      { name: "apple-mobile-web-app-title", content: "Event Horizon" },
     ],
-    links: [{ rel: "stylesheet", href: appCss }],
+    links: [
+      { rel: "stylesheet", href: appCss },
+      { rel: "manifest", href: "/manifest.webmanifest" },
+      { rel: "apple-touch-icon", href: "/icons/apple-touch-icon.png" },
+    ],
   }),
   component: RootComponent,
   notFoundComponent: NotFound,
 });
 
+function AppShell({ children }: { children: React.ReactNode }) {
+  return (
+    <ConvexClientProvider>
+      <EventHorizonProvider>
+        <MockAuthBridge>
+          <RootDocument>{children}</RootDocument>
+        </MockAuthBridge>
+      </EventHorizonProvider>
+    </ConvexClientProvider>
+  );
+}
+
 function RootComponent() {
+  React.useEffect(() => {
+    registerServiceWorker();
+  }, []);
+
+  const publishableKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
+  const useClerk = !isMockDataMode() && Boolean(publishableKey);
+
+  if (!useClerk) {
+    return (
+      <AppShell>
+        <Outlet />
+      </AppShell>
+    );
+  }
+
   return (
     <ClerkProvider
+      publishableKey={publishableKey}
       signInFallbackRedirectUrl={
-        import.meta.env.VITE_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL ?? "/dashboard"
+        import.meta.env.VITE_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL ?? "/hub"
       }
       signUpFallbackRedirectUrl={
-        import.meta.env.VITE_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL ?? "/dashboard"
+        import.meta.env.VITE_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL ?? "/hub"
       }
     >
-      <ConvexClientProvider>
-        <RootDocument>
-          <Outlet />
-        </RootDocument>
-      </ConvexClientProvider>
+      <AppShell>
+        <Outlet />
+      </AppShell>
     </ClerkProvider>
   );
 }
@@ -61,11 +97,11 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       <head>
         <HeadContent />
       </head>
-      <body className="antialiased">
+      <body className="font-sans antialiased">
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
-          enableSystem
+          defaultTheme="dark"
+          enableSystem={false}
           disableTransitionOnChange
         >
           {children}
@@ -81,22 +117,23 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 
 function NotFound() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
+    <div className="flex min-h-screen items-center justify-center bg-eh-neutral font-sans text-eh-on-surface">
       <main className="flex w-full max-w-xl flex-col items-center gap-6 px-8 py-24 text-center sm:items-start sm:text-left">
-        <p className="text-sm font-semibold tracking-[0.2em] text-zinc-500 uppercase dark:text-zinc-400">
+        <p className="text-sm font-semibold tracking-[0.2em] text-eh-primary uppercase">
           404
         </p>
         <div className="flex flex-col gap-3">
-          <h1 className="text-3xl font-semibold tracking-tight text-black dark:text-zinc-50">
+          <h1 className="text-3xl font-extrabold tracking-tight">
             Page not found
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            That URL does not match any route in this app. Head home and try
-            again from there.
+          <p className="max-w-md text-lg leading-8 text-eh-on-surface-muted">
+            That path is off the map. Head back to the hub or home.
           </p>
         </div>
         <Link to="/">
-          <Button size="lg">Back to home</Button>
+          <Button size="lg" className="rounded-full font-extrabold">
+            Back home
+          </Button>
         </Link>
       </main>
     </div>

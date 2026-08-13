@@ -3,17 +3,32 @@ import { ConvexProviderWithClerk } from "convex/react-clerk";
 import { ConvexReactClient } from "convex/react";
 import { type ReactNode } from "react";
 
+import { isMockDataMode } from "@/lib/event-horizon/data-mode";
+
 const convexUrl = import.meta.env.VITE_CONVEX_URL;
 
-if (!convexUrl) {
-  throw new Error("Missing VITE_CONVEX_URL in your .env.local file");
+let convex: ConvexReactClient | null = null;
+
+function getConvexClient(): ConvexReactClient | null {
+  if (isMockDataMode()) {
+    return null;
+  }
+  if (!convexUrl) {
+    return null;
+  }
+  if (!convex) {
+    convex = new ConvexReactClient(convexUrl);
+  }
+  return convex;
 }
 
-const convex = new ConvexReactClient(convexUrl);
-
 export function ConvexClientProvider({ children }: { children: ReactNode }) {
+  const client = getConvexClient();
+  if (!client) {
+    return children;
+  }
   return (
-    <ConvexProviderWithClerk client={convex} useAuth={useAuth}>
+    <ConvexProviderWithClerk client={client} useAuth={useAuth}>
       {children}
     </ConvexProviderWithClerk>
   );

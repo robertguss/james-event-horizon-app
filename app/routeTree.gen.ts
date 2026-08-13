@@ -8,165 +8,365 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { Route as rootRouteImport } from "./routes/__root";
-import { Route as IndexRouteImport } from "./routes/index";
-import { Route as AuthenticatedRouteRouteImport } from "./routes/_authenticated/route";
-import { Route as AuthenticatedDashboardRouteImport } from "./routes/_authenticated/dashboard";
-import { Route as ApiHealthRouteImport } from "./routes/api/health";
-import { Route as LoginSplatRouteImport } from "./routes/login.$";
-import { Route as SignupSplatRouteImport } from "./routes/signup.$";
+import { Route as rootRouteImport } from './routes/__root'
+import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AuthenticatedAcademyRouteImport } from './routes/_authenticated/academy'
+import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedHangarRouteImport } from './routes/_authenticated/hangar'
+import { Route as AuthenticatedHubRouteImport } from './routes/_authenticated/hub'
+import { Route as AuthenticatedLibraryRouteImport } from './routes/_authenticated/library'
+import { Route as AuthenticatedMissionsRouteImport } from './routes/_authenticated/missions'
+import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
+import { Route as ApiHealthRouteImport } from './routes/api/health'
+import { Route as DesignHubRouteImport } from './routes/design.hub'
+import { Route as LoginSplatRouteImport } from './routes/login.$'
+import { Route as SignupSplatRouteImport } from './routes/signup.$'
+import { Route as AuthenticatedParentIndexRouteImport } from './routes/_authenticated/parent/index'
+import { Route as AuthenticatedParentGateRouteImport } from './routes/_authenticated/parent/gate'
 
 const IndexRoute = IndexRouteImport.update({
-  id: "/",
-  path: "/",
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
-  id: "/_authenticated",
+  id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
-} as any);
-const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
-  id: "/dashboard",
-  path: "/dashboard",
+} as any)
+const AuthenticatedAcademyRoute = AuthenticatedAcademyRouteImport.update({
+  id: '/academy',
+  path: '/academy',
   getParentRoute: () => AuthenticatedRouteRoute,
-} as any);
+} as any)
+const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedHangarRoute = AuthenticatedHangarRouteImport.update({
+  id: '/hangar',
+  path: '/hangar',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedHubRoute = AuthenticatedHubRouteImport.update({
+  id: '/hub',
+  path: '/hub',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedLibraryRoute = AuthenticatedLibraryRouteImport.update({
+  id: '/library',
+  path: '/library',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedMissionsRoute = AuthenticatedMissionsRouteImport.update({
+  id: '/missions',
+  path: '/missions',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedOnboardingRoute = AuthenticatedOnboardingRouteImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const ApiHealthRoute = ApiHealthRouteImport.update({
-  id: "/api/health",
-  path: "/api/health",
+  id: '/api/health',
+  path: '/api/health',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
+const DesignHubRoute = DesignHubRouteImport.update({
+  id: '/design/hub',
+  path: '/design/hub',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LoginSplatRoute = LoginSplatRouteImport.update({
-  id: "/login/$",
-  path: "/login/$",
+  id: '/login/$',
+  path: '/login/$',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 const SignupSplatRoute = SignupSplatRouteImport.update({
-  id: "/signup/$",
-  path: "/signup/$",
+  id: '/signup/$',
+  path: '/signup/$',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
+const AuthenticatedParentIndexRoute =
+  AuthenticatedParentIndexRouteImport.update({
+    id: '/parent/',
+    path: '/parent/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedParentGateRoute = AuthenticatedParentGateRouteImport.update({
+  id: '/parent/gate',
+  path: '/parent/gate',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
-  "/": typeof IndexRoute;
-  "/dashboard": typeof AuthenticatedDashboardRoute;
-  "/api/health": typeof ApiHealthRoute;
-  "/login/$": typeof LoginSplatRoute;
-  "/signup/$": typeof SignupSplatRoute;
+  '/': typeof IndexRoute
+  '/academy': typeof AuthenticatedAcademyRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/hangar': typeof AuthenticatedHangarRoute
+  '/hub': typeof AuthenticatedHubRoute
+  '/library': typeof AuthenticatedLibraryRoute
+  '/missions': typeof AuthenticatedMissionsRoute
+  '/onboarding': typeof AuthenticatedOnboardingRoute
+  '/api/health': typeof ApiHealthRoute
+  '/design/hub': typeof DesignHubRoute
+  '/login/$': typeof LoginSplatRoute
+  '/signup/$': typeof SignupSplatRoute
+  '/parent/gate': typeof AuthenticatedParentGateRoute
+  '/parent/': typeof AuthenticatedParentIndexRoute
 }
 export interface FileRoutesByTo {
-  "/": typeof IndexRoute;
-  "/dashboard": typeof AuthenticatedDashboardRoute;
-  "/api/health": typeof ApiHealthRoute;
-  "/login/$": typeof LoginSplatRoute;
-  "/signup/$": typeof SignupSplatRoute;
+  '/': typeof IndexRoute
+  '/academy': typeof AuthenticatedAcademyRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/hangar': typeof AuthenticatedHangarRoute
+  '/hub': typeof AuthenticatedHubRoute
+  '/library': typeof AuthenticatedLibraryRoute
+  '/missions': typeof AuthenticatedMissionsRoute
+  '/onboarding': typeof AuthenticatedOnboardingRoute
+  '/api/health': typeof ApiHealthRoute
+  '/design/hub': typeof DesignHubRoute
+  '/login/$': typeof LoginSplatRoute
+  '/signup/$': typeof SignupSplatRoute
+  '/parent/gate': typeof AuthenticatedParentGateRoute
+  '/parent': typeof AuthenticatedParentIndexRoute
 }
 export interface FileRoutesById {
-  __root__: typeof rootRouteImport;
-  "/": typeof IndexRoute;
-  "/_authenticated": typeof AuthenticatedRouteRouteWithChildren;
-  "/_authenticated/dashboard": typeof AuthenticatedDashboardRoute;
-  "/api/health": typeof ApiHealthRoute;
-  "/login/$": typeof LoginSplatRoute;
-  "/signup/$": typeof SignupSplatRoute;
+  __root__: typeof rootRouteImport
+  '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/_authenticated/academy': typeof AuthenticatedAcademyRoute
+  '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/hangar': typeof AuthenticatedHangarRoute
+  '/_authenticated/hub': typeof AuthenticatedHubRoute
+  '/_authenticated/library': typeof AuthenticatedLibraryRoute
+  '/_authenticated/missions': typeof AuthenticatedMissionsRoute
+  '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
+  '/api/health': typeof ApiHealthRoute
+  '/design/hub': typeof DesignHubRoute
+  '/login/$': typeof LoginSplatRoute
+  '/signup/$': typeof SignupSplatRoute
+  '/_authenticated/parent/gate': typeof AuthenticatedParentGateRoute
+  '/_authenticated/parent/': typeof AuthenticatedParentIndexRoute
 }
 export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath;
-  fullPaths: "/" | "/dashboard" | "/api/health" | "/login/$" | "/signup/$";
-  fileRoutesByTo: FileRoutesByTo;
-  to: "/" | "/dashboard" | "/api/health" | "/login/$" | "/signup/$";
+  fileRoutesByFullPath: FileRoutesByFullPath
+  fullPaths:
+    | '/'
+    | '/academy'
+    | '/dashboard'
+    | '/hangar'
+    | '/hub'
+    | '/library'
+    | '/missions'
+    | '/onboarding'
+    | '/api/health'
+    | '/design/hub'
+    | '/login/$'
+    | '/signup/$'
+    | '/parent/gate'
+    | '/parent/'
+  fileRoutesByTo: FileRoutesByTo
+  to:
+    | '/'
+    | '/academy'
+    | '/dashboard'
+    | '/hangar'
+    | '/hub'
+    | '/library'
+    | '/missions'
+    | '/onboarding'
+    | '/api/health'
+    | '/design/hub'
+    | '/login/$'
+    | '/signup/$'
+    | '/parent/gate'
+    | '/parent'
   id:
-    | "__root__"
-    | "/"
-    | "/_authenticated"
-    | "/_authenticated/dashboard"
-    | "/api/health"
-    | "/login/$"
-    | "/signup/$";
-  fileRoutesById: FileRoutesById;
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/_authenticated/academy'
+    | '/_authenticated/dashboard'
+    | '/_authenticated/hangar'
+    | '/_authenticated/hub'
+    | '/_authenticated/library'
+    | '/_authenticated/missions'
+    | '/_authenticated/onboarding'
+    | '/api/health'
+    | '/design/hub'
+    | '/login/$'
+    | '/signup/$'
+    | '/_authenticated/parent/gate'
+    | '/_authenticated/parent/'
+  fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute;
-  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren;
-  ApiHealthRoute: typeof ApiHealthRoute;
-  LoginSplatRoute: typeof LoginSplatRoute;
-  SignupSplatRoute: typeof SignupSplatRoute;
+  IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  ApiHealthRoute: typeof ApiHealthRoute
+  DesignHubRoute: typeof DesignHubRoute
+  LoginSplatRoute: typeof LoginSplatRoute
+  SignupSplatRoute: typeof SignupSplatRoute
 }
 
-declare module "@tanstack/react-router" {
+declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    "/": {
-      id: "/";
-      path: "/";
-      fullPath: "/";
-      preLoaderRoute: typeof IndexRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/_authenticated": {
-      id: "/_authenticated";
-      path: "";
-      fullPath: "/";
-      preLoaderRoute: typeof AuthenticatedRouteRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/_authenticated/dashboard": {
-      id: "/_authenticated/dashboard";
-      path: "/dashboard";
-      fullPath: "/dashboard";
-      preLoaderRoute: typeof AuthenticatedDashboardRouteImport;
-      parentRoute: typeof AuthenticatedRouteRoute;
-    };
-    "/api/health": {
-      id: "/api/health";
-      path: "/api/health";
-      fullPath: "/api/health";
-      preLoaderRoute: typeof ApiHealthRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/login/$": {
-      id: "/login/$";
-      path: "/login/$";
-      fullPath: "/login/$";
-      preLoaderRoute: typeof LoginSplatRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/signup/$": {
-      id: "/signup/$";
-      path: "/signup/$";
-      fullPath: "/signup/$";
-      preLoaderRoute: typeof SignupSplatRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/academy': {
+      id: '/_authenticated/academy'
+      path: '/academy'
+      fullPath: '/academy'
+      preLoaderRoute: typeof AuthenticatedAcademyRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/dashboard': {
+      id: '/_authenticated/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/hangar': {
+      id: '/_authenticated/hangar'
+      path: '/hangar'
+      fullPath: '/hangar'
+      preLoaderRoute: typeof AuthenticatedHangarRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/hub': {
+      id: '/_authenticated/hub'
+      path: '/hub'
+      fullPath: '/hub'
+      preLoaderRoute: typeof AuthenticatedHubRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/library': {
+      id: '/_authenticated/library'
+      path: '/library'
+      fullPath: '/library'
+      preLoaderRoute: typeof AuthenticatedLibraryRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/missions': {
+      id: '/_authenticated/missions'
+      path: '/missions'
+      fullPath: '/missions'
+      preLoaderRoute: typeof AuthenticatedMissionsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/onboarding': {
+      id: '/_authenticated/onboarding'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof AuthenticatedOnboardingRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/api/health': {
+      id: '/api/health'
+      path: '/api/health'
+      fullPath: '/api/health'
+      preLoaderRoute: typeof ApiHealthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/design/hub': {
+      id: '/design/hub'
+      path: '/design/hub'
+      fullPath: '/design/hub'
+      preLoaderRoute: typeof DesignHubRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login/$': {
+      id: '/login/$'
+      path: '/login/$'
+      fullPath: '/login/$'
+      preLoaderRoute: typeof LoginSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/signup/$': {
+      id: '/signup/$'
+      path: '/signup/$'
+      fullPath: '/signup/$'
+      preLoaderRoute: typeof SignupSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/parent/': {
+      id: '/_authenticated/parent/'
+      path: '/parent'
+      fullPath: '/parent/'
+      preLoaderRoute: typeof AuthenticatedParentIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/parent/gate': {
+      id: '/_authenticated/parent/gate'
+      path: '/parent/gate'
+      fullPath: '/parent/gate'
+      preLoaderRoute: typeof AuthenticatedParentGateRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
 interface AuthenticatedRouteRouteChildren {
-  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute;
+  AuthenticatedAcademyRoute: typeof AuthenticatedAcademyRoute
+  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedHangarRoute: typeof AuthenticatedHangarRoute
+  AuthenticatedHubRoute: typeof AuthenticatedHubRoute
+  AuthenticatedLibraryRoute: typeof AuthenticatedLibraryRoute
+  AuthenticatedMissionsRoute: typeof AuthenticatedMissionsRoute
+  AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
+  AuthenticatedParentGateRoute: typeof AuthenticatedParentGateRoute
+  AuthenticatedParentIndexRoute: typeof AuthenticatedParentIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAcademyRoute: AuthenticatedAcademyRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
-};
+  AuthenticatedHangarRoute: AuthenticatedHangarRoute,
+  AuthenticatedHubRoute: AuthenticatedHubRoute,
+  AuthenticatedLibraryRoute: AuthenticatedLibraryRoute,
+  AuthenticatedMissionsRoute: AuthenticatedMissionsRoute,
+  AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
+  AuthenticatedParentGateRoute: AuthenticatedParentGateRoute,
+  AuthenticatedParentIndexRoute: AuthenticatedParentIndexRoute,
+}
 
 const AuthenticatedRouteRouteWithChildren =
-  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren);
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   ApiHealthRoute: ApiHealthRoute,
+  DesignHubRoute: DesignHubRoute,
   LoginSplatRoute: LoginSplatRoute,
   SignupSplatRoute: SignupSplatRoute,
-};
+}
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
-  ._addFileTypes<FileRouteTypes>();
+  ._addFileTypes<FileRouteTypes>()
 
-import type { getRouter } from "./router.tsx";
-import type { startInstance } from "./start.ts";
-declare module "@tanstack/react-start" {
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
   interface Register {
-    ssr: true;
-    router: Awaited<ReturnType<typeof getRouter>>;
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>;
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
   }
 }

@@ -8,6 +8,7 @@ import { ReadingCard } from "@/components/event-horizon/reading-card";
 import { TelescopeReticle } from "@/components/event-horizon/telescope-reticle";
 import { XpBadge } from "@/components/event-horizon/xp-badge";
 import { useEh } from "@/lib/eh/data";
+import { evidenceMode } from "@/lib/eh/pure/grade";
 import type {
   Attempt,
   CompleteResult,
@@ -88,10 +89,11 @@ export function MissionReader({ missionId }: MissionReaderProps) {
     setBusy(true);
     setFeedback(null);
     try {
+      const mode = evidenceMode(question);
       const result = await data.attempts.submitAnswer({
         attemptId: attempt.id,
         questionKey: question.id,
-        evidenceId: selectedEvidence,
+        evidenceId: mode === "choice_only" ? undefined : selectedEvidence,
         choiceId: selectedChoice,
         // Forged claims must be ignored by grader
         claimedCorrect: true,
@@ -153,11 +155,7 @@ export function MissionReader({ missionId }: MissionReaderProps) {
 
   const choices = question?.choices ?? [];
   const showEvidencePicker =
-    question?.type === "locate" ||
-    question?.requiresChoiceAndEvidence === true ||
-    (question != null &&
-      question.correctEvidenceIds.length > 0 &&
-      question.type !== "main_idea_mc");
+    question != null && evidenceMode(question) !== "choice_only";
 
   return (
     <div className="relative min-h-svh overflow-hidden bg-eh-neutral text-eh-on-surface">

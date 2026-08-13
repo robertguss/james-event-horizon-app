@@ -1,10 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { mission01 } from "../fixtures/mission01";
 import { evidenceExactSetMatch, gradeEvidence } from "./evidence";
-import { gradeAnswer } from "./grade";
+import { evidenceMode, gradeAnswer } from "./grade";
 
 const q1 = mission01.questions[0]!;
 const q2 = mission01.questions[1]!;
+const q3 = mission01.questions[2]!;
 const q4 = mission01.questions[3]!;
 const q5 = mission01.questions[4]!;
 
@@ -74,6 +75,38 @@ describe("MC + locate + exit ticket", () => {
   it("exit ticket accepts A", () => {
     expect(gradeAnswer({ question: q5, choiceId: "A" }).correct).toBe(true);
     expect(gradeAnswer({ question: q5, choiceId: "B" }).correct).toBe(false);
+  });
+
+  it("evidenceMode: locate / choice+evidence / choice-only", () => {
+    expect(evidenceMode(q1)).toBe("evidence_only");
+    expect(evidenceMode(q2)).toBe("choice_only");
+    expect(evidenceMode(q3)).toBe("choice_only");
+    expect(evidenceMode(q4)).toBe("choice_and_evidence");
+    expect(evidenceMode(q5)).toBe("choice_only");
+  });
+
+  it("Q3/Q5 choice-only ignore wrong evidenceId when choice is right", () => {
+    expect(
+      gradeAnswer({
+        question: q3,
+        choiceId: "A",
+        evidenceId: "s1",
+      }).correct,
+    ).toBe(true);
+    expect(
+      gradeAnswer({
+        question: q5,
+        choiceId: "A",
+        evidenceId: "s2",
+      }).correct,
+    ).toBe(true);
+    expect(
+      gradeAnswer({
+        question: q3,
+        choiceId: "B",
+        evidenceId: "s4",
+      }).correct,
+    ).toBe(false);
   });
 
   it("ignores forged claimedCorrect", () => {

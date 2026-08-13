@@ -7,8 +7,9 @@ Read to explore — son-facing reading comprehension PWA (grades ~3–5)
 - [Product brief](docs/PRODUCT-BRIEF.md)
 - [Design system (`DESIGN.md`)](DESIGN.md)
 - [v1 overnight implementation plan](docs/EVENT-HORIZON-V1-IMPLEMENTATION-PLAN.md)
-- Visual SoT (this PR): [`public/design-refs/`](public/design-refs/)
-  (`VISUAL-SOT.md` + hub/mission JPEGs)
+  (on `main` via #3 @ `8fba320`)
+- Visual SoT: [`docs/design-refs/`](docs/design-refs/) (`VISUAL-SOT.md` +
+  hub/mission JPEGs). Runtime hub scene is served from `public/hub-scene.jpeg`.
 
 ## Stack
 

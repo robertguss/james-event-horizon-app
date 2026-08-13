@@ -1,7 +1,8 @@
 import { SignUp } from "@clerk/tanstack-react-start";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import { z } from "zod";
 
+import { hostedStackEnabled } from "@/lib/eh/mode";
 import { safeAppRedirect } from "../lib/redirect";
 
 const signupSearchSchema = z.object({
@@ -10,12 +11,18 @@ const signupSearchSchema = z.object({
 
 export const Route = createFileRoute("/signup/$")({
   validateSearch: signupSearchSchema,
+  beforeLoad: () => {
+    // No ClerkProvider in fixture mode — never mount <SignUp>.
+    if (!hostedStackEnabled()) {
+      throw redirect({ to: "/hub" });
+    }
+  },
   component: SignupPage,
 });
 
 function SignupPage() {
-  const { redirect } = Route.useSearch();
-  const forceRedirectUrl = safeAppRedirect(redirect);
+  const { redirect: redirectTo } = Route.useSearch();
+  const forceRedirectUrl = safeAppRedirect(redirectTo);
 
   return (
     <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">

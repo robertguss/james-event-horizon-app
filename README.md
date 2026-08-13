@@ -6,6 +6,7 @@ Read to explore — son-facing reading comprehension PWA (grades ~3–5)
 
 - [Product brief](docs/PRODUCT-BRIEF.md)
 - [Design system (`DESIGN.md`)](DESIGN.md)
+- [v1 overnight implementation plan](docs/EVENT-HORIZON-V1-IMPLEMENTATION-PLAN.md)
 
 ## Stack
 

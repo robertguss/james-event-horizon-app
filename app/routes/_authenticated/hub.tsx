@@ -22,5 +22,11 @@ function HubPage() {
     return <Navigate to="/onboarding" />;
   }
 
-  return <HubView displayName={kid.displayName} xpTotal={kid.xp} />;
+  return (
+    <HubView
+      displayName={kid.displayName}
+      xpTotal={kid.xp}
+      equippedShipPaintId={kid.equippedShipPaintId}
+    />
+  );
 }

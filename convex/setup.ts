@@ -1,6 +1,8 @@
 import { v } from "convex/values";
+import { DEFAULT_SHIP_PAINT_ID, unlocksForLevel } from "../lib/cosmetics";
 import { mutation, query } from "./_generated/server";
 import { gradeBandValidator } from "./lib/gradeBand";
+import { toPublicKid } from "./lib/kidPublic";
 import {
   getKidForParent,
   getParentByClerkUserId,
@@ -31,14 +33,7 @@ export const getState = query({
     return {
       onboarded: true as const,
       parentId: parent._id,
-      kid: {
-        _id: kid._id,
-        displayName: kid.displayName,
-        gradeBand: kid.gradeBand,
-        xpTotal: kid.xpTotal,
-        level: kid.level,
-        streakDays: kid.streakDays,
-      },
+      kid: toPublicKid(kid),
     };
   },
 });
@@ -83,7 +78,8 @@ export const completeOnboarding = mutation({
       xpTotal: 0,
       level: 1,
       streakDays: 0,
-      unlockedCosmeticIds: [],
+      unlockedCosmeticIds: unlocksForLevel(1),
+      equippedShipPaintId: DEFAULT_SHIP_PAINT_ID,
       createdAt: now,
       updatedAt: now,
     });

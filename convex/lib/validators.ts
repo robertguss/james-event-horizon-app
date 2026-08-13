@@ -8,6 +8,9 @@ export const kidPublicValidator = v.object({
   xpTotal: v.number(),
   level: v.number(),
   streakDays: v.number(),
+  unlockedCosmeticIds: v.array(v.string()),
+  equippedShipPaintId: v.optional(v.string()),
+  equippedTelescopeId: v.optional(v.string()),
 });
 
 export const setupStateValidator = v.union(

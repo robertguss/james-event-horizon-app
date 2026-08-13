@@ -56,6 +56,11 @@ export const convexAdapter: EhData = {
       return morningOnly();
     },
   },
+  cosmetics: {
+    async equipCosmetic() {
+      return morningOnly();
+    },
+  },
   parent: {
     async verifyPin() {
       return morningOnly();

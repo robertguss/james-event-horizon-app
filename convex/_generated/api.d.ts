@@ -17,6 +17,7 @@ import type * as kids from "../kids.js";
 import type * as lib_gradeBand from "../lib/gradeBand.js";
 import type * as lib_hintCaps from "../lib/hintCaps.js";
 import type * as lib_hintLeak from "../lib/hintLeak.js";
+import type * as lib_kidPublic from "../lib/kidPublic.js";
 import type * as lib_missionCatalog from "../lib/missionCatalog.js";
 import type * as lib_parents from "../lib/parents.js";
 import type * as lib_pin from "../lib/pin.js";
@@ -41,6 +42,7 @@ declare const fullApi: ApiFromModules<{
   "lib/gradeBand": typeof lib_gradeBand;
   "lib/hintCaps": typeof lib_hintCaps;
   "lib/hintLeak": typeof lib_hintLeak;
+  "lib/kidPublic": typeof lib_kidPublic;
   "lib/missionCatalog": typeof lib_missionCatalog;
   "lib/parents": typeof lib_parents;
   "lib/pin": typeof lib_pin;

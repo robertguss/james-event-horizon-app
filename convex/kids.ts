@@ -1,5 +1,12 @@
 import { v } from "convex/values";
+import {
+  equipSlotForKind,
+  getCosmetic,
+  isCosmeticUnlocked,
+  mergeUnlocks,
+} from "../lib/cosmetics";
 import { mutation, query } from "./_generated/server";
+import { toPublicKid } from "./lib/kidPublic";
 import {
   getKidForParent,
   getParentByClerkUserId,
@@ -26,14 +33,7 @@ export const getActive = query({
       return null;
     }
 
-    return {
-      _id: kid._id,
-      displayName: kid.displayName,
-      gradeBand: kid.gradeBand,
-      xpTotal: kid.xpTotal,
-      level: kid.level,
-      streakDays: kid.streakDays,
-    };
+    return toPublicKid(kid);
   },
 });
 
@@ -52,14 +52,44 @@ export const rename = mutation({
     const { kid } = await requireOwnedKid(ctx, args.kidId);
     const now = Date.now();
     await ctx.db.patch("kids", kid._id, { displayName, updatedAt: now });
+    const updated = await ctx.db.get("kids", kid._id);
+    if (!updated) throw new Error("Kid not found");
+    return toPublicKid(updated);
+  },
+});
 
-    return {
-      _id: kid._id,
-      displayName,
-      gradeBand: kid.gradeBand,
-      xpTotal: kid.xpTotal,
+export const equipCosmetic = mutation({
+  args: {
+    kidId: v.id("kids"),
+    cosmeticId: v.string(),
+  },
+  returns: kidPublicValidator,
+  handler: async (ctx, args) => {
+    const { kid } = await requireOwnedKid(ctx, args.kidId);
+    const def = getCosmetic(args.cosmeticId);
+    if (!def) throw new Error("Unknown cosmetic");
+
+    const unlocks = mergeUnlocks({
       level: kid.level,
-      streakDays: kid.streakDays,
-    };
+      unlocks: kid.unlockedCosmeticIds,
+    });
+    if (!isCosmeticUnlocked(def.id, { level: kid.level, unlocks })) {
+      throw new Error("Cosmetic locked");
+    }
+
+    const slot = equipSlotForKind(def.kind);
+    if (!slot) throw new Error("Cosmetic cannot be equipped");
+
+    const now = Date.now();
+    await ctx.db.patch("kids", kid._id, {
+      unlockedCosmeticIds: unlocks,
+      updatedAt: now,
+      ...(slot === "equippedShipPaintId"
+        ? { equippedShipPaintId: def.id }
+        : { equippedTelescopeId: def.id }),
+    });
+    const updated = await ctx.db.get("kids", kid._id);
+    if (!updated) throw new Error("Kid not found");
+    return toPublicKid(updated);
   },
 });

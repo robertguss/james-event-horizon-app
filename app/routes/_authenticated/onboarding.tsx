@@ -4,7 +4,8 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { FIXTURE_PARENT_PIN, isFixtureMode, useEh } from "@/lib/eh/data";
+import { FIXTURE_PARENT_PIN, useEh } from "@/lib/eh/data";
+import { showFixturePinHint } from "@/lib/eh/mode";
 
 export const Route = createFileRoute("/_authenticated/onboarding")({
   component: OnboardingPage,
@@ -13,8 +14,9 @@ export const Route = createFileRoute("/_authenticated/onboarding")({
 function OnboardingPage() {
   const { ready, kid, completeOnboarding } = useEh();
   const navigate = useNavigate();
+  const pinHint = showFixturePinHint();
   const [displayName, setDisplayName] = useState("James");
-  const [pin, setPin] = useState(isFixtureMode() ? FIXTURE_PARENT_PIN : "");
+  const [pin, setPin] = useState(pinHint ? FIXTURE_PARENT_PIN : "");
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
 
@@ -100,7 +102,7 @@ function OnboardingPage() {
               required
               className="h-12 rounded-full bg-eh-surface"
             />
-            {isFixtureMode() ? (
+            {pinHint ? (
               <p className="text-xs text-eh-on-surface-muted">
                 Fixture PIN is {FIXTURE_PARENT_PIN} (dev only).
               </p>

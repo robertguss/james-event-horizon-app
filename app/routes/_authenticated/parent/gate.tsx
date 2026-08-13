@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { FIXTURE_PARENT_PIN, isFixtureMode, useEh } from "@/lib/eh/data";
+import { FIXTURE_PARENT_PIN, useEh } from "@/lib/eh/data";
+import { showFixturePinHint } from "@/lib/eh/mode";
 import { isParentUnlocked, unlockParentSession } from "@/lib/parent-session";
 
 export const Route = createFileRoute("/_authenticated/parent/gate")({
@@ -70,7 +71,7 @@ function ParentGatePage() {
           <p className="text-eh-on-surface-muted">
             Enter your PIN to open the parent area.
           </p>
-          {isFixtureMode() ? (
+          {showFixturePinHint() ? (
             <p className="text-xs text-eh-on-surface-muted">
               Fixture PIN is {FIXTURE_PARENT_PIN} (dev only).
             </p>

@@ -22,7 +22,7 @@ PWA on
 | Mode                 | Flag                                                 | Auth / data                                                               |
 | -------------------- | ---------------------------------------------------- | ------------------------------------------------------------------------- |
 | Overnight / CI / DEV | `VITE_EH_DATA=fixture` (unset in non-prod → fixture) | `lib/eh/*` fixture adapter; no Clerk keys or Convex URL needed for checks |
-| Production / preview | unset ≠ fixture; set `VITE_EH_DATA=convex` for live  | Hosted Clerk + Convex; no `fixture_parent` / PIN `1234` default           |
+| Production / preview | **must** `VITE_EH_DATA=convex` or boot hard-fails    | Hosted Clerk + Convex; unset/fixture/typo refuse to start                 |
 | Mac morning (live)   | `VITE_EH_DATA=convex`                                | Clerk + Convex via **repo scripts** below                                 |
 
 Product UI imports data only from [`lib/eh/data`](lib/eh/data.tsx). Mode /

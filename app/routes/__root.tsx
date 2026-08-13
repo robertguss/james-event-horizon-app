@@ -13,7 +13,11 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { EhProvider } from "@/lib/eh/data";
-import { hostedStackEnabled } from "@/lib/eh/mode";
+import {
+  EhModeConfigError,
+  assertEhModeBootable,
+  hostedStackEnabled,
+} from "@/lib/eh/mode";
 import { registerServiceWorker } from "@/lib/pwa";
 import { ConvexClientProvider } from "../ConvexClientProvider";
 import appCss from "../globals.css?url";
@@ -60,11 +64,19 @@ function RootComponent() {
     registerServiceWorker();
   }, []);
 
-  // Binding: do not mount hosted Clerk unless hosted stack is enabled.
+  let hosted: boolean;
+  try {
+    // PROD without VITE_EH_DATA=convex must refuse to boot.
+    assertEhModeBootable();
+    hosted = hostedStackEnabled();
+  } catch (err) {
+    return <ModeBootFailure error={err} />;
+  }
+
   const publishableKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY as
     string | undefined;
 
-  if (!hostedStackEnabled() || !publishableKey) {
+  if (!hosted || !publishableKey) {
     return (
       <AppShell>
         <Outlet />
@@ -86,6 +98,30 @@ function RootComponent() {
         <Outlet />
       </AppShell>
     </ClerkProvider>
+  );
+}
+
+function ModeBootFailure({ error }: { error: unknown }) {
+  const message =
+    error instanceof Error
+      ? error.message
+      : "Event Horizon failed to start: invalid VITE_EH_DATA configuration.";
+  return (
+    <RootDocument>
+      <main className="mx-auto flex min-h-svh max-w-xl flex-col justify-center gap-4 px-6 py-12 font-sans text-eh-on-surface">
+        <h1 className="text-2xl font-extrabold tracking-tight">
+          Configuration required
+        </h1>
+        <p className="text-lg leading-relaxed text-eh-on-surface-muted">
+          {message}
+        </p>
+        {error instanceof EhModeConfigError ? (
+          <p className="text-sm text-eh-on-surface-muted">
+            Operator action: set VITE_EH_DATA=convex for production/preview.
+          </p>
+        ) : null}
+      </main>
+    </RootDocument>
   );
 }
 

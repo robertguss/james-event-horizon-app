@@ -29,10 +29,12 @@ export type {
 } from "./types";
 export { FIXTURE_PARENT_PIN } from "./auth/fixtureAuth";
 export {
+  assertEhModeBootable,
   getEhMode,
   hostedStackEnabled,
   isFixtureMode,
   isProdBuild,
+  showFixturePinHint,
 } from "./mode";
 
 /** Sole factory for product data. UI imports only from this module. */

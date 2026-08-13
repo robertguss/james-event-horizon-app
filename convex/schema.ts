@@ -52,4 +52,36 @@ export default defineSchema({
   })
     .index("by_attemptId", ["attemptId"])
     .index("by_attempt_question", ["attemptId", "questionKey"]),
+
+  /** Slice 5 stub catalog — questions stay fixture/morning detail pack. */
+  missions: defineTable({
+    slug: v.string(),
+    title: v.string(),
+    planet: v.string(),
+    planetId: v.string(),
+    gradeBand: gradeBandValidator,
+    estimatedMinutes: v.number(),
+    skillTags: v.array(v.string()),
+    status: v.union(
+      v.literal("draft"),
+      v.literal("published"),
+      v.literal("stub"),
+    ),
+    kind: v.union(
+      v.literal("standard"),
+      v.literal("stub"),
+      v.literal("blackHole"),
+    ),
+    objective: v.string(),
+    sentences: v.array(
+      v.object({
+        id: v.string(),
+        text: v.string(),
+      }),
+    ),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_slug", ["slug"])
+    .index("by_status", ["status"]),
 });

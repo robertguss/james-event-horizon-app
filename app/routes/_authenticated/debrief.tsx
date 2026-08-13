@@ -2,10 +2,12 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 
 import { KidShell } from "@/components/event-horizon/kid-shell";
+import { getCosmetic } from "@/lib/cosmetics";
 import { useEh } from "@/lib/eh/data";
 
 type CompleteSnapshot = {
   missionId: string;
+  missionTitle?: string;
   breakdown: {
     questions: number;
     exitTicket: number;
@@ -18,6 +20,7 @@ type CompleteSnapshot = {
   level: number;
   xp: number;
   streakDays: number;
+  newSectorStamps?: string[];
 };
 
 export const Route = createFileRoute("/_authenticated/debrief")({
@@ -48,6 +51,7 @@ function DebriefPage() {
   }
 
   const breakdown = snap?.breakdown;
+  const sectorChips = snap?.newSectorStamps ?? [];
 
   return (
     <KidShell title="Debrief">
@@ -56,10 +60,10 @@ function DebriefPage() {
           Mission complete
         </p>
         <h2 className="text-2xl font-extrabold text-eh-on-reading">
-          Dust Storm on Mars
+          {snap?.missionTitle ?? "Dust Storm on Mars"}
         </h2>
         <p className="text-lg text-eh-on-reading/80">
-          {kid?.displayName ?? "Explorer"}, you charted Rusty Ridge.
+          {kid?.displayName ?? "Explorer"}, you charted another sector.
         </p>
 
         {breakdown ? (
@@ -79,6 +83,28 @@ function DebriefPage() {
             Finish a mission to see your XP breakdown here.
           </p>
         )}
+
+        {sectorChips.length > 0 ? (
+          <div className="mt-4" data-testid="sector-stamp-chips">
+            <p className="text-sm font-bold tracking-wide text-eh-primary uppercase">
+              Sector stamps
+            </p>
+            <div className="mt-2 flex flex-wrap gap-2">
+              {sectorChips.map((id) => {
+                const def = getCosmetic(id);
+                return (
+                  <span
+                    key={id}
+                    className="inline-flex items-center rounded-full px-3 py-1 text-sm font-extrabold text-white"
+                    style={{ backgroundColor: def?.swatch ?? "#2EC4B6" }}
+                  >
+                    {def?.name ?? id}
+                  </span>
+                );
+              })}
+            </div>
+          </div>
+        ) : null}
 
         <div className="mt-6 flex flex-wrap gap-3">
           {snap?.leveledUp ? (

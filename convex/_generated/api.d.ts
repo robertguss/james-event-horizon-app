@@ -9,6 +9,7 @@
  */
 
 import type * as auth from "../auth.js";
+import type * as grokPrompt from "../grokPrompt.js";
 import type * as hintContext from "../hintContext.js";
 import type * as hintRequests from "../hintRequests.js";
 import type * as hints from "../hints.js";
@@ -24,6 +25,7 @@ import type * as lib_pin from "../lib/pin.js";
 import type * as lib_validators from "../lib/validators.js";
 import type * as lib_xaiHint from "../lib/xaiHint.js";
 import type * as parents from "../parents.js";
+import type * as seed from "../seed.js";
 import type * as setup from "../setup.js";
 
 import type {
@@ -34,6 +36,7 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   auth: typeof auth;
+  grokPrompt: typeof grokPrompt;
   hintContext: typeof hintContext;
   hintRequests: typeof hintRequests;
   hints: typeof hints;
@@ -49,6 +52,7 @@ declare const fullApi: ApiFromModules<{
   "lib/validators": typeof lib_validators;
   "lib/xaiHint": typeof lib_xaiHint;
   parents: typeof parents;
+  seed: typeof seed;
   setup: typeof setup;
 }>;
 

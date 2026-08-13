@@ -116,12 +116,14 @@ export function MissionReader({ missionId }: MissionReaderProps) {
               "eh.lastComplete",
               JSON.stringify({
                 missionId: mission.id,
+                missionTitle: mission.title,
                 breakdown: done.xpBreakdown,
                 leveledUp: done.leveledUp,
                 previousLevel: done.previousLevel,
                 level: done.kid.level,
                 xp: done.kid.xp,
                 streakDays: done.kid.streakDays,
+                newSectorStamps: done.newSectorStamps,
               }),
             );
           }

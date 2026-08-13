@@ -4,7 +4,10 @@ export type CosmeticDef = {
   id: string;
   kind: CosmeticKind;
   name: string;
+  /** Level gate (use a high value when unlockClears is the real gate). */
   unlockLevel: number;
+  /** Sector stamps: unlock after this many mission clears (every 3). */
+  unlockClears?: number;
   artSrc: string;
   swatch: string;
 };
@@ -60,6 +63,24 @@ export const COSMETICS: readonly CosmeticDef[] = [
     artSrc: "/art/planet_rocky_01.webp",
     swatch: DESIGN_SWATCHES.accretion,
   },
+  {
+    id: "sector_stamp_01",
+    kind: "planet_stamp",
+    name: "Sector Alpha",
+    unlockLevel: 99,
+    unlockClears: 3,
+    artSrc: "/art/planet_rocky_01.webp",
+    swatch: DESIGN_SWATCHES.success,
+  },
+  {
+    id: "sector_stamp_02",
+    kind: "planet_stamp",
+    name: "Sector Beta",
+    unlockLevel: 99,
+    unlockClears: 6,
+    artSrc: "/art/bh_unlock_01.webp",
+    swatch: DESIGN_SWATCHES.nebulaPink,
+  },
 ] as const;
 
 export const DEFAULT_SHIP_PAINT_ID = "paint_default";
@@ -72,7 +93,19 @@ export function getCosmetic(id: string): CosmeticDef | undefined {
 }
 
 export function unlocksForLevel(level: number): string[] {
-  return COSMETICS.filter((c) => c.unlockLevel <= level).map((c) => c.id);
+  return COSMETICS.filter(
+    (c) => c.unlockClears === undefined && c.unlockLevel <= level,
+  ).map((c) => c.id);
+}
+
+/** Sector stamps every 3 mission clears (PRODUCT-BRIEF). */
+export function sectorStampsForClears(clears: number): string[] {
+  return COSMETICS.filter(
+    (c) =>
+      c.kind === "planet_stamp" &&
+      c.unlockClears !== undefined &&
+      clears >= c.unlockClears,
+  ).map((c) => c.id);
 }
 
 export function isCosmeticUnlocked(
@@ -82,14 +115,22 @@ export function isCosmeticUnlocked(
   const def = getCosmetic(cosmeticId);
   if (!def) return false;
   if (kid.unlocks.includes(cosmeticId)) return true;
+  if (def.unlockClears !== undefined) return false;
   return kid.level >= def.unlockLevel;
 }
 
 export function mergeUnlocks(kid: {
   level: number;
   unlocks: string[];
+  missionsCompleted?: number;
 }): string[] {
-  return [...new Set([...kid.unlocks, ...unlocksForLevel(kid.level)])];
+  return [
+    ...new Set([
+      ...kid.unlocks,
+      ...unlocksForLevel(kid.level),
+      ...sectorStampsForClears(kid.missionsCompleted ?? 0),
+    ]),
+  ];
 }
 
 export function shipPaints(): CosmeticDef[] {

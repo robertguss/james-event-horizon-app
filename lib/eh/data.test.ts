@@ -1,8 +1,5 @@
 import { afterEach, describe, expect, it } from "vitest";
-import {
-  resetFixture,
-  resetFixtureAdapter,
-} from "./adapters/fixtureAdapter";
+import { resetFixture, resetFixtureAdapter } from "./adapters/fixtureAdapter";
 import { FIXTURE_PARENT_PIN } from "./auth/fixtureAuth";
 import { getEhData, getEhMode } from "./data";
 

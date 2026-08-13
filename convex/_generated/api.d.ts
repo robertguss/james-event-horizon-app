@@ -8,13 +8,16 @@
  * @module
  */
 
+import type * as attempts from "../attempts.js";
 import type * as auth from "../auth.js";
+import type * as authSession from "../authSession.js";
 import type * as grokPrompt from "../grokPrompt.js";
 import type * as hintContext from "../hintContext.js";
 import type * as hintRequests from "../hintRequests.js";
 import type * as hints from "../hints.js";
 import type * as http from "../http.js";
 import type * as kids from "../kids.js";
+import type * as lib_attemptMap from "../lib/attemptMap.js";
 import type * as lib_gradeBand from "../lib/gradeBand.js";
 import type * as lib_hintCaps from "../lib/hintCaps.js";
 import type * as lib_hintLeak from "../lib/hintLeak.js";
@@ -24,6 +27,7 @@ import type * as lib_parents from "../lib/parents.js";
 import type * as lib_pin from "../lib/pin.js";
 import type * as lib_validators from "../lib/validators.js";
 import type * as lib_xaiHint from "../lib/xaiHint.js";
+import type * as missions from "../missions.js";
 import type * as parents from "../parents.js";
 import type * as seed from "../seed.js";
 import type * as setup from "../setup.js";
@@ -35,13 +39,16 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  attempts: typeof attempts;
   auth: typeof auth;
+  authSession: typeof authSession;
   grokPrompt: typeof grokPrompt;
   hintContext: typeof hintContext;
   hintRequests: typeof hintRequests;
   hints: typeof hints;
   http: typeof http;
   kids: typeof kids;
+  "lib/attemptMap": typeof lib_attemptMap;
   "lib/gradeBand": typeof lib_gradeBand;
   "lib/hintCaps": typeof lib_hintCaps;
   "lib/hintLeak": typeof lib_hintLeak;
@@ -51,6 +58,7 @@ declare const fullApi: ApiFromModules<{
   "lib/pin": typeof lib_pin;
   "lib/validators": typeof lib_validators;
   "lib/xaiHint": typeof lib_xaiHint;
+  missions: typeof missions;
   parents: typeof parents;
   seed: typeof seed;
   setup: typeof setup;

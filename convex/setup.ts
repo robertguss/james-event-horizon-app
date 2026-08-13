@@ -80,7 +80,14 @@ export const completeOnboarding = mutation({
       streakDays: 0,
       unlockedCosmeticIds: unlocksForLevel(1),
       equippedShipPaintId: DEFAULT_SHIP_PAINT_ID,
+      missionsCompleted: 0,
+      bhCompletionTimestampsMs: [],
       createdAt: now,
+      updatedAt: now,
+    });
+
+    await ctx.db.patch("parents", parentId, {
+      activeKidId: kidId,
       updatedAt: now,
     });
 

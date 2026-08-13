@@ -88,10 +88,12 @@ function RootComponent() {
     <ClerkProvider
       publishableKey={publishableKey}
       signInFallbackRedirectUrl={
-        import.meta.env.VITE_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL ?? "/hub"
+        import.meta.env.VITE_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL ??
+        "/onboarding"
       }
       signUpFallbackRedirectUrl={
-        import.meta.env.VITE_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL ?? "/hub"
+        import.meta.env.VITE_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL ??
+        "/onboarding"
       }
     >
       <AppShell>

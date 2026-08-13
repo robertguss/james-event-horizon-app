@@ -173,10 +173,19 @@ export function resetFixture(options: ResetFixtureOptions = {}): void {
   const xpFromLevel =
     options.level !== undefined ? xpFloorForLevel(options.level) : undefined;
   const xp = options.xpTotal ?? xpFromLevel;
+  // When seeding a non-zero streak without an explicit date, stamp yesterday
+  // (real local calendar — same clock complete() uses) so the next complete()
+  // continues the streak instead of resetting to 1.
+  let lastMissionDate = options.lastMissionDate;
+  if (lastMissionDate === undefined && (options.streakDays ?? 0) > 0) {
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    lastMissionDate = localDateString(yesterday);
+  }
   const hasKidOverrides =
     xp !== undefined ||
     options.streakDays !== undefined ||
-    options.lastMissionDate !== undefined ||
+    lastMissionDate !== undefined ||
     options.level !== undefined;
 
   store.kids.set(
@@ -187,7 +196,7 @@ export function resetFixture(options: ResetFixtureOptions = {}): void {
             xp: xp ?? 0,
             level: options.level,
             streakDays: options.streakDays,
-            lastMissionDate: options.lastMissionDate,
+            lastMissionDate,
           }
         : undefined,
     ),

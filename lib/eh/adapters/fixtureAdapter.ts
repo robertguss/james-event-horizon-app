@@ -195,10 +195,9 @@ export function resetFixture(options: ResetFixtureOptions = {}): void {
   }
 
   if (options.bhCompletionTimestampsMs) {
-    store.bhCompletions.set(
-      FIXTURE_KID_ID,
-      [...options.bhCompletionTimestampsMs],
-    );
+    store.bhCompletions.set(FIXTURE_KID_ID, [
+      ...options.bhCompletionTimestampsMs,
+    ]);
   }
 }
 
@@ -211,9 +210,10 @@ function missionById(missionId: string): MissionDetail | null {
   return fixtureMissionById(missionId);
 }
 
-function lockCopy(
-  reason: MissionLockReason,
-): { lockReason: MissionLockReason; lockMessage: string } {
+function lockCopy(reason: MissionLockReason): {
+  lockReason: MissionLockReason;
+  lockMessage: string;
+} {
   switch (reason) {
     case "coming_soon":
       return {
@@ -376,8 +376,7 @@ export const fixtureAdapter: EhData = {
   missions: {
     async list() {
       const store = getStore();
-      const kid =
-        store.kids.get(FIXTURE_KID_ID) ?? [...store.kids.values()][0];
+      const kid = store.kids.get(FIXTURE_KID_ID) ?? [...store.kids.values()][0];
       const synced = kid
         ? syncKidUnlocks(kid, store.missionsCompleted.get(kid.id) ?? 0)
         : undefined;

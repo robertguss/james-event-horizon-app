@@ -1,81 +1,94 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <title>Slice 5 — Missions list (locked BH)</title>
-  <style>
-    :root {
-      --primary: #2EC4B6;
-      --secondary: #F5E6D3;
-      --on-reading: #1a1428;
-      --cream: #FFF8F0;
-    }
-    body {
-      margin: 0;
-      font-family: "Trebuchet MS", "Segoe UI", sans-serif;
-      background: radial-gradient(circle at top, #3a2a5c, #1a1428 55%);
-      color: var(--on-reading);
-      padding: 2rem;
-    }
-    h1 { color: #fff; }
-    .card {
-      background: var(--cream);
-      border-radius: 36px;
-      padding: 1.75rem;
-      margin: 1rem 0;
-      max-width: 36rem;
-    }
-    .eyebrow {
-      text-transform: uppercase;
-      font-weight: 800;
-      color: var(--primary);
-      letter-spacing: 0.04em;
-      font-size: 0.85rem;
-    }
-    .locked {
-      margin-top: 1rem;
-      background: color-mix(in srgb, var(--secondary) 80%, white);
-      border-radius: 1rem;
-      padding: 1rem 1.25rem;
-    }
-    .cta {
-      display: inline-flex;
-      margin-top: 1rem;
-      background: var(--primary);
-      color: #fff;
-      font-weight: 800;
-      text-decoration: none;
-      padding: 0.75rem 1.25rem;
-      border-radius: 999px;
-    }
-    [data-kind="blackHole"] { outline: 2px solid #FF8A4C; }
-  </style>
-</head>
-<body>
-  <h1>Missions — locked BH visible (L1 / streak 0)</h1>
-  <article class="card" data-kind="standard" data-locked="false">
-  <p class="eyebrow">Next up</p>
-  <h2>Dust Storm on Mars</h2>
-  <p class="planet">Rusty Ridge (Mars sector)</p>
-  <a class="cta" href="#">Launch mission</a>
-</article>
-<article class="card" data-kind="stub" data-locked="true">
-  <p class="eyebrow">Chart stub</p>
-  <h2>Ice Rings Ahead</h2>
-  <p class="planet">Glass Halo (Saturn sector)</p>
-  <div class="locked" data-locked="true"><strong>Locked — not a dead end</strong><p>Coming soon — chart more sectors first.</p></div>
-</article>
-<article class="card" data-kind="stub" data-locked="true">
-  <p class="eyebrow">Chart stub</p>
-  <h2>Comet Trail Clues</h2>
-  <p class="planet">Silver Wake (Kuiper sector)</p>
-  <div class="locked" data-locked="true"><strong>Locked — not a dead end</strong><p>Coming soon — chart more sectors first.</p></div>
-</article>
-<article class="card" data-kind="blackHole" data-locked="true">
-  <p class="eyebrow">Black hole</p>
-  <h2>Accretion Whisper</h2>
-  <p class="planet">Friendly Horizon (Black-hole sector)</p>
-  <div class="locked" data-locked="true"><strong>Locked — not a dead end</strong><p>Reach level 5 or a 5-day streak to open black holes.</p></div>
-</article>
-</body>
+  <head>
+    <meta charset="utf-8" />
+    <title>Slice 5 — Missions list (locked BH)</title>
+    <style>
+      :root {
+        --primary: #2ec4b6;
+        --secondary: #f5e6d3;
+        --on-reading: #1a1428;
+        --cream: #fff8f0;
+      }
+      body {
+        margin: 0;
+        font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+        background: radial-gradient(circle at top, #3a2a5c, #1a1428 55%);
+        color: var(--on-reading);
+        padding: 2rem;
+      }
+      h1 {
+        color: #fff;
+      }
+      .card {
+        background: var(--cream);
+        border-radius: 36px;
+        padding: 1.75rem;
+        margin: 1rem 0;
+        max-width: 36rem;
+      }
+      .eyebrow {
+        text-transform: uppercase;
+        font-weight: 800;
+        color: var(--primary);
+        letter-spacing: 0.04em;
+        font-size: 0.85rem;
+      }
+      .locked {
+        margin-top: 1rem;
+        background: color-mix(in srgb, var(--secondary) 80%, white);
+        border-radius: 1rem;
+        padding: 1rem 1.25rem;
+      }
+      .cta {
+        display: inline-flex;
+        margin-top: 1rem;
+        background: var(--primary);
+        color: #fff;
+        font-weight: 800;
+        text-decoration: none;
+        padding: 0.75rem 1.25rem;
+        border-radius: 999px;
+      }
+      [data-kind="blackHole"] {
+        outline: 2px solid #ff8a4c;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Missions — locked BH visible (L1 / streak 0)</h1>
+    <article class="card" data-kind="standard" data-locked="false">
+      <p class="eyebrow">Next up</p>
+      <h2>Dust Storm on Mars</h2>
+      <p class="planet">Rusty Ridge (Mars sector)</p>
+      <a class="cta" href="#">Launch mission</a>
+    </article>
+    <article class="card" data-kind="stub" data-locked="true">
+      <p class="eyebrow">Chart stub</p>
+      <h2>Ice Rings Ahead</h2>
+      <p class="planet">Glass Halo (Saturn sector)</p>
+      <div class="locked" data-locked="true">
+        <strong>Locked — not a dead end</strong>
+        <p>Coming soon — chart more sectors first.</p>
+      </div>
+    </article>
+    <article class="card" data-kind="stub" data-locked="true">
+      <p class="eyebrow">Chart stub</p>
+      <h2>Comet Trail Clues</h2>
+      <p class="planet">Silver Wake (Kuiper sector)</p>
+      <div class="locked" data-locked="true">
+        <strong>Locked — not a dead end</strong>
+        <p>Coming soon — chart more sectors first.</p>
+      </div>
+    </article>
+    <article class="card" data-kind="blackHole" data-locked="true">
+      <p class="eyebrow">Black hole</p>
+      <h2>Accretion Whisper</h2>
+      <p class="planet">Friendly Horizon (Black-hole sector)</p>
+      <div class="locked" data-locked="true">
+        <strong>Locked — not a dead end</strong>
+        <p>Reach level 5 or a 5-day streak to open black holes.</p>
+      </div>
+    </article>
+  </body>
 </html>

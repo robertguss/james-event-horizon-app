@@ -525,6 +525,19 @@ export const fixtureAdapter: EhData = {
       };
     },
   },
+  setup: {
+    async complete(input) {
+      await fixtureAdapter.parent.setPin(input.pin);
+      const kids = await fixtureAdapter.kids.list();
+      if (kids[0]) {
+        return kids[0];
+      }
+      return fixtureAdapter.kids.create({
+        displayName: input.displayName,
+        gradeBand: input.gradeBand,
+      });
+    },
+  },
 };
 
 /** Test helper: expose ledger / hints without widening EhData. */

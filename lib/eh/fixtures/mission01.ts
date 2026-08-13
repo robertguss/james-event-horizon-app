@@ -7,6 +7,7 @@ export const mission01: MissionDetail = {
   planet: "Rusty Ridge (Mars sector)",
   planetId: "rusty_ridge",
   gradeBand: "3-5",
+  kind: "standard",
   estimatedMinutes: 10,
   skillTags: [
     "locate_evidence",

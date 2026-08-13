@@ -13,3 +13,11 @@ export function levelForXp(xp: number): number {
   // Beyond L5: continue +50 pattern if needed later; overnight may cap display at L5+.
   return level;
 }
+
+/** Minimum cumulative XP required to be at `level` (for resetFixture seeds). */
+export function xpFloorForLevel(level: number): number {
+  if (level <= 1) return 0;
+  const idx = Math.min(level - 1, LEVEL_THRESHOLDS.length - 1);
+  const floor = LEVEL_THRESHOLDS[idx];
+  return floor ?? 0;
+}

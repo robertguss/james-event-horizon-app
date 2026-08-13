@@ -48,10 +48,14 @@ describe("lib/eh fixture-first data API", () => {
     expect(second.displayName).toBe("James");
   });
 
-  it("lists seeded Mission 1 with five questions", async () => {
+  it("lists seeded Mission 1 with five questions plus stubs", async () => {
     const eh = getEhData();
     const missions = await eh.missions.list();
     expect(missions[0]?.id).toBe("mission_01_mars_dust");
+    expect(missions[0]?.kind).toBe("standard");
+    expect(missions[0]?.locked).toBe(false);
+    expect(missions.some((m) => m.kind === "stub")).toBe(true);
+    expect(missions.some((m) => m.kind === "blackHole" && m.locked)).toBe(true);
     const detail = await eh.missions.get("mission_01_mars_dust");
     expect(detail?.sentences).toHaveLength(8);
     expect(detail?.questions).toHaveLength(5);

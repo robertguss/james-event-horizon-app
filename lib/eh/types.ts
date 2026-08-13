@@ -11,7 +11,14 @@ export type EhKid = {
   unlocks: string[];
   equippedShipPaintId?: string;
   equippedTelescopeId?: string;
+  /** First time BH gate became true — never overwrite once set. */
+  blackHoleUnlockedAt?: number;
 };
+
+export type MissionKind = "standard" | "stub" | "blackHole";
+
+export type MissionLockReason =
+  "coming_soon" | "black_hole_gate" | "black_hole_weekly_cap";
 
 export type MissionSummary = {
   id: string;
@@ -21,6 +28,11 @@ export type MissionSummary = {
   gradeBand: "3-5";
   estimatedMinutes: number;
   objective: string;
+  kind: MissionKind;
+  /** True when launch is blocked — friendly row, not a dead click. */
+  locked: boolean;
+  lockReason?: MissionLockReason;
+  lockMessage?: string;
 };
 
 export type EvidenceRule = "exact" | "anyOf";
@@ -50,9 +62,12 @@ export type MissionQuestion = {
   distractorTraps?: string[];
 };
 
-export type MissionDetail = MissionSummary & {
+export type MissionDetail = Omit<
+  MissionSummary,
+  "locked" | "lockReason" | "lockMessage"
+> & {
   skillTags: string[];
-  status: "draft" | "published";
+  status: "draft" | "published" | "stub";
   sentences: { id: string; text: string }[];
   questions: MissionQuestion[];
   scoring: {
@@ -169,6 +184,8 @@ export type CompleteResult = {
   leveledUp: boolean;
   previousLevel: number;
   ledger: XpLedgerEntry[];
+  /** Sector stamps earned on this fresh complete (debrief chips). */
+  newSectorStamps: string[];
 };
 
 export type ParentProgress = {

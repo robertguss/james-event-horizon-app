@@ -7,7 +7,7 @@ import {
   xpForCorrectAnswer,
 } from "./xp";
 import { levelForXp } from "./level";
-import { isBlackHoleUnlocked } from "./bhGate";
+import { blackHoleUnlocked, isBlackHoleUnlocked } from "./bhGate";
 import { nextStreakState } from "./streak";
 
 describe("XP tiers (plan §7)", () => {
@@ -98,6 +98,9 @@ describe("daily first-mission bonus + streak", () => {
 
 describe("BH gate predicate", () => {
   it("unlocks at level >= 5 or streak >= 5", () => {
+    expect(blackHoleUnlocked(5, 0)).toBe(true);
+    expect(blackHoleUnlocked(1, 5)).toBe(true);
+    expect(blackHoleUnlocked(4, 4)).toBe(false);
     expect(isBlackHoleUnlocked({ level: 5, streakDays: 0 })).toBe(true);
     expect(isBlackHoleUnlocked({ level: 1, streakDays: 5 })).toBe(true);
     expect(isBlackHoleUnlocked({ level: 4, streakDays: 4 })).toBe(false);

@@ -5,6 +5,7 @@ import {
   L2_SHIP_PAINT_ID,
   getCosmetic,
   isCosmeticUnlocked,
+  sectorStampsForClears,
   unlocksForLevel,
 } from "./cosmetics";
 
@@ -15,6 +16,16 @@ describe("cosmetics unlock predicates", () => {
     expect(ids).toContain("paint_default");
     expect(ids).toContain("planet_rocky_01");
     expect(ids).not.toContain("paint_solar_01");
+    expect(ids).not.toContain("sector_stamp_01");
+  });
+
+  it("sector stamps unlock every 3 clears", () => {
+    expect(sectorStampsForClears(0)).toEqual([]);
+    expect(sectorStampsForClears(2)).toEqual([]);
+    expect(sectorStampsForClears(3)).toContain("sector_stamp_01");
+    expect(sectorStampsForClears(6)).toEqual(
+      expect.arrayContaining(["sector_stamp_01", "sector_stamp_02"]),
+    );
   });
 
   it("isCosmeticUnlocked respects level and persisted unlocks", () => {

@@ -4,6 +4,7 @@ import {
   getCosmetic,
   isCosmeticUnlocked,
   mergeUnlocks,
+  sectorStampsForClears,
   unlocksForLevel,
 } from "../../cosmetics";
 import {
@@ -14,9 +15,17 @@ import {
   fixtureSignInAsParent,
   getFixtureSession,
 } from "../auth/fixtureAuth";
-import { mission01 } from "../fixtures/mission01";
+import {
+  ALL_FIXTURE_MISSIONS,
+  fixtureMissionById,
+} from "../fixtures/missionsStub";
+import {
+  blackHoleUnlocked,
+  canStartBlackHole,
+  maybeStampBlackHoleUnlockedAt,
+} from "../pure/bhGate";
 import { reduceComplete, reduceHint, reduceSubmit } from "../pure/attempt";
-import { levelForXp } from "../pure/level";
+import { levelForXp, xpFloorForLevel } from "../pure/level";
 import { localDateString } from "../pure/streak";
 import type {
   Attempt,
@@ -25,6 +34,8 @@ import type {
   EhKid,
   HintEvent,
   MissionDetail,
+  MissionLockReason,
+  MissionSummary,
   XpLedgerEntry,
 } from "../types";
 
@@ -35,33 +46,66 @@ type Store = {
   ledger: XpLedgerEntry[];
   hintEvents: HintEvent[];
   missionsCompleted: Map<string, number>;
+  /** BH completion timestamps (ms) per kid — weekly cap window. */
+  bhCompletions: Map<string, number[]>;
+  /** Injectable clock for weekly-cap tests. */
+  nowMs?: number;
 };
 
 const globalStore = globalThis as typeof globalThis & {
   __ehFixtureStore?: Store;
 };
 
+function now(): number {
+  // Avoid recurse during first getStore() seed (createDefaultKid → now).
+  return globalStore.__ehFixtureStore?.nowMs ?? Date.now();
+}
+
+/** Test helper: advance fixture clock without wiping kid state. */
+export function setFixtureNowMs(ms: number): void {
+  getStore().nowMs = ms;
+}
+
 function createDefaultKid(overrides?: Partial<EhKid>): EhKid {
   const xp = overrides?.xp ?? 0;
   const level = overrides?.level ?? levelForXp(xp);
+  const streakDays = overrides?.streakDays ?? 0;
   const unlocks = overrides?.unlocks ?? unlocksForLevel(level);
+  const blackHoleUnlockedAt =
+    overrides?.blackHoleUnlockedAt ??
+    maybeStampBlackHoleUnlockedAt(
+      undefined,
+      blackHoleUnlocked(level, streakDays),
+      now(),
+    );
   return {
     id: FIXTURE_KID_ID,
     displayName: overrides?.displayName ?? FIXTURE_KID_NAME,
     gradeBand: "3-5",
     xp,
     level,
-    streakDays: overrides?.streakDays ?? 0,
+    streakDays,
     lastMissionDate: overrides?.lastMissionDate,
     unlocks,
     equippedShipPaintId:
       overrides?.equippedShipPaintId ?? DEFAULT_SHIP_PAINT_ID,
     equippedTelescopeId: overrides?.equippedTelescopeId,
+    blackHoleUnlockedAt,
   };
 }
 
-function syncKidUnlocks(kid: EhKid): EhKid {
-  return { ...kid, unlocks: mergeUnlocks(kid) };
+function syncKidUnlocks(kid: EhKid, missionsCompleted = 0): EhKid {
+  const unlocked = blackHoleUnlocked(kid.level, kid.streakDays);
+  const blackHoleUnlockedAt = maybeStampBlackHoleUnlockedAt(
+    kid.blackHoleUnlockedAt,
+    unlocked,
+    now(),
+  );
+  return {
+    ...kid,
+    unlocks: mergeUnlocks({ ...kid, missionsCompleted }),
+    blackHoleUnlockedAt,
+  };
 }
 
 function emptyStore(): Store {
@@ -72,6 +116,7 @@ function emptyStore(): Store {
     ledger: [],
     hintEvents: [],
     missionsCompleted: new Map(),
+    bhCompletions: new Map(),
   };
 }
 
@@ -89,8 +134,13 @@ export type ResetFixtureOptions = {
   seedDefaultKid?: boolean;
   /** Seed kid XP (e.g. 90 to cross L2 after first-daily or mission XP). */
   xpTotal?: number;
+  /** Seed by level floor XP (Slice 5 BH unlock demos). */
+  level?: number;
   streakDays?: number;
   lastMissionDate?: string;
+  missionsCompleted?: number;
+  bhCompletionTimestampsMs?: number[];
+  nowMs?: number;
 };
 
 /** Reset in-memory fixture state (tests / level-up demos / onboarding). */
@@ -98,22 +148,56 @@ export function resetFixture(options: ResetFixtureOptions = {}): void {
   const seed = options.seedDefaultKid !== false;
   if (!seed) {
     globalStore.__ehFixtureStore = emptyStore();
+    if (options.nowMs !== undefined) {
+      globalStore.__ehFixtureStore.nowMs = options.nowMs;
+    }
     return;
   }
-  globalStore.__ehFixtureStore = undefined;
-  const store = getStore();
-  if (
-    options.xpTotal !== undefined ||
+  // Seed clock before first kid create so blackHoleUnlockedAt is deterministic.
+  const store = emptyStore();
+  if (options.nowMs !== undefined) {
+    store.nowMs = options.nowMs;
+  }
+  globalStore.__ehFixtureStore = store;
+
+  const xpFromLevel =
+    options.level !== undefined ? xpFloorForLevel(options.level) : undefined;
+  const xp = options.xpTotal ?? xpFromLevel;
+  const hasKidOverrides =
+    xp !== undefined ||
     options.streakDays !== undefined ||
-    options.lastMissionDate !== undefined
-  ) {
-    store.kids.set(
+    options.lastMissionDate !== undefined ||
+    options.level !== undefined;
+
+  store.kids.set(
+    FIXTURE_KID_ID,
+    createDefaultKid(
+      hasKidOverrides
+        ? {
+            xp: xp ?? 0,
+            level: options.level,
+            streakDays: options.streakDays,
+            lastMissionDate: options.lastMissionDate,
+          }
+        : undefined,
+    ),
+  );
+
+  if (options.missionsCompleted !== undefined) {
+    store.missionsCompleted.set(FIXTURE_KID_ID, options.missionsCompleted);
+    const kid = store.kids.get(FIXTURE_KID_ID);
+    if (kid) {
+      store.kids.set(
+        FIXTURE_KID_ID,
+        syncKidUnlocks(kid, options.missionsCompleted),
+      );
+    }
+  }
+
+  if (options.bhCompletionTimestampsMs) {
+    store.bhCompletions.set(
       FIXTURE_KID_ID,
-      createDefaultKid({
-        xp: options.xpTotal ?? 0,
-        streakDays: options.streakDays,
-        lastMissionDate: options.lastMissionDate,
-      }),
+      [...options.bhCompletionTimestampsMs],
     );
   }
 }
@@ -124,8 +208,72 @@ export function resetFixtureAdapter(options?: ResetFixtureOptions): void {
 }
 
 function missionById(missionId: string): MissionDetail | null {
-  if (missionId === mission01.id) return mission01;
-  return null;
+  return fixtureMissionById(missionId);
+}
+
+function lockCopy(
+  reason: MissionLockReason,
+): { lockReason: MissionLockReason; lockMessage: string } {
+  switch (reason) {
+    case "coming_soon":
+      return {
+        lockReason: reason,
+        lockMessage: "Coming soon — chart more sectors first.",
+      };
+    case "black_hole_gate":
+      return {
+        lockReason: reason,
+        lockMessage: "Reach level 5 or a 5-day streak to open black holes.",
+      };
+    case "black_hole_weekly_cap":
+      return {
+        lockReason: reason,
+        lockMessage: "Black-hole mission used this week — come back later.",
+      };
+    default: {
+      const _exhaustive: never = reason;
+      return _exhaustive;
+    }
+  }
+}
+
+function summarizeMission(
+  mission: MissionDetail,
+  kid: EhKid | undefined,
+): MissionSummary {
+  const base = {
+    id: mission.id,
+    title: mission.title,
+    planet: mission.planet,
+    planetId: mission.planetId,
+    gradeBand: mission.gradeBand,
+    estimatedMinutes: mission.estimatedMinutes,
+    objective: mission.objective,
+    kind: mission.kind,
+  };
+
+  if (mission.kind === "stub") {
+    return { ...base, locked: true, ...lockCopy("coming_soon") };
+  }
+
+  if (mission.kind === "blackHole") {
+    const gate = canStartBlackHole({
+      level: kid?.level ?? 1,
+      streakDays: kid?.streakDays ?? 0,
+      bhCompletionTimestampsMs: kid
+        ? (getStore().bhCompletions.get(kid.id) ?? [])
+        : [],
+      nowMs: now(),
+    });
+    if (!gate.ok) {
+      const reason =
+        gate.reason === "gate" ? "black_hole_gate" : "black_hole_weekly_cap";
+      return { ...base, locked: true, ...lockCopy(reason) };
+    }
+    return { ...base, locked: false };
+  }
+
+  return { ...base, locked: false };
 }
 
 function getAttemptOrThrow(attemptId: string): Attempt {
@@ -142,6 +290,29 @@ function appendLedger(entry: Omit<XpLedgerEntry, "id">): XpLedgerEntry {
   const full: XpLedgerEntry = { ...entry, id: nextId("xp") };
   getStore().ledger.push(full);
   return full;
+}
+
+function assertMissionPlayable(mission: MissionDetail, kid: EhKid): void {
+  if (mission.kind === "stub") {
+    throw new Error("Mission coming soon");
+  }
+  if (mission.kind === "blackHole") {
+    const gate = canStartBlackHole({
+      level: kid.level,
+      streakDays: kid.streakDays,
+      bhCompletionTimestampsMs: getStore().bhCompletions.get(kid.id) ?? [],
+      nowMs: now(),
+    });
+    if (!gate.ok) {
+      const { lockMessage } = lockCopy(
+        gate.reason === "gate" ? "black_hole_gate" : "black_hole_weekly_cap",
+      );
+      throw new Error(lockMessage);
+    }
+  }
+  if (mission.questions.length === 0) {
+    throw new Error("Mission coming soon");
+  }
 }
 
 export const fixtureAdapter: EhData = {
@@ -174,17 +345,26 @@ export const fixtureAdapter: EhData = {
   },
   kids: {
     async list() {
-      return [...getStore().kids.values()].map(syncKidUnlocks);
+      const store = getStore();
+      return [...store.kids.values()].map((kid) =>
+        syncKidUnlocks(kid, store.missionsCompleted.get(kid.id) ?? 0),
+      );
     },
     async get(kidId) {
-      const kid = getStore().kids.get(kidId);
-      return kid ? syncKidUnlocks(kid) : null;
+      const store = getStore();
+      const kid = store.kids.get(kidId);
+      return kid
+        ? syncKidUnlocks(kid, store.missionsCompleted.get(kidId) ?? 0)
+        : null;
     },
     async create(input) {
       const store = getStore();
       const existing = store.kids.get(FIXTURE_KID_ID);
       if (existing) {
-        return syncKidUnlocks(existing);
+        return syncKidUnlocks(
+          existing,
+          store.missionsCompleted.get(existing.id) ?? 0,
+        );
       }
       const kid = createDefaultKid({
         displayName: input.displayName.trim() || FIXTURE_KID_NAME,
@@ -195,17 +375,15 @@ export const fixtureAdapter: EhData = {
   },
   missions: {
     async list() {
-      return [
-        {
-          id: mission01.id,
-          title: mission01.title,
-          planet: mission01.planet,
-          planetId: mission01.planetId,
-          gradeBand: mission01.gradeBand,
-          estimatedMinutes: mission01.estimatedMinutes,
-          objective: mission01.objective,
-        },
-      ];
+      const store = getStore();
+      const kid =
+        store.kids.get(FIXTURE_KID_ID) ?? [...store.kids.values()][0];
+      const synced = kid
+        ? syncKidUnlocks(kid, store.missionsCompleted.get(kid.id) ?? 0)
+        : undefined;
+      return ALL_FIXTURE_MISSIONS.map((mission) =>
+        summarizeMission(mission, synced),
+      );
     },
     async get(missionId) {
       return missionById(missionId);
@@ -226,9 +404,15 @@ export const fixtureAdapter: EhData = {
     },
     async start(kidId, missionId) {
       const store = getStore();
-      if (!store.kids.has(kidId)) throw new Error("Kid not found");
+      const kid = store.kids.get(kidId);
+      if (!kid) throw new Error("Kid not found");
       const mission = missionById(missionId);
       if (!mission) throw new Error("Mission not found");
+
+      assertMissionPlayable(
+        mission,
+        syncKidUnlocks(kid, store.missionsCompleted.get(kidId) ?? 0),
+      );
 
       const existing = await fixtureAdapter.attempts.getActive(
         kidId,
@@ -241,7 +425,7 @@ export const fixtureAdapter: EhData = {
         kidId,
         missionId,
         status: "active",
-        startedAt: Date.now(),
+        startedAt: now(),
         currentQuestionIndex: 0,
         questionResults: [],
         currentHintsUsed: 0,
@@ -298,7 +482,7 @@ export const fixtureAdapter: EhData = {
         step: reduced.step,
         source: "static",
         text: reduced.text,
-        createdAt: Date.now(),
+        createdAt: now(),
       };
       store.hintEvents.push(event);
 
@@ -319,23 +503,54 @@ export const fixtureAdapter: EhData = {
       const kid = store.kids.get(attempt.kidId);
       if (!kid) throw new Error("Kid not found");
 
+      if (attempt.status !== "completed" && mission.kind === "blackHole") {
+        assertMissionPlayable(
+          mission,
+          syncKidUnlocks(kid, store.missionsCompleted.get(kid.id) ?? 0),
+        );
+      }
+
       const reduced = reduceComplete({
         attempt,
         mission,
         kid,
         today: localDateString(),
+        now: now(),
       });
 
-      const kidWithUnlocks = syncKidUnlocks(reduced.kid);
+      const priorCompleted = store.missionsCompleted.get(kid.id) ?? 0;
+      let kidWithUnlocks = syncKidUnlocks(reduced.kid, priorCompleted);
+      let newSectorStamps: string[] = [];
+
       if (reduced.kind === "fresh") {
         for (const delta of reduced.ledgerDeltas) {
           appendLedger(delta);
         }
+
+        const completedCount = priorCompleted + 1;
+        store.missionsCompleted.set(kidWithUnlocks.id, completedCount);
+
+        const beforeStamps = new Set(sectorStampsForClears(priorCompleted));
+        const afterStamps = sectorStampsForClears(completedCount);
+        newSectorStamps = afterStamps.filter((id) => !beforeStamps.has(id));
+
+        kidWithUnlocks = syncKidUnlocks(kidWithUnlocks, completedCount);
+        // Persist newly earned sector stamps into unlocks (streak break safe).
+        kidWithUnlocks = {
+          ...kidWithUnlocks,
+          unlocks: [...new Set([...kidWithUnlocks.unlocks, ...afterStamps])],
+        };
+
+        if (mission.kind === "blackHole") {
+          const prev = store.bhCompletions.get(kidWithUnlocks.id) ?? [];
+          store.bhCompletions.set(kidWithUnlocks.id, [
+            ...prev,
+            reduced.attempt.completedAt ?? now(),
+          ]);
+        }
+
         store.kids.set(kidWithUnlocks.id, kidWithUnlocks);
         store.attempts.set(reduced.attempt.id, reduced.attempt);
-        const completedCount =
-          (store.missionsCompleted.get(kidWithUnlocks.id) ?? 0) + 1;
-        store.missionsCompleted.set(kidWithUnlocks.id, completedCount);
       }
 
       return {
@@ -345,6 +560,7 @@ export const fixtureAdapter: EhData = {
         leveledUp: reduced.leveledUp,
         previousLevel: reduced.previousLevel,
         ledger: store.ledger.filter((e) => e.attemptId === attempt.id),
+        newSectorStamps,
       };
     },
   },
@@ -357,7 +573,10 @@ export const fixtureAdapter: EhData = {
       const def = getCosmetic(input.cosmeticId);
       if (!def) throw new Error("Unknown cosmetic");
 
-      const unlocked = syncKidUnlocks(kid);
+      const unlocked = syncKidUnlocks(
+        kid,
+        store.missionsCompleted.get(kid.id) ?? 0,
+      );
       if (!isCosmeticUnlocked(def.id, unlocked)) {
         throw new Error("Cosmetic locked");
       }
@@ -419,5 +638,9 @@ export function getFixtureDebugState() {
     hintEvents: [...store.hintEvents],
     attempts: [...store.attempts.values()],
     kids: [...store.kids.values()],
+    missionsCompleted: Object.fromEntries(store.missionsCompleted),
+    bhCompletions: Object.fromEntries(
+      [...store.bhCompletions.entries()].map(([k, v]) => [k, [...v]]),
+    ),
   };
 }

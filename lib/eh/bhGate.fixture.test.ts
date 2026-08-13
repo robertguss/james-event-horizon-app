@@ -60,6 +60,7 @@ describe("fixture black-hole gate + weekly cap", () => {
     const kid = (await eh.kids.list())[0];
     expect(kid?.level).toBe(1);
     expect(kid?.streakDays).toBe(5);
+    expect(kid?.lastMissionDate).toBeDefined();
     expect(kid?.blackHoleUnlockedAt).toBeDefined();
 
     const bh = (await eh.missions.list()).find(

@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Slice 6 — Parent mini-stats</title>
+    <style>
+      :root {
+        --primary: #2ec4b6;
+        --secondary: #f5e6d3;
+        --neutral: #1b1430;
+        --surface: #241b3d;
+        --elevated: #2e2450;
+        --on-surface: #f4f0ff;
+        --muted: #b8aed4;
+        --border: rgba(244, 240, 255, 0.14);
+      }
+      body {
+        margin: 0;
+        font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+        background:
+          radial-gradient(circle at 20% 0%, #2ec4b622, transparent 40%),
+          linear-gradient(180deg, #1b1430, #241b3d);
+        color: var(--on-surface);
+        min-height: 100vh;
+        padding: 2rem 1.5rem;
+      }
+      main {
+        max-width: 32rem;
+        margin: 0 auto;
+      }
+      .eyebrow {
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        font-weight: 700;
+        color: var(--muted);
+        font-size: 0.85rem;
+      }
+      h1 {
+        font-size: 2rem;
+        margin: 0.25rem 0 1.25rem;
+      }
+      .panel {
+        background: color-mix(in srgb, var(--elevated) 90%, transparent);
+        border: 1px solid var(--border);
+        border-radius: 28px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+      }
+      .label {
+        text-transform: uppercase;
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: var(--muted);
+      }
+      .value {
+        font-size: 2rem;
+        font-weight: 800;
+        margin-top: 0.35rem;
+      }
+      .tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin: 0.75rem 0 0;
+        padding: 0;
+        list-style: none;
+      }
+      .tag {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        padding: 0.35rem 0.75rem;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--secondary);
+      }
+      .row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        margin-top: 1rem;
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        height: 3rem;
+        padding: 0 1.25rem;
+        border-radius: 999px;
+        border: 1px solid var(--border);
+        background: transparent;
+        color: var(--on-surface);
+        font-weight: 800;
+      }
+      .btn-primary {
+        background: var(--primary);
+        color: #0b1f1d;
+        border: none;
+        width: 100%;
+        height: 3.5rem;
+        margin-top: 0.5rem;
+      }
+      .btn-outline {
+        width: 100%;
+        margin-top: 0.75rem;
+      }
+      input {
+        flex: 1;
+        height: 3rem;
+        border-radius: 999px;
+        border: 1px solid var(--border);
+        background: var(--surface);
+        color: var(--on-surface);
+        padding: 0 1rem;
+      }
+      .name-row {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <p class="eyebrow">Parent area</p>
+      <h1>Explorer progress</h1>
+      <section class="panel">
+        <div class="grid">
+          <div>
+            <p class="label">Missions done</p>
+            <p class="value">2</p>
+          </div>
+          <div>
+            <p class="label">Streak</p>
+            <p class="value">3 days</p>
+          </div>
+        </div>
+        <p class="label" style="margin-top: 1rem">Weak skills</p>
+        <ul class="tags">
+          <li class="tag">locate evidence</li>
+          <li class="tag">main idea</li>
+        </ul>
+        <p style="color: var(--muted); margin: 1rem 0 0">Level 2 · 120 XP</p>
+      </section>
+      <section class="panel">
+        <p class="label">Explorer name</p>
+        <div class="name-row">
+          <input value="James" readonly />
+          <button class="btn" type="button">Save</button>
+        </div>
+        <div class="row">
+          <div>
+            <strong>Daily reminder</strong>
+            <p
+              style="
+                color: var(--muted);
+                margin: 0.25rem 0 0;
+                font-size: 0.9rem;
+              "
+            >
+              Optional nudge to keep the streak going.
+            </p>
+          </div>
+          <button class="btn" type="button" aria-pressed="true">On</button>
+        </div>
+      </section>
+      <button class="btn btn-primary" type="button">Back to kid hub</button>
+      <button class="btn btn-outline" type="button">Sign out (fixture)</button>
+    </main>
+  </body>
+</html>

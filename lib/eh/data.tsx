@@ -27,9 +27,13 @@ export type {
   EhMode,
   EquipCosmeticInput,
   MissionSummary,
+  ParentStats,
 } from "./types";
 export { FIXTURE_PARENT_PIN } from "./auth/fixtureAuth";
-export { resetFixture } from "./adapters/fixtureAdapter";
+export {
+  resetFixture,
+  seedFixtureWrongAnswers,
+} from "./adapters/fixtureAdapter";
 export {
   assertEhModeBootable,
   getEhMode,

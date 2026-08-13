@@ -68,7 +68,13 @@ export const convexAdapter: EhData = {
     async setPin() {
       return morningOnly();
     },
-    async progress() {
+    async getParentStats() {
+      return morningOnly();
+    },
+    async updateKidName() {
+      return morningOnly();
+    },
+    async setReminderEnabled() {
       return morningOnly();
     },
   },

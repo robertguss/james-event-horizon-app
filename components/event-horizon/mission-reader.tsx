@@ -47,18 +47,25 @@ export function MissionReader({ missionId }: MissionReaderProps) {
     let cancelled = false;
     void (async () => {
       if (!ready || !kid) return;
-      const detail = await data.missions.get(missionId);
-      if (cancelled) return;
-      if (!detail) {
-        setError("Mission not found");
-        return;
+      try {
+        const detail = await data.missions.get(missionId);
+        if (cancelled) return;
+        if (!detail) {
+          setError("Mission not found");
+          return;
+        }
+        setMission(detail);
+        const active =
+          (await data.attempts.getActive(kid.id, missionId)) ??
+          (await data.attempts.start(kid.id, missionId));
+        if (cancelled) return;
+        setAttempt(active);
+      } catch (err) {
+        if (cancelled) return;
+        setError(
+          err instanceof Error ? err.message : "Mission locked — try another.",
+        );
       }
-      setMission(detail);
-      const active =
-        (await data.attempts.getActive(kid.id, missionId)) ??
-        (await data.attempts.start(kid.id, missionId));
-      if (cancelled) return;
-      setAttempt(active);
     })();
     return () => {
       cancelled = true;
@@ -107,30 +114,38 @@ export function MissionReader({ missionId }: MissionReaderProps) {
         setSelectedEvidence(undefined);
         if (result.nextQuestionIndex === null) {
           setPhase("complete");
-          const done: CompleteResult = await data.attempts.complete({
-            attemptId: attempt.id,
-          });
-          await refresh();
-          if (typeof sessionStorage !== "undefined") {
-            sessionStorage.setItem(
-              "eh.lastComplete",
-              JSON.stringify({
-                missionId: mission.id,
-                missionTitle: mission.title,
-                breakdown: done.xpBreakdown,
-                leveledUp: done.leveledUp,
-                previousLevel: done.previousLevel,
-                level: done.kid.level,
-                xp: done.kid.xp,
-                streakDays: done.kid.streakDays,
-                newSectorStamps: done.newSectorStamps,
-              }),
+          try {
+            const done: CompleteResult = await data.attempts.complete({
+              attemptId: attempt.id,
+            });
+            await refresh();
+            if (typeof sessionStorage !== "undefined") {
+              sessionStorage.setItem(
+                "eh.lastComplete",
+                JSON.stringify({
+                  missionId: mission.id,
+                  missionTitle: mission.title,
+                  breakdown: done.xpBreakdown,
+                  leveledUp: done.leveledUp,
+                  previousLevel: done.previousLevel,
+                  level: done.kid.level,
+                  xp: done.kid.xp,
+                  streakDays: done.kid.streakDays,
+                  newSectorStamps: done.newSectorStamps,
+                }),
+              );
+            }
+            if (done.leveledUp) {
+              void navigate({ to: "/level-up" });
+            } else {
+              void navigate({ to: "/debrief" });
+            }
+          } catch (err) {
+            setError(
+              err instanceof Error
+                ? err.message
+                : "Mission locked — try another.",
             );
-          }
-          if (done.leveledUp) {
-            void navigate({ to: "/level-up" });
-          } else {
-            void navigate({ to: "/debrief" });
           }
         }
       }

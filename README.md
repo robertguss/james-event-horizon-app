@@ -7,13 +7,48 @@ Read to explore — son-facing reading comprehension PWA (grades ~3–5)
 - [Product brief](docs/PRODUCT-BRIEF.md)
 - [Design system (`DESIGN.md`)](DESIGN.md)
 - [v1 overnight implementation plan](docs/EVENT-HORIZON-V1-IMPLEMENTATION-PLAN.md)
+- Visual SoT (this PR): [`public/design-refs/`](public/design-refs/)
+  (`VISUAL-SOT.md` + hub/mission JPEGs)
 
 ## Stack
 
-PWA on [robertguss/web-app-starter-kit](https://github.com/robertguss/web-app-starter-kit) (TanStack Start, Convex, Clerk); xAI Grok server-side for Socratic hints only.
+PWA on
+[robertguss/web-app-starter-kit](https://github.com/robertguss/web-app-starter-kit)
+(TanStack Start, Convex, Clerk); xAI Grok server-side for Socratic hints only.
+
+## Overnight vs Mac morning
+
+| Mode                          | Flag                                                      | Auth / data                                                                 |
+| ----------------------------- | --------------------------------------------------------- | --------------------------------------------------------------------------- |
+| Overnight / CI / cloud agents | `VITE_EH_DATA_MODE=mock` (default)                        | Fixture repository; no live Clerk or Convex cloud required for `aubr check` |
+| Mac morning (live)            | `VITE_EH_DATA_MODE=convex` (alias: `VITE_EH_DATA=convex`) | Clerk + Convex via **repo scripts** below                                   |
+
+## Setup (repo scripts — do not ad-hoc dashboard-poke)
+
+```bash
+# Non-interactive / agent
+./setup.sh --yes --no-dev
+# or: SETUP_NONINTERACTIVE=1 ./setup.sh --no-dev
+
+# Day-to-day
+aube install
+aubx convex dev --until-success   # writes VITE_CONVEX_URL
+aubx clerk@latest auth login      # once per machine (browser OAuth)
+./scripts/setup-clerk-auth.sh     # or: aubr setup:clerk
+aubx convex env set PIN_PEPPER "$(openssl rand -hex 32)"
+# .env.local: VITE_EH_DATA_MODE=convex
+aubr dev
+```
+
+See also morning checklist in
+[`docs/EVENT-HORIZON-V1-IMPLEMENTATION-PLAN.md`](docs/EVENT-HORIZON-V1-IMPLEMENTATION-PLAN.md)
+§13.
+
+Env template: [`.env.example`](.env.example).
 
 ## Status
 
-Product + design docs; build not started.
+Slice 1 in progress: PWA + hub + onboarding/PIN (mock-first overnight). Clerk
+OAuth must finish on the shared Mac (cloud VMs cannot complete browser login).
 
 Private family app / personal project.

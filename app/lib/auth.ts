@@ -2,9 +2,10 @@ import { auth } from "@clerk/tanstack-react-start/server";
 import { redirect } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 
+import { getDataMode } from "../../lib/event-horizon/data-mode";
 import { safeAppRedirect } from "./redirect";
 
-const dataMode = import.meta.env.VITE_EH_DATA_MODE ?? "mock";
+const dataMode = getDataMode();
 const demoUserId = import.meta.env.VITE_EH_DEMO_CLERK_USER_ID ?? "demo_parent";
 
 export const getAuthUserId = createServerFn({ method: "GET" }).handler(

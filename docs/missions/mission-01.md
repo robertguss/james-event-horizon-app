@@ -17,6 +17,8 @@
 **Title:** Dust Storm on Mars  
 **Objective (kid-facing):** Scan the Mars transmission. Use your telescope to find the clues that prove what the dust storm did.
 
+**UI framing (locked visuals):** This mission is **Missions flow only** — cream passage card, mid-screen answer pills, **Check** + **Hint**, telescope/evidence scan. Hub chips (Missions / Hangar / Library / Academy) and Level Up celebration are out of scope for this file; do not reshape questions around those screens.
+
 **Parent / designer note:** First Practice mission. Slightly space-flavored so the fantasy lands, but comprehension skills (evidence, main idea, vocab) transfer beyond space facts.
 
 ---

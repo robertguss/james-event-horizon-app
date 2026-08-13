@@ -1,13 +1,17 @@
 @import "tailwindcss";
 @import "tw-animate-css";
-@import "@fontsource-variable/geist/index.css";
+@import "@fontsource/nunito/400.css";
+@import "@fontsource/nunito/500.css";
+@import "@fontsource/nunito/600.css";
+@import "@fontsource/nunito/700.css";
+@import "@fontsource/nunito/800.css";
 
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-nunito);
   --font-mono: var(--font-geist-mono);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -42,77 +46,96 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+
+  /* Event Horizon DESIGN.md tokens */
+  --color-eh-primary: var(--eh-primary);
+  --color-eh-primary-pressed: var(--eh-primary-pressed);
+  --color-eh-secondary: var(--eh-secondary);
+  --color-eh-tertiary: var(--eh-tertiary);
+  --color-eh-tertiary-glow: var(--eh-tertiary-glow);
+  --color-eh-neutral: var(--eh-neutral);
+  --color-eh-surface: var(--eh-surface);
+  --color-eh-surface-elevated: var(--eh-surface-elevated);
+  --color-eh-nebula-pink: var(--eh-nebula-pink);
+  --color-eh-nebula-magenta: var(--eh-nebula-magenta);
+  --color-eh-on-primary: var(--eh-on-primary);
+  --color-eh-on-secondary: var(--eh-on-secondary);
+  --color-eh-on-tertiary: var(--eh-on-tertiary);
+  --color-eh-on-surface: var(--eh-on-surface);
+  --color-eh-on-surface-muted: var(--eh-on-surface-muted);
+  --color-eh-reading-panel: var(--eh-reading-panel);
+  --color-eh-on-reading: var(--eh-on-reading);
+  --color-eh-highlight: var(--eh-highlight);
+  --color-eh-star: var(--eh-star);
+  --color-eh-border-glass: var(--eh-border-glass);
+  --radius-eh-sm: 12px;
+  --radius-eh-md: 20px;
+  --radius-eh-lg: 28px;
+  --radius-eh-xl: 36px;
 }
 
 :root {
-  --font-geist-sans: "Geist Variable", ui-sans-serif, system-ui, sans-serif;
-  --font-geist-mono: "Geist Variable", ui-monospace, SFMono-Regular, monospace;
-  --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --font-nunito: "Nunito", ui-rounded, "Segoe UI", sans-serif;
+  --font-geist-mono: ui-monospace, SFMono-Regular, monospace;
+
+  --eh-primary: #2ec4b6;
+  --eh-primary-pressed: #24a99d;
+  --eh-secondary: #f5e6d3;
+  --eh-tertiary: #f0c75e;
+  --eh-tertiary-glow: #ffd978;
+  --eh-neutral: #1b1430;
+  --eh-surface: #241b3d;
+  --eh-surface-elevated: #2e2450;
+  --eh-nebula-pink: #c77dff;
+  --eh-nebula-magenta: #e056a0;
+  --eh-on-primary: #0b1f1d;
+  --eh-on-secondary: #2a1f14;
+  --eh-on-tertiary: #2a2208;
+  --eh-on-surface: #f4f0ff;
+  --eh-on-surface-muted: #b8aed4;
+  --eh-reading-panel: #fff8f0;
+  --eh-on-reading: #1a1528;
+  --eh-highlight: #5eead4;
+  --eh-star: #ffe8a3;
+  --eh-border-glass: #ffffff33;
+
+  --radius: 1.75rem;
+  --background: var(--eh-neutral);
+  --foreground: var(--eh-on-surface);
+  --card: var(--eh-surface-elevated);
+  --card-foreground: var(--eh-on-surface);
+  --popover: var(--eh-surface);
+  --popover-foreground: var(--eh-on-surface);
+  --primary: var(--eh-primary);
+  --primary-foreground: var(--eh-on-primary);
+  --secondary: var(--eh-secondary);
+  --secondary-foreground: var(--eh-on-secondary);
+  --muted: var(--eh-surface);
+  --muted-foreground: var(--eh-on-surface-muted);
+  --accent: var(--eh-surface-elevated);
+  --accent-foreground: var(--eh-on-surface);
+  --destructive: #ff6b8a;
+  --border: var(--eh-border-glass);
+  --input: var(--eh-border-glass);
+  --ring: var(--eh-primary);
+  --chart-1: var(--eh-primary);
+  --chart-2: var(--eh-tertiary);
+  --chart-3: var(--eh-nebula-pink);
+  --chart-4: var(--eh-nebula-magenta);
+  --chart-5: var(--eh-highlight);
+  --sidebar: var(--eh-surface);
+  --sidebar-foreground: var(--eh-on-surface);
+  --sidebar-primary: var(--eh-primary);
+  --sidebar-primary-foreground: var(--eh-on-primary);
+  --sidebar-accent: var(--eh-surface-elevated);
+  --sidebar-accent-foreground: var(--eh-on-surface);
+  --sidebar-border: var(--eh-border-glass);
+  --sidebar-ring: var(--eh-primary);
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --background: var(--eh-neutral);
+  --foreground: var(--eh-on-surface);
 }
 
 @layer base {
@@ -120,6 +143,68 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans;
+  }
+}
+
+@layer utilities {
+  .eh-jelly-teal {
+    background: linear-gradient(
+      180deg,
+      color-mix(in oklab, var(--eh-primary) 92%, white) 0%,
+      var(--eh-primary) 45%,
+      var(--eh-primary-pressed) 100%
+    );
+    box-shadow:
+      inset 0 2px 0 rgba(255, 255, 255, 0.35),
+      0 10px 24px rgba(11, 8, 24, 0.35);
+  }
+
+  .eh-jelly-cream {
+    background: linear-gradient(
+      180deg,
+      color-mix(in oklab, var(--eh-secondary) 90%, white) 0%,
+      var(--eh-secondary) 50%,
+      color-mix(in oklab, var(--eh-secondary) 85%, #d4b896) 100%
+    );
+    box-shadow:
+      inset 0 2px 0 rgba(255, 255, 255, 0.45),
+      0 10px 24px rgba(11, 8, 24, 0.3);
+  }
+
+  .eh-reading-card {
+    background: var(--eh-reading-panel);
+    color: var(--eh-on-reading);
+    border: 6px solid var(--eh-primary);
+    box-shadow:
+      inset 0 0 0 3px var(--eh-tertiary),
+      0 16px 40px rgba(11, 8, 24, 0.35);
+  }
+
+  /* DESIGN.md button-hint: gold assist (VISUAL-SOT prefers gold over teal Hint mock). */
+  .eh-button-hint {
+    background: linear-gradient(
+      180deg,
+      color-mix(in oklab, var(--eh-tertiary) 88%, white) 0%,
+      var(--eh-tertiary) 45%,
+      color-mix(in oklab, var(--eh-tertiary) 80%, #c9a13a) 100%
+    );
+    color: var(--eh-on-tertiary);
+    box-shadow:
+      inset 0 2px 0 rgba(255, 255, 255, 0.4),
+      0 8px 18px rgba(11, 8, 24, 0.28);
+  }
+
+  .eh-button-check {
+    background: linear-gradient(
+      180deg,
+      color-mix(in oklab, var(--eh-primary) 92%, white) 0%,
+      var(--eh-primary) 45%,
+      var(--eh-primary-pressed) 100%
+    );
+    color: white;
+    box-shadow:
+      inset 0 2px 0 rgba(255, 255, 255, 0.35),
+      0 8px 18px rgba(11, 8, 24, 0.28);
   }
 }

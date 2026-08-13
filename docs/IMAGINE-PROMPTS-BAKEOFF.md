@@ -1,8 +1,11 @@
 # Event Horizon — Imagine prompts (historical bake-off)
 
-> Historical bake-off (A comic / B soft 3D / C adventure-map). **Winner locked: toy-like stylized 3D (B lineage).** Prefer `IMAGINE-PROMPTS-LOCKED.md` for new art.
+> Historical bake-off (A comic / B soft 3D / C adventure-map). **Winner locked:
+> toy-like stylized 3D (B lineage).** Prefer `IMAGINE-PROMPTS-LOCKED.md` for new
+> art.
 
-Each prompt below is **self-contained**. Paste as-is. Style A and C are archived; do not use them for new production art.
+Each prompt below is **self-contained**. Paste as-is. Style A and C are
+archived; do not use them for new production art.
 
 ---
 

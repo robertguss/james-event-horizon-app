@@ -14,6 +14,9 @@ jobs:
     name: Lint, typecheck, test
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    env:
+      # Overnight / PR CI: fixture-first. No Clerk keys, no Convex URL.
+      VITE_EH_DATA: fixture
 
     steps:
       - name: Checkout
@@ -29,8 +32,18 @@ jobs:
       - name: Install dependencies (frozen lockfile)
         run: aube ci
 
-      - name: Generate Convex types
-        run: aubx convex codegen
+      # Prefer committed convex/_generated over cloud codegen in CI.
+      # Do not spin CONVEX_AGENT_MODE=anonymous here (junk deployments).
+      - name: Convex codegen (skip without deployment)
+        run: |
+          if [ -n "${CONVEX_DEPLOYMENT:-}" ]; then
+            aubx convex codegen
+          else
+            echo "No CONVEX_DEPLOYMENT — using committed convex/_generated"
+            test -f convex/_generated/api.d.ts
+            test -f convex/_generated/dataModel.d.ts
+            test -f convex/_generated/server.d.ts
+          fi
 
       - name: Lint
         run: aubr lint

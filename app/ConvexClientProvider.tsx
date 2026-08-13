@@ -3,17 +3,29 @@ import { ConvexProviderWithClerk } from "convex/react-clerk";
 import { ConvexReactClient } from "convex/react";
 import { type ReactNode } from "react";
 
-const convexUrl = import.meta.env.VITE_CONVEX_URL;
+import { hostedStackEnabled } from "@/lib/eh/mode";
 
-if (!convexUrl) {
-  throw new Error("Missing VITE_CONVEX_URL in your .env.local file");
+const convexUrl = import.meta.env.VITE_CONVEX_URL as string | undefined;
+
+let convex: ConvexReactClient | null = null;
+
+function getConvexClient(): ConvexReactClient | null {
+  if (!hostedStackEnabled() || !convexUrl) {
+    return null;
+  }
+  if (!convex) {
+    convex = new ConvexReactClient(convexUrl);
+  }
+  return convex;
 }
 
-const convex = new ConvexReactClient(convexUrl);
-
 export function ConvexClientProvider({ children }: { children: ReactNode }) {
+  const client = getConvexClient();
+  if (!client) {
+    return children;
+  }
   return (
-    <ConvexProviderWithClerk client={convex} useAuth={useAuth}>
+    <ConvexProviderWithClerk client={client} useAuth={useAuth}>
       {children}
     </ConvexProviderWithClerk>
   );

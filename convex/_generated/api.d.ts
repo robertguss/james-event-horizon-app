@@ -10,6 +10,13 @@
 
 import type * as auth from "../auth.js";
 import type * as http from "../http.js";
+import type * as kids from "../kids.js";
+import type * as lib_gradeBand from "../lib/gradeBand.js";
+import type * as lib_parents from "../lib/parents.js";
+import type * as lib_pin from "../lib/pin.js";
+import type * as lib_validators from "../lib/validators.js";
+import type * as parents from "../parents.js";
+import type * as setup from "../setup.js";
 
 import type {
   ApiFromModules,
@@ -20,6 +27,13 @@ import type {
 declare const fullApi: ApiFromModules<{
   auth: typeof auth;
   http: typeof http;
+  kids: typeof kids;
+  "lib/gradeBand": typeof lib_gradeBand;
+  "lib/parents": typeof lib_parents;
+  "lib/pin": typeof lib_pin;
+  "lib/validators": typeof lib_validators;
+  parents: typeof parents;
+  setup: typeof setup;
 }>;
 
 /**

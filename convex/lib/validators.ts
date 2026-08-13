@@ -178,12 +178,8 @@ export const missionDetailValidator = v.object({
   ),
   questions: v.array(missionQuestionValidator),
   scoring: v.object({
-    questionXp: v.object({
-      0: v.number(),
-      1: v.number(),
-      2: v.number(),
-      3: v.number(),
-    }),
+    // Hint-count keys are "0".."3". v.object field names cannot start with a digit.
+    questionXp: v.record(v.string(), v.number()),
     exitTicketXp: v.number(),
     missionCompleteXp: v.number(),
     firstDailyXp: v.number(),

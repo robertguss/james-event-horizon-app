@@ -41,6 +41,15 @@ function MissionsPage() {
                 {mission.sentences.length} sentences, {mission.questions.length}{" "}
                 questions).
               </p>
+              {/* Token/chrome sample only — gold Hint per DESIGN.md / VISUAL-SOT. */}
+              <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+                <span className="eh-button-check inline-flex h-12 min-w-24 items-center justify-center rounded-full px-5 text-sm font-extrabold">
+                  Check
+                </span>
+                <span className="eh-button-hint inline-flex h-12 min-w-24 items-center justify-center rounded-full px-5 text-sm font-extrabold">
+                  Hint
+                </span>
+              </div>
             </div>
           ))
         )}

@@ -280,34 +280,33 @@ export function MissionReader({ missionId }: MissionReaderProps) {
             <div className="fixed inset-x-0 bottom-0 z-20 border-t border-white/10 bg-eh-neutral/85 px-3 py-3 backdrop-blur-md">
               <div className="mx-auto flex max-w-3xl flex-wrap items-center justify-center gap-2 sm:gap-3">
                 <CheckButton onClick={() => void onCheck()} disabled={busy} />
-                {choices.length > 0 ? (
-                  choices.map((choice, index) => (
-                    <ChoicePill
-                      key={choice.id}
-                      accent={index % 2 === 0 ? "gold" : "teal"}
-                      selected={selectedChoice === choice.id}
-                      onClick={() => {
-                        setSelectedChoice(choice.id);
-                        setFeedback(null);
-                      }}
-                      title={choice.text}
-                    >
-                      {choice.id}
-                    </ChoicePill>
-                  ))
-                ) : (
-                  <>
-                    <span className="eh-button-hint inline-flex h-12 min-w-[4.5rem] items-center justify-center rounded-full px-4 text-sm font-extrabold opacity-40">
-                      ·
-                    </span>
-                    <span className="eh-button-check inline-flex h-12 min-w-[4.5rem] items-center justify-center rounded-full px-4 text-sm font-extrabold text-white opacity-40">
-                      ·
-                    </span>
-                    <span className="eh-button-hint inline-flex h-12 min-w-[4.5rem] items-center justify-center rounded-full px-4 text-sm font-extrabold opacity-40">
-                      ·
-                    </span>
-                  </>
-                )}
+                {choices.length > 0
+                  ? choices.map((choice, index) => (
+                      <ChoicePill
+                        key={choice.id}
+                        accent={index % 2 === 0 ? "gold" : "teal"}
+                        selected={selectedChoice === choice.id}
+                        onClick={() => {
+                          setSelectedChoice(choice.id);
+                          setFeedback(null);
+                        }}
+                        title={choice.text}
+                      >
+                        {choice.id}
+                      </ChoicePill>
+                    ))
+                  : // Locate rhythm: gold · teal · gold accent slots (tap sentences above)
+                    (["gold", "teal", "gold"] as const).map((accent, i) => (
+                      <span
+                        key={`slot-${i}`}
+                        aria-hidden
+                        className={
+                          accent === "gold"
+                            ? "eh-button-hint inline-flex h-12 min-w-[4.5rem] items-center justify-center rounded-full px-4"
+                            : "eh-button-check inline-flex h-12 min-w-[4.5rem] items-center justify-center rounded-full px-4"
+                        }
+                      />
+                    ))}
                 <HintButton onClick={() => void onHint()} disabled={busy} />
               </div>
               {selectedChoice && choices.length > 0 ? (

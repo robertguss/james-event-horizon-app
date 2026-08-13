@@ -51,3 +51,5 @@ yarn-error.log*
 
 # Local agent audit trails
 .audit/
+# Local hub vs SoT capture (artifacts live outside repo)
+/validation-screenshots/

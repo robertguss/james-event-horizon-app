@@ -9,6 +9,7 @@
  */
 
 import type * as auth from "../auth.js";
+import type * as grokPrompt from "../grokPrompt.js";
 import type * as hintContext from "../hintContext.js";
 import type * as hintRequests from "../hintRequests.js";
 import type * as hints from "../hints.js";
@@ -35,6 +36,7 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   auth: typeof auth;
+  grokPrompt: typeof grokPrompt;
   hintContext: typeof hintContext;
   hintRequests: typeof hintRequests;
   hints: typeof hints;

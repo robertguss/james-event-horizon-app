@@ -265,6 +265,7 @@ export const fixtureAdapter: EhData = {
       const mission = missionById(attempt.missionId);
       if (!mission) throw new Error("Mission not found");
 
+      // Overnight: static only (no network / no Convex Grok path).
       const reduced = reduceHint({
         attempt,
         mission,

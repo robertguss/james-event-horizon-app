@@ -78,12 +78,20 @@ describe("fixture Mission 1 E2E", () => {
     expect(hint1.source).toBe("static");
     expect(hint1.text.toLowerCase()).not.toContain("answer is");
     expect(hint1.text).not.toMatch(/\bs3\b/);
+    expect(hint1.text).not.toContain(
+      "Then a wall of dust rose in the distance.",
+    );
 
     const hint2 = await eh.attempts.requestHint({
       attemptId: attempt.id,
       questionKey: "q1_locate_wall",
     });
     expect(hint2.step).toBe(2);
+    expect(hint2.source).toBe("static");
+    expect(hint2.text).not.toMatch(/\bs3\b/);
+    expect(hint2.text).not.toContain(
+      "Then a wall of dust rose in the distance.",
+    );
 
     const ok = await eh.attempts.submitAnswer({
       attemptId: attempt.id,
@@ -94,6 +102,37 @@ describe("fixture Mission 1 E2E", () => {
     // 2 hints used → 10 XP (plan §7)
     expect(ok.xpAwarded).toBe(10);
     expect(ok.attempt.questionResults[0]?.hintsUsed).toBe(2);
+
+    const { hintEvents } = getFixtureDebugState();
+    expect(hintEvents.every((e) => e.source === "static")).toBe(true);
+  });
+
+  it("requestHint returns source static without any key", async () => {
+    const eh = getEhData();
+    const attempt = await eh.attempts.start(FIXTURE_KID_ID, mission01.id);
+    const hint = await eh.attempts.requestHint({
+      attemptId: attempt.id,
+      questionKey: "q1_locate_wall",
+    });
+    expect(hint.source).toBe("static");
+    expect(hint.text.length).toBeGreaterThan(0);
+  });
+
+  it("Q1 steps 1–2 hint texts do not leak s3 or the exact correct sentence", () => {
+    const q1 = mission01.questions.find((q) => q.id === "q1_locate_wall");
+    expect(q1).toBeTruthy();
+    for (const text of q1!.hints.slice(0, 2)) {
+      expect(text).not.toMatch(/\bs3\b/);
+      expect(text).not.toContain("Then a wall of dust rose in the distance.");
+    }
+  });
+
+  it("Q2 hint ladder texts do not contain answer letter B", () => {
+    const q2 = mission01.questions.find((q) => q.id === "q2_main_idea");
+    expect(q2).toBeTruthy();
+    for (const text of q2!.hints) {
+      expect(text).not.toMatch(/\bB\b/);
+    }
   });
 
   it("H2: freeze score once correct — re-submit stays 10 XP not 20", async () => {

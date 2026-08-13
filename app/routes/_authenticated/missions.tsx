@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 
 import { KidShell } from "@/components/event-horizon/kid-shell";
@@ -63,20 +63,18 @@ function MissionsPage() {
               <p className="mt-4 text-lg leading-relaxed text-eh-on-reading">
                 {mission.objective}
               </p>
-              <p className="mt-4 text-sm font-semibold text-eh-on-reading/70">
-                Runtime arrives in a later slice — content is ready (
-                {mission.sentences.length} sentences, {mission.questions.length}{" "}
-                questions).
+              <p className="mt-3 text-sm font-semibold text-eh-on-reading/70">
+                {mission.sentences.length} sentences ·{" "}
+                {mission.questions.length} questions · ~
+                {mission.estimatedMinutes} min
               </p>
-              {/* Token/chrome sample only — gold Hint per DESIGN.md / VISUAL-SOT. */}
-              <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
-                <span className="eh-button-check inline-flex h-12 min-w-24 items-center justify-center rounded-full px-5 text-sm font-extrabold">
-                  Check
-                </span>
-                <span className="eh-button-hint inline-flex h-12 min-w-24 items-center justify-center rounded-full px-5 text-sm font-extrabold">
-                  Hint
-                </span>
-              </div>
+              <Link
+                to="/mission/$id"
+                params={{ id: mission.id }}
+                className="eh-button-check mt-6 inline-flex h-12 items-center justify-center rounded-full px-6 text-base font-extrabold text-white"
+              >
+                Launch mission
+              </Link>
             </div>
           ))
         )}

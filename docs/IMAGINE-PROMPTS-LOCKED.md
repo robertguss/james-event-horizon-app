@@ -1,8 +1,13 @@
 # Event Horizon — locked style Imagine prompts
 
-**Style locked (Aug 2026):** Toy-like stylized 3D / low-poly space — matte plastic–clay surfaces, faceted planets, soft cinematic lighting + depth of field, pastel purple–magenta–deep-blue nebula, glassy jelly UI (teal/cream + gold stars), young explorer often from behind on a glowing platform. Not comic-flat. Not parchment adventure-map.
+**Style locked (Aug 2026):** Toy-like stylized 3D / low-poly space — matte
+plastic–clay surfaces, faceted planets, soft cinematic lighting + depth of
+field, pastel purple–magenta–deep-blue nebula, glassy jelly UI (teal/cream +
+gold stars), young explorer often from behind on a glowing platform. Not
+comic-flat. Not parchment adventure-map.
 
-Each prompt below is **self-contained**. Paste as-is. For follow-ups in the same chat: “same art style and materials as the previous image.”
+Each prompt below is **self-contained**. Paste as-is. For follow-ups in the same
+chat: “same art style and materials as the previous image.”
 
 ---
 

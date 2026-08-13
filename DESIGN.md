@@ -1,7 +1,9 @@
 ---
 version: alpha
 name: Event Horizon
-description: Toy-like stylized 3D space reading game for grades 3–5. Soft cinematic hub, glassy jelly UI, readability-first mission panels.
+description:
+  Toy-like stylized 3D space reading game for grades 3–5. Soft cinematic hub,
+  glassy jelly UI, readability-first mission panels.
 colors:
   primary: "#2EC4B6"
   primary-pressed: "#24A99D"
@@ -187,74 +189,114 @@ components:
 
 # Event Horizon — DESIGN.md
 
-Agent-facing visual identity for **Event Horizon** (subtitle: Read to explore). Follow [DESIGN.md](https://github.com/google-labs-code/design.md). Tokens above are normative; prose below explains how to apply them.
+Agent-facing visual identity for **Event Horizon** (subtitle: Read to explore).
+Follow [DESIGN.md](https://github.com/google-labs-code/design.md). Tokens above
+are normative; prose below explains how to apply them.
 
 ## Overview
 
-Event Horizon is a **toy-like stylized 3D** space reading game for a child in grades 3–5. The emotional target is **wonder + clarity**: cozy spaceship adventure, never grimdark, never babyish clutter, never hard military sci-fi.
+Event Horizon is a **toy-like stylized 3D** space reading game for a child in
+grades 3–5. The emotional target is **wonder + clarity**: cozy spaceship
+adventure, never grimdark, never babyish clutter, never hard military sci-fi.
 
-**Locked look (hub reference):** matte plastic / clay materials, faceted low-poly planets, soft cinematic lighting with depth of field, pastel purple–magenta–deep-blue nebula, young explorer often seen from behind on a glowing stone platform, and **glassy jelly UI** — large teal/cream pills with gold star accents and chunky 3D icons.
+**Locked look (hub reference):** matte plastic / clay materials, faceted
+low-poly planets, soft cinematic lighting with depth of field, pastel
+purple–magenta–deep-blue nebula, young explorer often seen from behind on a
+glowing stone platform, and **glassy jelly UI** — large teal/cream pills with
+gold star accents and chunky 3D icons.
 
 Product constraints that shape the UI:
 
-- **Tablet-first PWA**; huge tap targets; mission screens stay **2D and readable** even if the hub is 3D.
-- Passages live on a cream **reading panel** — readability always beats spectacle.
-- Telescope = evidence scanner (circular reticle / soft teal highlight on a sentence).
+- **Tablet-first PWA**; huge tap targets; mission screens stay **2D and
+  readable** even if the hub is 3D.
+- Passages live on a cream **reading panel** — readability always beats
+  spectacle.
+- Telescope = evidence scanner (circular reticle / soft teal highlight on a
+  sentence).
 - Black holes are **friendly awe** (bright accretion ring), never horror void.
-- Short labels only: Missions, Hangar, Library, Academy, Scan, Hint, Level Up — no technobabble.
+- Short labels only: Missions, Hangar, Library, Academy, Scan, Hint, Level Up —
+  no technobabble.
 
-Stack note: ship on Robert’s web-app-starter-kit (TanStack Start, Convex, Clerk, shadcn). Prefer mapping these tokens into CSS variables / Tailwind theme rather than inventing a second palette.
+Stack note: ship on Robert’s web-app-starter-kit (TanStack Start, Convex, Clerk,
+shadcn). Prefer mapping these tokens into CSS variables / Tailwind theme rather
+than inventing a second palette.
 
 ## Colors
 
-The world is a dreamy nebula; interactive chrome is **teal jelly** and **cream**; celebration is **soft gold**.
+The world is a dreamy nebula; interactive chrome is **teal jelly** and
+**cream**; celebration is **soft gold**.
 
-- **Primary (`#2EC4B6`):** Teal — primary actions (Launch, Scan, Check, hub Missions).
-- **Secondary (`#F5E6D3`):** Warm cream — secondary hub chips, reading-adjacent surfaces.
-- **Tertiary (`#F0C75E`):** Soft gold — XP, stars, Hint, reward sparkle (not the only CTA).
-- **Neutral / surface (`#1B1430`, `#241B3D`, `#2E2450`):** Deep space ink for canvas and elevated panels.
-- **Nebula accents (`#C77DFF`, `#E056A0`):** Background atmosphere only — never body text.
-- **Reading panel (`#FFF8F0` on `#1A1528` text):** High-contrast passage surface.
-- **Highlight (`#5EEAD4`):** Evidence / selected sentence glow (soft, not neon chaos).
-- **Accretion (`#FF8A4C`) + black-hole (`#0A0614`):** Reward / black-hole moments — cute ring, not void horror.
-- **Error (`#FF6B8A`):** Soft coral for wrong answers — always pair with icon/shape, never red-vs-green alone.
+- **Primary (`#2EC4B6`):** Teal — primary actions (Launch, Scan, Check, hub
+  Missions).
+- **Secondary (`#F5E6D3`):** Warm cream — secondary hub chips, reading-adjacent
+  surfaces.
+- **Tertiary (`#F0C75E`):** Soft gold — XP, stars, Hint, reward sparkle (not the
+  only CTA).
+- **Neutral / surface (`#1B1430`, `#241B3D`, `#2E2450`):** Deep space ink for
+  canvas and elevated panels.
+- **Nebula accents (`#C77DFF`, `#E056A0`):** Background atmosphere only — never
+  body text.
+- **Reading panel (`#FFF8F0` on `#1A1528` text):** High-contrast passage
+  surface.
+- **Highlight (`#5EEAD4`):** Evidence / selected sentence glow (soft, not neon
+  chaos).
+- **Accretion (`#FF8A4C`) + black-hole (`#0A0614`):** Reward / black-hole
+  moments — cute ring, not void horror.
+- **Error (`#FF6B8A`):** Soft coral for wrong answers — always pair with
+  icon/shape, never red-vs-green alone.
 
-Keep one strong action color per screen (usually primary teal). Gold is garnish and XP, not a competing CTA.
+Keep one strong action color per screen (usually primary teal). Gold is garnish
+and XP, not a competing CTA.
 
-Atmosphere tokens (`nebula-*`, `border-glass`, `tertiary-glow`) are for **backgrounds, gradients, and borders only** — never as text fill behind body copy.
+Atmosphere tokens (`nebula-*`, `border-glass`, `tertiary-glow`) are for
+**backgrounds, gradients, and borders only** — never as text fill behind body
+copy.
 
 ## Typography
 
-**Nunito** is the single family — rounded, friendly, excellent at large sizes for developing readers.
+**Nunito** is the single family — rounded, friendly, excellent at large sizes
+for developing readers.
 
 - **Display / headlines:** Extra-bold for hub titles and Level Up moments.
-- **Body-lg (22px / 1.65):** Default **passage** size on tablet; never shrink passages to fit art.
+- **Body-lg (22px / 1.65):** Default **passage** size on tablet; never shrink
+  passages to fit art.
 - **Body-md:** Choices, hints, supporting copy.
-- **Labels:** Bold/extra-bold short words on jelly buttons; avoid all-caps walls of text (small tracking on `label-sm` only).
+- **Labels:** Bold/extra-bold short words on jelly buttons; avoid all-caps walls
+  of text (small tracking on `label-sm` only).
 - **XP:** Extra-bold numerals next to star icons.
 
-Do not introduce a second display font for v1. Parent screens may reuse the same scale at slightly denser sizes.
+Do not introduce a second display font for v1. Parent screens may reuse the same
+scale at slightly denser sizes.
 
 ## Layout
 
-Tablet-first, landscape-comfortable. Missions use a **single focal column**: reading card center, choices below, tools (Scan / Hint) in a thumb-friendly bottom band. Hub can be scenic full-bleed with corner jelly chips.
+Tablet-first, landscape-comfortable. Missions use a **single focal column**:
+reading card center, choices below, tools (Scan / Hint) in a thumb-friendly
+bottom band. Hub can be scenic full-bleed with corner jelly chips.
 
 - Base rhythm: **8px** scale (`sm`/`md`/`lg`…).
 - Minimum tap height: **48px** (`tap-min`); prefer 56px for primary actions.
 - Reading card internal padding: **28px** (`panel-pad`).
-- Safe margins ~24px from screen edges; avoid putting critical controls under notches / home indicators.
-- Prefer containment: passage + questions in one elevated card stack so the nebula stays background, not noise behind glyphs.
+- Safe margins ~24px from screen edges; avoid putting critical controls under
+  notches / home indicators.
+- Prefer containment: passage + questions in one elevated card stack so the
+  nebula stays background, not noise behind glyphs.
 
 ## Elevation & Depth
 
-Depth comes from **cinematic lighting and layered translucency**, not heavy Material shadows.
+Depth comes from **cinematic lighting and layered translucency**, not heavy
+Material shadows.
 
-- Hub: real/fake 3D scene with shallow DoF; UI floats as glassy pills with soft bloom.
-- Missions: flatter. Soft shadow or 1px glass border (`border-glass`) under the reading card; keep the passage plane calm.
-- Selected evidence: soft teal wash (`highlight-soft`), not a harsh outline storm.
+- Hub: real/fake 3D scene with shallow DoF; UI floats as glassy pills with soft
+  bloom.
+- Missions: flatter. Soft shadow or 1px glass border (`border-glass`) under the
+  reading card; keep the passage plane calm.
+- Selected evidence: soft teal wash (`highlight-soft`), not a harsh outline
+  storm.
 - Rewards: brief bloom / star sparkle; one motion verb at a time.
 
-Honor `prefers-reduced-motion`: hard cuts, still nebula, no parallax requirement.
+Honor `prefers-reduced-motion`: hard cuts, still nebula, no parallax
+requirement.
 
 ## Shapes
 
@@ -263,29 +305,44 @@ Everything interactive is **highly rounded** — jelly language.
 - Pills / primary buttons: `rounded.full`.
 - Cards / choice rows: `rounded.lg`–`xl` (20–36px).
 - Telescope / scanner: circular reticle.
-- Avoid sharp 4px admin-tool radii on kid surfaces. Parent PIN screens may tighten slightly but stay in-family.
+- Avoid sharp 4px admin-tool radii on kid surfaces. Parent PIN screens may
+  tighten slightly but stay in-family.
 
 ## Components
 
-- **button-primary:** Teal jelly pill — Launch, Scan (confirm), Check. 56px tall, full radius.
-- **button-secondary:** Cream jelly — Library / Academy-style secondary hub actions.
+- **button-primary:** Teal jelly pill — Launch, Scan (confirm), Check. 56px
+  tall, full radius.
+- **button-secondary:** Cream jelly — Library / Academy-style secondary hub
+  actions.
 - **button-hint:** Gold jelly — Hint only; never the primary path.
-- **button-choice / selected:** Elevated dark glass rows; selected gains teal soft fill + check affordance.
-- **reading-card:** Cream panel, large Nunito body, generous padding; blank of chrome inside the text well.
-- **hub-chip:** Oversized corner jelly (Missions / Hangar / Library / Academy) with chunky icon + short label.
+- **button-choice / selected:** Elevated dark glass rows; selected gains teal
+  soft fill + check affordance.
+- **reading-card:** Cream panel, large Nunito body, generous padding; blank of
+  chrome inside the text well.
+- **hub-chip:** Oversized corner jelly (Missions / Hangar / Library / Academy)
+  with chunky icon + short label.
 - **xp-badge:** Pill with star + bold XP count.
 
-States: pressed = slightly darker teal; disabled = 40% opacity, still readable label. Wrong answer = coral icon + gentle shake (or static X if reduced motion) — never shame copy.
+States: pressed = slightly darker teal; disabled = 40% opacity, still readable
+label. Wrong answer = coral icon + gentle shake (or static X if reduced motion)
+— never shame copy.
 
 ## Do's and Don'ts
 
-- Do keep mission text on the cream reading panel at ≥22px with airy line-height.
+- Do keep mission text on the cream reading panel at ≥22px with airy
+  line-height.
 - Don’t place passage text directly on nebula / busy 3D backgrounds.
-- Do use teal for the single primary action per view; gold for XP/Hint/celebration only.
-- Don’t mix flat comic ink outlines or parchment Zelda-map chrome into the default kid UI (those bake-offs are out).
-- Do keep black holes cute (eyes/smile optional) with a bright accretion ring — awe, not fear.
-- Don’t use franchise lookalikes, horror voids, military gore, or watermarks on gameplay art.
+- Do use teal for the single primary action per view; gold for
+  XP/Hint/celebration only.
+- Don’t mix flat comic ink outlines or parchment Zelda-map chrome into the
+  default kid UI (those bake-offs are out).
+- Do keep black holes cute (eyes/smile optional) with a bright accretion ring —
+  awe, not fear.
+- Don’t use franchise lookalikes, horror voids, military gore, or watermarks on
+  gameplay art.
 - Do hit ~48–56px tap targets; thumb zones at the bottom on tablets.
 - Don’t rely on red/green alone for correctness — add icons/shapes.
-- Do map these tokens into the starter-kit theme; don’t invent a parallel palette in components.
-- Don’t generate runtime AI images per mission — prebake assets to match this identity.
+- Do map these tokens into the starter-kit theme; don’t invent a parallel
+  palette in components.
+- Don’t generate runtime AI images per mission — prebake assets to match this
+  identity.

@@ -12,7 +12,11 @@ coverage
 .claude
 .codex
 .cursor/hooks/state
+.convex
 convex/_generated
 aube-lock.yaml
 app/routeTree.gen.ts
 *.tsbuildinfo
+validation-screenshots
+public/design-refs/*.jpeg
+docs/design-refs/*.jpeg

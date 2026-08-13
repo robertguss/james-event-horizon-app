@@ -12,7 +12,8 @@ import {
 } from "@tanstack/react-router";
 
 import { Button } from "@/components/ui/button";
-import { EhProvider, isFixtureMode } from "@/lib/eh/data";
+import { EhProvider } from "@/lib/eh/data";
+import { hostedStackEnabled } from "@/lib/eh/mode";
 import { registerServiceWorker } from "@/lib/pwa";
 import { ConvexClientProvider } from "../ConvexClientProvider";
 import appCss from "../globals.css?url";
@@ -59,11 +60,11 @@ function RootComponent() {
     registerServiceWorker();
   }, []);
 
-  // Binding: do not mount hosted Clerk in fixture mode.
-  const fixture = isFixtureMode();
-  const publishableKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
+  // Binding: do not mount hosted Clerk unless hosted stack is enabled.
+  const publishableKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY as
+    string | undefined;
 
-  if (fixture || !publishableKey || publishableKey.includes("placeholder")) {
+  if (!hostedStackEnabled() || !publishableKey) {
     return (
       <AppShell>
         <Outlet />

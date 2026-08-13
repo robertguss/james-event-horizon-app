@@ -47,6 +47,12 @@ export type EhSession = {
   activeKidId: string | null;
 };
 
+export type CompleteOnboardingInput = {
+  displayName: string;
+  gradeBand: "3-5";
+  pin: string;
+};
+
 export type EhData = {
   mode: EhMode;
   auth: {
@@ -71,5 +77,9 @@ export type EhData = {
     verifyPin(pin: string): Promise<boolean>;
     setPin(pin: string): Promise<void>;
     progress(kidId: string): Promise<ParentProgress>;
+  };
+  setup: {
+    /** Create kid if needed + set parent PIN (fixture setPin / Convex completeOnboarding). */
+    complete(input: CompleteOnboardingInput): Promise<EhKid>;
   };
 };

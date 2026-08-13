@@ -2,20 +2,20 @@ import { auth } from "@clerk/tanstack-react-start/server";
 import { redirect } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 
-import { isFixtureMode } from "@/lib/eh/data";
+import { hostedStackEnabled } from "@/lib/eh/mode";
+import { resolveServerUserId } from "@/lib/eh/serverUser";
 import { safeAppRedirect } from "./redirect";
 
-const fixtureUserId =
-  import.meta.env.VITE_EH_DEMO_CLERK_USER_ID ?? "fixture_parent";
+export { resolveServerUserId } from "@/lib/eh/serverUser";
 
 export const getAuthUserId = createServerFn({ method: "GET" }).handler(
   async () => {
-    if (isFixtureMode()) {
-      return { userId: fixtureUserId as string | null };
+    if (!hostedStackEnabled()) {
+      return { userId: resolveServerUserId(null) };
     }
     try {
       const { userId } = await auth();
-      return { userId };
+      return { userId: resolveServerUserId(userId) };
     } catch {
       return { userId: null };
     }

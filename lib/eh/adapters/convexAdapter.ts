@@ -49,4 +49,10 @@ export const convexAdapter: EhData = {
       throw new Error("convexAdapter: morning only");
     },
   },
+  setup: {
+    async complete() {
+      // Morning: map to api.setup.completeOnboarding
+      throw new Error("convexAdapter: morning only");
+    },
+  },
 };

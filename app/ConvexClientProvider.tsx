@@ -3,14 +3,14 @@ import { ConvexProviderWithClerk } from "convex/react-clerk";
 import { ConvexReactClient } from "convex/react";
 import { type ReactNode } from "react";
 
-import { isFixtureMode } from "@/lib/eh/data";
+import { hostedStackEnabled } from "@/lib/eh/mode";
 
 const convexUrl = import.meta.env.VITE_CONVEX_URL as string | undefined;
 
 let convex: ConvexReactClient | null = null;
 
 function getConvexClient(): ConvexReactClient | null {
-  if (isFixtureMode() || !convexUrl) {
+  if (!hostedStackEnabled() || !convexUrl) {
     return null;
   }
   if (!convex) {

@@ -19,13 +19,15 @@ PWA on
 
 ## Overnight vs Mac morning
 
-| Mode                          | Flag                                      | Auth / data                                                               |
-| ----------------------------- | ----------------------------------------- | ------------------------------------------------------------------------- |
-| Overnight / CI / cloud agents | `VITE_EH_DATA=fixture` (default if unset) | `lib/eh/*` fixture adapter; no Clerk keys or Convex URL needed for checks |
-| Mac morning (live)            | `VITE_EH_DATA=convex`                     | Clerk + Convex via **repo scripts** below                                 |
+| Mode                 | Flag                                                 | Auth / data                                                               |
+| -------------------- | ---------------------------------------------------- | ------------------------------------------------------------------------- |
+| Overnight / CI / DEV | `VITE_EH_DATA=fixture` (unset in non-prod → fixture) | `lib/eh/*` fixture adapter; no Clerk keys or Convex URL needed for checks |
+| Production / preview | unset ≠ fixture; set `VITE_EH_DATA=convex` for live  | Hosted Clerk + Convex; no `fixture_parent` / PIN `1234` default           |
+| Mac morning (live)   | `VITE_EH_DATA=convex`                                | Clerk + Convex via **repo scripts** below                                 |
 
-Product UI imports data only from [`lib/eh/data.ts`](lib/eh/data.ts). Fixture
-kid is **James**, parent PIN **`1234`** (fixture only), home is **`/hub`**.
+Product UI imports data only from [`lib/eh/data`](lib/eh/data.tsx). Mode /
+`hostedStackEnabled()` live in [`lib/eh/mode.ts`](lib/eh/mode.ts). Fixture kid
+is **James**, parent PIN **`1234`** (fixture only), home is **`/hub`**.
 
 ```bash
 # Overnight green (no Clerk / no Convex URL)

@@ -11,7 +11,7 @@ export const Route = createFileRoute("/_authenticated/onboarding")({
 });
 
 function OnboardingPage() {
-  const { ready, kid, ensureKid } = useEh();
+  const { ready, kid, completeOnboarding } = useEh();
   const navigate = useNavigate();
   const [displayName, setDisplayName] = useState("James");
   const [pin, setPin] = useState(isFixtureMode() ? FIXTURE_PARENT_PIN : "");
@@ -36,7 +36,7 @@ function OnboardingPage() {
     setError(null);
     setPending(true);
     try {
-      await ensureKid({ displayName, gradeBand: "3-5" });
+      await completeOnboarding({ displayName, gradeBand: "3-5", pin });
       await navigate({ to: "/hub" });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not finish setup");

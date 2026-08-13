@@ -8,11 +8,13 @@ describe("lib/eh fixture-first data API", () => {
     resetFixtureAdapter();
     delete process.env.VITE_EH_DATA;
     delete process.env.VITE_EH_DATA_MODE;
+    delete process.env.VITE_EH_TEST_PROD;
   });
 
-  it("defaults to fixture when env is unset", () => {
+  it("DEV unset → fixture (overnight)", () => {
     delete process.env.VITE_EH_DATA;
     delete process.env.VITE_EH_DATA_MODE;
+    process.env.VITE_EH_TEST_PROD = "0";
     expect(getEhMode()).toBe("fixture");
     expect(getEhData().mode).toBe("fixture");
   });
@@ -49,5 +51,20 @@ describe("lib/eh fixture-first data API", () => {
   it("lists Mission 1 fixture without runtime", async () => {
     const missions = await getEhData().missions.list();
     expect(missions[0]?.id).toBe("mission_01_mars_dust");
+  });
+
+  it("custom onboarding PIN is accepted; default 1234 rejected after set", async () => {
+    resetFixtureAdapter({ seedDefaultKid: false });
+    const eh = getEhData();
+    expect(await eh.kids.list()).toHaveLength(0);
+
+    const kid = await eh.setup.complete({
+      displayName: "Jamie",
+      gradeBand: "3-5",
+      pin: "5678",
+    });
+    expect(kid.displayName).toBe("Jamie");
+    await expect(eh.parent.verifyPin("5678")).resolves.toBe(true);
+    await expect(eh.parent.verifyPin(FIXTURE_PARENT_PIN)).resolves.toBe(false);
   });
 });

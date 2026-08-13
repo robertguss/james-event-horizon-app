@@ -10,31 +10,30 @@ import {
 
 import { convexAdapter } from "./adapters/convexAdapter";
 import { fixtureAdapter } from "./adapters/fixtureAdapter";
-import { FIXTURE_KID_ID, FIXTURE_PARENT_PIN } from "./auth/fixtureAuth";
-import type { EhData, EhKid, EhMode, MissionSummary } from "./types";
+import { FIXTURE_PARENT_PIN } from "./auth/fixtureAuth";
+import { getEhMode } from "./mode";
+import type {
+  CompleteOnboardingInput,
+  EhData,
+  EhKid,
+  EhMode,
+  MissionSummary,
+} from "./types";
 
-export type { EhData, EhKid, EhMode, MissionSummary } from "./types";
+export type {
+  CompleteOnboardingInput,
+  EhData,
+  EhKid,
+  EhMode,
+  MissionSummary,
+} from "./types";
 export { FIXTURE_PARENT_PIN } from "./auth/fixtureAuth";
-
-export function getEhMode(): EhMode {
-  const value =
-    (typeof import.meta !== "undefined"
-      ? (import.meta.env.VITE_EH_DATA ?? import.meta.env.VITE_EH_DATA_MODE)
-      : undefined) ??
-    (typeof process !== "undefined"
-      ? (process.env.VITE_EH_DATA ?? process.env.VITE_EH_DATA_MODE)
-      : undefined);
-
-  // Only explicit convex flips to live. unset / fixture / legacy mock → fixture.
-  if (value === "convex") {
-    return "convex";
-  }
-  return "fixture";
-}
-
-export function isFixtureMode(): boolean {
-  return getEhMode() === "fixture";
-}
+export {
+  getEhMode,
+  hostedStackEnabled,
+  isFixtureMode,
+  isProdBuild,
+} from "./mode";
 
 /** Sole factory for product data. UI imports only from this module. */
 export function getEhData(): EhData {
@@ -51,6 +50,7 @@ type EhContextValue = {
     displayName: string;
     gradeBand: "3-5";
   }) => Promise<EhKid>;
+  completeOnboarding: (input: CompleteOnboardingInput) => Promise<EhKid>;
   verifyPin: (pin: string) => Promise<boolean>;
   data: EhData;
 };
@@ -86,16 +86,25 @@ export function EhProvider({ children }: { children: ReactNode }) {
 
   const ensureKid = useCallback(
     async (input?: { displayName: string; gradeBand: "3-5" }) => {
-      const existing = await data.kids.get(FIXTURE_KID_ID);
-      if (existing) {
-        setKid(existing);
-        return existing;
+      const kids = await data.kids.list();
+      if (kids[0]) {
+        setKid(kids[0]);
+        return kids[0];
       }
       const created = await data.kids.create(
         input ?? { displayName: "James", gradeBand: "3-5" },
       );
       setKid(created);
       return created;
+    },
+    [data],
+  );
+
+  const completeOnboarding = useCallback(
+    async (input: CompleteOnboardingInput) => {
+      const kidResult = await data.setup.complete(input);
+      setKid(kidResult);
+      return kidResult;
     },
     [data],
   );
@@ -113,10 +122,20 @@ export function EhProvider({ children }: { children: ReactNode }) {
       missions,
       refresh,
       ensureKid,
+      completeOnboarding,
       verifyPin,
       data,
     }),
-    [data, ready, kid, missions, refresh, ensureKid, verifyPin],
+    [
+      data,
+      ready,
+      kid,
+      missions,
+      refresh,
+      ensureKid,
+      completeOnboarding,
+      verifyPin,
+    ],
   );
 
   return <EhContext.Provider value={value}>{children}</EhContext.Provider>;

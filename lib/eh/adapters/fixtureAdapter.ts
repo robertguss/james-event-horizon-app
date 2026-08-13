@@ -18,28 +18,45 @@ const globalStore = globalThis as typeof globalThis & {
   __ehFixtureStore?: Store;
 };
 
+function seedDefaultKid(store: Store): void {
+  store.kids.set(FIXTURE_KID_ID, {
+    id: FIXTURE_KID_ID,
+    displayName: FIXTURE_KID_NAME,
+    gradeBand: "3-5",
+    xp: 0,
+    level: 1,
+    streakDays: 0,
+    unlocks: [],
+  });
+}
+
 function getStore(): Store {
   if (!globalStore.__ehFixtureStore) {
     const kids = new Map<string, EhKid>();
-    kids.set(FIXTURE_KID_ID, {
-      id: FIXTURE_KID_ID,
-      displayName: FIXTURE_KID_NAME,
-      gradeBand: "3-5",
-      xp: 0,
-      level: 1,
-      streakDays: 0,
-      unlocks: [],
-    });
     globalStore.__ehFixtureStore = {
       pin: FIXTURE_PARENT_PIN,
       kids,
     };
+    seedDefaultKid(globalStore.__ehFixtureStore);
   }
   return globalStore.__ehFixtureStore;
 }
 
+export type ResetFixtureOptions = {
+  /** When false, start with no kids so onboarding/complete can run. Default true. */
+  seedDefaultKid?: boolean;
+};
+
 /** Reset in-memory fixture state (tests). */
-export function resetFixtureAdapter(): void {
+export function resetFixtureAdapter(options?: ResetFixtureOptions): void {
+  const seed = options?.seedDefaultKid !== false;
+  if (!seed) {
+    globalStore.__ehFixtureStore = {
+      pin: FIXTURE_PARENT_PIN,
+      kids: new Map(),
+    };
+    return;
+  }
   globalStore.__ehFixtureStore = undefined;
 }
 
@@ -80,7 +97,7 @@ export const fixtureAdapter: EhData = {
     },
     async create(input) {
       const store = getStore();
-      const existing = store.kids.get(FIXTURE_KID_ID);
+      const existing = [...store.kids.values()][0];
       if (existing) {
         return existing;
       }
@@ -145,6 +162,19 @@ export const fixtureAdapter: EhData = {
         streakDays: kid.streakDays,
         missionsCompleted: 0,
       };
+    },
+  },
+  setup: {
+    async complete(input) {
+      await fixtureAdapter.parent.setPin(input.pin);
+      const kids = await fixtureAdapter.kids.list();
+      if (kids[0]) {
+        return kids[0];
+      }
+      return fixtureAdapter.kids.create({
+        displayName: input.displayName,
+        gradeBand: input.gradeBand,
+      });
     },
   },
 };

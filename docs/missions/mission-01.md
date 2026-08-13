@@ -151,14 +151,14 @@ requiring the kid’s tap (per product brief).
    cameras.
 3. It’s one of these ideas: the calm sky · **a wall of dust rises** · grit on
    the cameras. Which one is the _start_?
-4. Telescope glow on `s3` (still require tap).
+4. Telescope glow on the wall-of-dust sentence (still require tap).
 
 ### Q2 hints
 
 1. Ask: what happens from start to finish?
 2. Cross out choices that never appear in the transmission.
 3. Keep the choice that includes **storm → wait → drive again**.
-4. Soft highlight whole passage; still require selecting B.
+4. Soft highlight the whole transmission; still require your Check.
 
 ### Q3 hints
 
@@ -166,7 +166,7 @@ requiring the kid’s tap (per product brief).
 2. In a dust storm, what tiny stuff would hit a camera?
 3. Courage is another meaning of “grit,” but does that fit **pushed against
    cameras**?
-4. Spotlight `s4`; still require choosing A.
+4. Spotlight the cameras sentence; still require your Check.
 
 ### Q4 hints
 
@@ -174,14 +174,14 @@ requiring the kid’s tap (per product brief).
 2. Connect “could not see” with what she did next.
 3. Evidence is probably the seeing problem or the parking sentence — not the
    “two hours later” sentence alone.
-4. Glow `s5` (and optionally `s6`); still require answer B + tap.
+4. Glow the seeing / parking sentences; still require choice + evidence tap.
 
 ### Q5 hints
 
 1. What lesson does the last sentence teach?
 2. Do storms here destroy everything forever, or pause a trip?
 3. Match the choice to “stop for a while” / “do not last forever.”
-4. Glow `s8`; still require A.
+4. Glow the last sentence; still require your Check.
 
 ---
 

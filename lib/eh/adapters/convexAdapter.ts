@@ -48,6 +48,8 @@ export const convexAdapter: EhData = {
       return morningOnly();
     },
     async requestHint() {
+      // Morning: call api.hints.getSocraticHint then persist hintEvents.
+      // Overnight: do not implement live Convex — use fixtureAdapter.
       return morningOnly();
     },
     async complete() {

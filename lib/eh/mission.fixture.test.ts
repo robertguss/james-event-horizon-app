@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { getFixtureDebugState, resetFixture } from "./adapters/fixtureAdapter";
 import { FIXTURE_KID_ID } from "./auth/fixtureAuth";
 import { getEhData } from "./data";
@@ -78,12 +78,20 @@ describe("fixture Mission 1 E2E", () => {
     expect(hint1.source).toBe("static");
     expect(hint1.text.toLowerCase()).not.toContain("answer is");
     expect(hint1.text).not.toMatch(/\bs3\b/);
+    expect(hint1.text).not.toContain(
+      "Then a wall of dust rose in the distance.",
+    );
 
     const hint2 = await eh.attempts.requestHint({
       attemptId: attempt.id,
       questionKey: "q1_locate_wall",
     });
     expect(hint2.step).toBe(2);
+    expect(hint2.source).toBe("static");
+    expect(hint2.text).not.toMatch(/\bs3\b/);
+    expect(hint2.text).not.toContain(
+      "Then a wall of dust rose in the distance.",
+    );
 
     const ok = await eh.attempts.submitAnswer({
       attemptId: attempt.id,
@@ -94,6 +102,67 @@ describe("fixture Mission 1 E2E", () => {
     // 2 hints used → 10 XP (plan §7)
     expect(ok.xpAwarded).toBe(10);
     expect(ok.attempt.questionResults[0]?.hintsUsed).toBe(2);
+
+    const { hintEvents } = getFixtureDebugState();
+    expect(hintEvents.every((e) => e.source === "static")).toBe(true);
+  });
+
+  it("requestHint returns source static without any key", async () => {
+    const eh = getEhData();
+    const attempt = await eh.attempts.start(FIXTURE_KID_ID, mission01.id);
+    const hint = await eh.attempts.requestHint({
+      attemptId: attempt.id,
+      questionKey: "q1_locate_wall",
+    });
+    expect(hint.source).toBe("static");
+    expect(hint.text.length).toBeGreaterThan(0);
+  });
+
+  it("Q1 steps 1–2 hint texts do not leak s3 or the exact correct sentence", () => {
+    const q1 = mission01.questions.find((q) => q.id === "q1_locate_wall");
+    expect(q1).toBeTruthy();
+    for (const text of q1!.hints.slice(0, 2)) {
+      expect(text).not.toMatch(/\bs3\b/);
+      expect(text).not.toContain("Then a wall of dust rose in the distance.");
+    }
+  });
+
+  it("Q2 hint ladder texts do not present B as the answer letter", () => {
+    const q2 = mission01.questions.find((q) => q.id === "q2_main_idea");
+    expect(q2).toBeTruthy();
+    for (const text of q2!.hints) {
+      // Avoid answer-letter leaks like "selecting B" / "answer B" / "choose B"
+      expect(text).not.toMatch(
+        /\b(?:selecting|answer|choose|choice|letter)\s+B\b/i,
+      );
+      expect(text).not.toMatch(/\bB\b(?=\s*[.!]|$)/);
+    }
+  });
+
+  it("mockGrokFetch path can return source grok and persist hintEvent.source", async () => {
+    const canned =
+      "Look near the beginning of the transmission — what in the sky changes?";
+    const mockGrokFetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        choices: [{ message: { content: canned } }],
+      }),
+    });
+    resetFixture({ mockGrokFetch: mockGrokFetch as unknown as typeof fetch });
+
+    const eh = getEhData();
+    const attempt = await eh.attempts.start(FIXTURE_KID_ID, mission01.id);
+    const hint = await eh.attempts.requestHint({
+      attemptId: attempt.id,
+      questionKey: "q1_locate_wall",
+    });
+    expect(hint.source).toBe("grok");
+    expect(hint.text).toBe(canned);
+    expect(mockGrokFetch).toHaveBeenCalledOnce();
+
+    const { hintEvents } = getFixtureDebugState();
+    expect(hintEvents[0]?.source).toBe("grok");
+    expect(hintEvents[0]?.text).toBe(canned);
   });
 
   it("H2: freeze score once correct — re-submit stays 10 XP not 20", async () => {

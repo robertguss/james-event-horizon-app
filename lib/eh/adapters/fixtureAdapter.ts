@@ -1,3 +1,4 @@
+import { resolveSocraticHint } from "../../../convex/lib/xaiHint";
 import {
   FIXTURE_KID_ID,
   FIXTURE_KID_NAME,
@@ -27,6 +28,10 @@ type Store = {
   ledger: XpLedgerEntry[];
   hintEvents: HintEvent[];
   missionsCompleted: Map<string, number>;
+  /** Test-only: mocked fetch for resolveSocraticHint (no network overnight). */
+  mockGrokFetch?: typeof fetch;
+  /** Test-only dummy key when mockGrokFetch is set. */
+  xaiApiKey?: string;
 };
 
 const globalStore = globalThis as typeof globalThis & {
@@ -74,6 +79,14 @@ export type ResetFixtureOptions = {
   xpTotal?: number;
   streakDays?: number;
   lastMissionDate?: string;
+  /**
+   * Test-only: when set, requestHint calls resolveSocraticHint with this fetch
+   * and a dummy apiKey so tests can assert source:"grok". Overnight default:
+   * omit → always static, no network.
+   */
+  mockGrokFetch?: typeof fetch;
+  /** Optional dummy key used with mockGrokFetch (defaults to "fixture-test-key"). */
+  xaiApiKey?: string;
 };
 
 /** Reset in-memory fixture state (tests / level-up demos / onboarding). */
@@ -85,6 +98,10 @@ export function resetFixture(options: ResetFixtureOptions = {}): void {
   }
   globalStore.__ehFixtureStore = undefined;
   const store = getStore();
+  if (options.mockGrokFetch) {
+    store.mockGrokFetch = options.mockGrokFetch;
+    store.xaiApiKey = options.xaiApiKey ?? "fixture-test-key";
+  }
   if (
     options.xpTotal !== undefined ||
     options.streakDays !== undefined ||
@@ -265,6 +282,7 @@ export const fixtureAdapter: EhData = {
       const mission = missionById(attempt.missionId);
       if (!mission) throw new Error("Mission not found");
 
+      // Attempt step / hintsByQuestionKey owned by Slice 2 reduceHint (H1+H2).
       const reduced = reduceHint({
         attempt,
         mission,
@@ -272,21 +290,50 @@ export const fixtureAdapter: EhData = {
       });
       store.attempts.set(reduced.attempt.id, reduced.attempt);
 
+      let text = reduced.text;
+      let source: "static" | "grok" = "static";
+
+      // Overnight default: static. Test-only mockGrokFetch may return grok.
+      if (store.mockGrokFetch) {
+        const question = mission.questions.find(
+          (q) => q.id === input.questionKey,
+        );
+        if (!question) throw new Error("Question not found");
+        const alreadyShown = question.hints.slice(0, reduced.step - 1);
+        const passageExcerpt = mission.sentences.map((s) => s.text).join(" ");
+        const choiceTexts = (question.choices ?? []).map((c) => c.text);
+        const resolved = await resolveSocraticHint({
+          request: {
+            step: reduced.step,
+            questionPrompt: question.prompt,
+            questionType: question.type,
+            passageExcerpt,
+            choiceTexts,
+            alreadyShownHintTexts: alreadyShown,
+          },
+          staticFallbackText: reduced.text,
+          apiKey: store.xaiApiKey ?? "fixture-test-key",
+          fetchImpl: store.mockGrokFetch,
+        });
+        text = resolved.text;
+        source = resolved.source;
+      }
+
       const event: HintEvent = {
         id: nextId("hint"),
         attemptId: attempt.id,
         questionKey: input.questionKey,
         step: reduced.step,
-        source: "static",
-        text: reduced.text,
+        source,
+        text,
         createdAt: Date.now(),
       };
       store.hintEvents.push(event);
 
       return {
         step: reduced.step,
-        text: reduced.text,
-        source: "static" as const,
+        text,
+        source,
         glowEvidenceIds: reduced.glowEvidenceIds,
         attempt: reduced.attempt,
       };

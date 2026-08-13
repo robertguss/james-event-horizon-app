@@ -74,7 +74,7 @@ export const mission01: MissionDetail = {
         "Ask: what happens from start to finish?",
         "Cross out choices that never appear in the transmission.",
         "Keep the choice that includes **storm → wait → drive again**.",
-        "Soft highlight whole passage; still require selecting B.",
+        "Soft highlight the whole transmission; still require your Check.",
       ],
     },
     {
@@ -96,7 +96,7 @@ export const mission01: MissionDetail = {
         "Reread the camera sentence. What is the wind pushing?",
         "In a dust storm, what tiny stuff would hit a camera?",
         "Courage is another meaning of “grit,” but does that fit **pushed against cameras**?",
-        "Spotlight the cameras sentence; still require choosing A.",
+        "Spotlight the cameras sentence; still require your Check.",
       ],
     },
     {
@@ -121,7 +121,7 @@ export const mission01: MissionDetail = {
         "What problem did Maya have right before she parked?",
         "Connect “could not see” with what she did next.",
         "Evidence is probably the seeing problem or the parking sentence — not the “two hours later” sentence alone.",
-        "Glow the seeing / parking sentences; still require answer B + tap.",
+        "Glow the seeing / parking sentences; still require choice + evidence tap.",
       ],
     },
     {
@@ -146,7 +146,7 @@ export const mission01: MissionDetail = {
         "What lesson does the last sentence teach?",
         "Do storms here destroy everything forever, or pause a trip?",
         "Match the choice to “stop for a while” / “do not last forever.”",
-        "Glow the last sentence; still require A.",
+        "Glow the last sentence; still require your Check.",
       ],
     },
   ],

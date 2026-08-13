@@ -3,17 +3,14 @@ import { ConvexProviderWithClerk } from "convex/react-clerk";
 import { ConvexReactClient } from "convex/react";
 import { type ReactNode } from "react";
 
-import { isMockDataMode } from "@/lib/event-horizon/data-mode";
+import { isFixtureMode } from "@/lib/eh/data";
 
-const convexUrl = import.meta.env.VITE_CONVEX_URL;
+const convexUrl = import.meta.env.VITE_CONVEX_URL as string | undefined;
 
 let convex: ConvexReactClient | null = null;
 
 function getConvexClient(): ConvexReactClient | null {
-  if (isMockDataMode()) {
-    return null;
-  }
-  if (!convexUrl) {
+  if (isFixtureMode() || !convexUrl) {
     return null;
   }
   if (!convex) {

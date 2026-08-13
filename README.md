@@ -18,10 +18,19 @@ PWA on
 
 ## Overnight vs Mac morning
 
-| Mode                          | Flag                                                      | Auth / data                                                                 |
-| ----------------------------- | --------------------------------------------------------- | --------------------------------------------------------------------------- |
-| Overnight / CI / cloud agents | `VITE_EH_DATA_MODE=mock` (default)                        | Fixture repository; no live Clerk or Convex cloud required for `aubr check` |
-| Mac morning (live)            | `VITE_EH_DATA_MODE=convex` (alias: `VITE_EH_DATA=convex`) | Clerk + Convex via **repo scripts** below                                   |
+| Mode                          | Flag                                      | Auth / data                                                               |
+| ----------------------------- | ----------------------------------------- | ------------------------------------------------------------------------- |
+| Overnight / CI / cloud agents | `VITE_EH_DATA=fixture` (default if unset) | `lib/eh/*` fixture adapter; no Clerk keys or Convex URL needed for checks |
+| Mac morning (live)            | `VITE_EH_DATA=convex`                     | Clerk + Convex via **repo scripts** below                                 |
+
+Product UI imports data only from [`lib/eh/data.ts`](lib/eh/data.ts). Fixture
+kid is **James**, parent PIN **`1234`** (fixture only), home is **`/hub`**.
+
+```bash
+# Overnight green (no Clerk / no Convex URL)
+VITE_EH_DATA=fixture aubr check
+VITE_EH_DATA=fixture aubr test:once
+```
 
 ## Setup (repo scripts — do not ad-hoc dashboard-poke)
 
@@ -30,13 +39,13 @@ PWA on
 ./setup.sh --yes --no-dev
 # or: SETUP_NONINTERACTIVE=1 ./setup.sh --no-dev
 
-# Day-to-day
+# Day-to-day (Mac morning live)
 aube install
 aubx convex dev --until-success   # writes VITE_CONVEX_URL
 aubx clerk@latest auth login      # once per machine (browser OAuth)
 ./scripts/setup-clerk-auth.sh     # or: aubr setup:clerk
 aubx convex env set PIN_PEPPER "$(openssl rand -hex 32)"
-# .env.local: VITE_EH_DATA_MODE=convex
+# .env.local: VITE_EH_DATA=convex
 aubr dev
 ```
 
@@ -48,7 +57,7 @@ Env template: [`.env.example`](.env.example).
 
 ## Status
 
-Slice 1 in progress: PWA + hub + onboarding/PIN (mock-first overnight). Clerk
-OAuth must finish on the shared Mac (cloud VMs cannot complete browser login).
+Slice 1: PWA + hub + onboarding/PIN (fixture-first overnight). Clerk OAuth
+finishes on the shared Mac (cloud VMs cannot complete browser login).
 
 Private family app / personal project.

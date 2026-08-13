@@ -2,16 +2,16 @@ import { auth } from "@clerk/tanstack-react-start/server";
 import { redirect } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 
-import { getDataMode } from "../../lib/event-horizon/data-mode";
+import { isFixtureMode } from "@/lib/eh/data";
 import { safeAppRedirect } from "./redirect";
 
-const dataMode = getDataMode();
-const demoUserId = import.meta.env.VITE_EH_DEMO_CLERK_USER_ID ?? "demo_parent";
+const fixtureUserId =
+  import.meta.env.VITE_EH_DEMO_CLERK_USER_ID ?? "fixture_parent";
 
 export const getAuthUserId = createServerFn({ method: "GET" }).handler(
   async () => {
-    if (dataMode !== "convex") {
-      return { userId: demoUserId as string | null };
+    if (isFixtureMode()) {
+      return { userId: fixtureUserId as string | null };
     }
     try {
       const { userId } = await auth();

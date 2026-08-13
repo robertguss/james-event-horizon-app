@@ -7,8 +7,7 @@ import {
 import { lazy, Suspense, useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
-import { isMockDataMode } from "@/lib/event-horizon/data-mode";
-import { useEventHorizon } from "@/lib/event-horizon/EventHorizonProvider";
+import { isFixtureMode, useEh } from "@/lib/eh/data";
 import { clearParentSession, isParentUnlocked } from "@/lib/parent-session";
 
 const ParentSignOutButton = lazy(async () => {
@@ -21,16 +20,16 @@ export const Route = createFileRoute("/_authenticated/parent/")({
 });
 
 function ParentPage() {
-  const { setup, identity } = useEventHorizon();
+  const { ready, kid } = useEh();
   const navigate = useNavigate();
   const [unlocked, setUnlocked] = useState<boolean | null>(null);
-  const mock = isMockDataMode();
+  const fixture = isFixtureMode();
 
   useEffect(() => {
     setUnlocked(isParentUnlocked());
   }, []);
 
-  if (setup === undefined || unlocked === null) {
+  if (!ready || unlocked === null) {
     return (
       <div className="grid min-h-svh place-items-center bg-eh-neutral text-eh-on-surface">
         <p className="font-extrabold">Loading…</p>
@@ -38,11 +37,7 @@ function ParentPage() {
     );
   }
 
-  if (!identity.clerkUserId) {
-    return <Navigate to="/login/$" params={{ _splat: "" }} />;
-  }
-
-  if (!setup || !setup.onboarded) {
+  if (!kid) {
     return <Navigate to="/onboarding" />;
   }
 
@@ -65,12 +60,9 @@ function ParentPage() {
           <p className="text-sm font-bold text-eh-on-surface-muted uppercase">
             Explorer
           </p>
-          <p className="mt-2 text-2xl font-extrabold">
-            {setup.kid.displayName}
-          </p>
+          <p className="mt-2 text-2xl font-extrabold">{kid.displayName}</p>
           <p className="mt-1 text-eh-on-surface-muted">
-            Grade {setup.kid.gradeBand} · Level {setup.kid.level} ·{" "}
-            {setup.kid.xpTotal} XP
+            Grade {kid.gradeBand} · Level {kid.level} · {kid.xp} XP
           </p>
         </section>
 
@@ -80,7 +72,7 @@ function ParentPage() {
               Back to kid hub
             </Button>
           </Link>
-          {mock ? (
+          {fixture ? (
             <Button
               variant="outline"
               className="h-14 w-full rounded-full font-extrabold"
@@ -89,7 +81,7 @@ function ParentPage() {
                 void navigate({ to: "/" });
               }}
             >
-              Sign out (mock)
+              Sign out (fixture)
             </Button>
           ) : (
             <Suspense fallback={null}>

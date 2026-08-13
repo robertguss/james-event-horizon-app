@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useEventHorizon } from "@/lib/event-horizon/EventHorizonProvider";
+import { FIXTURE_PARENT_PIN, isFixtureMode, useEh } from "@/lib/eh/data";
 import { isParentUnlocked, unlockParentSession } from "@/lib/parent-session";
 
 export const Route = createFileRoute("/_authenticated/parent/gate")({
@@ -12,7 +12,7 @@ export const Route = createFileRoute("/_authenticated/parent/gate")({
 });
 
 function ParentGatePage() {
-  const { setup, identity, verifyPin } = useEventHorizon();
+  const { ready, kid, verifyPin } = useEh();
   const navigate = useNavigate();
   const [pin, setPin] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -23,7 +23,7 @@ function ParentGatePage() {
     setAlreadyUnlocked(isParentUnlocked());
   }, []);
 
-  if (setup === undefined) {
+  if (!ready) {
     return (
       <div className="grid min-h-svh place-items-center bg-eh-neutral text-eh-on-surface">
         <p className="font-extrabold">Loading…</p>
@@ -31,11 +31,7 @@ function ParentGatePage() {
     );
   }
 
-  if (!identity.clerkUserId) {
-    return <Navigate to="/login/$" params={{ _splat: "" }} />;
-  }
-
-  if (!setup || !setup.onboarded) {
+  if (!kid) {
     return <Navigate to="/onboarding" />;
   }
 
@@ -48,8 +44,8 @@ function ParentGatePage() {
     setError(null);
     setPending(true);
     try {
-      const result = await verifyPin(pin);
-      if (!result.ok) {
+      const ok = await verifyPin(pin);
+      if (!ok) {
         setError("Wrong PIN. Try again.");
         return;
       }
@@ -74,6 +70,11 @@ function ParentGatePage() {
           <p className="text-eh-on-surface-muted">
             Enter your PIN to open the parent area.
           </p>
+          {isFixtureMode() ? (
+            <p className="text-xs text-eh-on-surface-muted">
+              Fixture PIN is {FIXTURE_PARENT_PIN} (dev only).
+            </p>
+          ) : null}
         </div>
         <form
           onSubmit={(event) => void onSubmit(event)}

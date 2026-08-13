@@ -12,9 +12,7 @@ import {
 } from "@tanstack/react-router";
 
 import { Button } from "@/components/ui/button";
-import { isMockDataMode } from "@/lib/event-horizon/data-mode";
-import { EventHorizonProvider } from "@/lib/event-horizon/EventHorizonProvider";
-import { MockAuthBridge } from "@/lib/event-horizon/MockAuthBridge";
+import { EhProvider, isFixtureMode } from "@/lib/eh/data";
 import { registerServiceWorker } from "@/lib/pwa";
 import { ConvexClientProvider } from "../ConvexClientProvider";
 import appCss from "../globals.css?url";
@@ -49,11 +47,9 @@ export const Route = createRootRoute({
 function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <ConvexClientProvider>
-      <EventHorizonProvider>
-        <MockAuthBridge>
-          <RootDocument>{children}</RootDocument>
-        </MockAuthBridge>
-      </EventHorizonProvider>
+      <EhProvider>
+        <RootDocument>{children}</RootDocument>
+      </EhProvider>
     </ConvexClientProvider>
   );
 }
@@ -63,10 +59,11 @@ function RootComponent() {
     registerServiceWorker();
   }, []);
 
+  // Binding: do not mount hosted Clerk in fixture mode.
+  const fixture = isFixtureMode();
   const publishableKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
-  const useClerk = !isMockDataMode() && Boolean(publishableKey);
 
-  if (!useClerk) {
+  if (fixture || !publishableKey || publishableKey.includes("placeholder")) {
     return (
       <AppShell>
         <Outlet />
@@ -130,9 +127,9 @@ function NotFound() {
             That path is off the map. Head back to the hub or home.
           </p>
         </div>
-        <Link to="/">
+        <Link to="/hub">
           <Button size="lg" className="rounded-full font-extrabold">
-            Back home
+            Back to hub
           </Button>
         </Link>
       </main>

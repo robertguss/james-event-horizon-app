@@ -1,16 +1,16 @@
 import { createFileRoute, Navigate } from "@tanstack/react-router";
 
 import { HubView } from "@/components/event-horizon/hub-view";
-import { useEventHorizon } from "@/lib/event-horizon/EventHorizonProvider";
+import { useEh } from "@/lib/eh/data";
 
 export const Route = createFileRoute("/_authenticated/hub")({
   component: HubPage,
 });
 
 function HubPage() {
-  const { setup, identity } = useEventHorizon();
+  const { ready, kid } = useEh();
 
-  if (setup === undefined) {
+  if (!ready) {
     return (
       <div className="grid min-h-svh place-items-center bg-eh-neutral text-eh-on-surface">
         <p className="font-extrabold">Loading hub…</p>
@@ -18,15 +18,9 @@ function HubPage() {
     );
   }
 
-  if (!identity.clerkUserId || setup === null) {
-    return <Navigate to="/login/$" params={{ _splat: "" }} />;
-  }
-
-  if (!setup.onboarded) {
+  if (!kid) {
     return <Navigate to="/onboarding" />;
   }
 
-  return (
-    <HubView displayName={setup.kid.displayName} xpTotal={setup.kid.xpTotal} />
-  );
+  return <HubView displayName={kid.displayName} xpTotal={kid.xp} />;
 }

@@ -1,7 +1,7 @@
-import type { MissionFixture } from "../types";
+import type { MissionDetail } from "../types";
 
 /** Seeded from docs/missions/mission-01.md — content only; no runtime in Slice 1. */
-export const mission01: MissionFixture = {
+export const mission01: MissionDetail = {
   id: "mission_01_mars_dust",
   title: "Dust Storm on Mars",
   planet: "Rusty Ridge (Mars sector)",
@@ -83,5 +83,3 @@ export const mission01: MissionFixture = {
     },
   ],
 };
-
-export const missionFixtures: MissionFixture[] = [mission01];

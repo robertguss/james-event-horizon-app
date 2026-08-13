@@ -9,6 +9,8 @@ export type EhKid = {
   streakDays: number;
   lastMissionDate?: string;
   unlocks: string[];
+  equippedShipPaintId?: string;
+  equippedTelescopeId?: string;
 };
 
 export type MissionSummary = {
@@ -189,6 +191,11 @@ export type CompleteOnboardingInput = {
   pin: string;
 };
 
+export type EquipCosmeticInput = {
+  kidId: string;
+  cosmeticId: string;
+};
+
 export type EhData = {
   mode: EhMode;
   auth: {
@@ -211,6 +218,9 @@ export type EhData = {
     submitAnswer(input: SubmitAnswerInput): Promise<SubmitAnswerResult>;
     requestHint(input: HintInput): Promise<HintResult>;
     complete(input: { attemptId: string }): Promise<CompleteResult>;
+  };
+  cosmetics: {
+    equipCosmetic(input: EquipCosmeticInput): Promise<EhKid>;
   };
   parent: {
     verifyPin(pin: string): Promise<boolean>;

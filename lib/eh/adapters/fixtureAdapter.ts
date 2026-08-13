@@ -1,4 +1,12 @@
 import {
+  DEFAULT_SHIP_PAINT_ID,
+  equipSlotForKind,
+  getCosmetic,
+  isCosmeticUnlocked,
+  mergeUnlocks,
+  unlocksForLevel,
+} from "../../cosmetics";
+import {
   FIXTURE_KID_ID,
   FIXTURE_KID_NAME,
   FIXTURE_PARENT_ID,
@@ -35,16 +43,25 @@ const globalStore = globalThis as typeof globalThis & {
 
 function createDefaultKid(overrides?: Partial<EhKid>): EhKid {
   const xp = overrides?.xp ?? 0;
+  const level = overrides?.level ?? levelForXp(xp);
+  const unlocks = overrides?.unlocks ?? unlocksForLevel(level);
   return {
     id: FIXTURE_KID_ID,
     displayName: overrides?.displayName ?? FIXTURE_KID_NAME,
     gradeBand: "3-5",
     xp,
-    level: overrides?.level ?? levelForXp(xp),
+    level,
     streakDays: overrides?.streakDays ?? 0,
     lastMissionDate: overrides?.lastMissionDate,
-    unlocks: overrides?.unlocks ?? [],
+    unlocks,
+    equippedShipPaintId:
+      overrides?.equippedShipPaintId ?? DEFAULT_SHIP_PAINT_ID,
+    equippedTelescopeId: overrides?.equippedTelescopeId,
   };
+}
+
+function syncKidUnlocks(kid: EhKid): EhKid {
+  return { ...kid, unlocks: mergeUnlocks(kid) };
 }
 
 function emptyStore(): Store {
@@ -157,16 +174,17 @@ export const fixtureAdapter: EhData = {
   },
   kids: {
     async list() {
-      return [...getStore().kids.values()];
+      return [...getStore().kids.values()].map(syncKidUnlocks);
     },
     async get(kidId) {
-      return getStore().kids.get(kidId) ?? null;
+      const kid = getStore().kids.get(kidId);
+      return kid ? syncKidUnlocks(kid) : null;
     },
     async create(input) {
       const store = getStore();
       const existing = store.kids.get(FIXTURE_KID_ID);
       if (existing) {
-        return existing;
+        return syncKidUnlocks(existing);
       }
       const kid = createDefaultKid({
         displayName: input.displayName.trim() || FIXTURE_KID_NAME,
@@ -308,25 +326,48 @@ export const fixtureAdapter: EhData = {
         today: localDateString(),
       });
 
+      const kidWithUnlocks = syncKidUnlocks(reduced.kid);
       if (reduced.kind === "fresh") {
         for (const delta of reduced.ledgerDeltas) {
           appendLedger(delta);
         }
-        store.kids.set(reduced.kid.id, reduced.kid);
+        store.kids.set(kidWithUnlocks.id, kidWithUnlocks);
         store.attempts.set(reduced.attempt.id, reduced.attempt);
         const completedCount =
-          (store.missionsCompleted.get(reduced.kid.id) ?? 0) + 1;
-        store.missionsCompleted.set(reduced.kid.id, completedCount);
+          (store.missionsCompleted.get(kidWithUnlocks.id) ?? 0) + 1;
+        store.missionsCompleted.set(kidWithUnlocks.id, completedCount);
       }
 
       return {
         attempt: reduced.attempt,
-        kid: reduced.kid,
+        kid: kidWithUnlocks,
         xpBreakdown: reduced.xpBreakdown,
         leveledUp: reduced.leveledUp,
         previousLevel: reduced.previousLevel,
         ledger: store.ledger.filter((e) => e.attemptId === attempt.id),
       };
+    },
+  },
+  cosmetics: {
+    async equipCosmetic(input) {
+      const store = getStore();
+      const kid = store.kids.get(input.kidId);
+      if (!kid) throw new Error("Kid not found");
+
+      const def = getCosmetic(input.cosmeticId);
+      if (!def) throw new Error("Unknown cosmetic");
+
+      const unlocked = syncKidUnlocks(kid);
+      if (!isCosmeticUnlocked(def.id, unlocked)) {
+        throw new Error("Cosmetic locked");
+      }
+
+      const slot = equipSlotForKind(def.kind);
+      if (!slot) throw new Error("Cosmetic cannot be equipped");
+
+      const next: EhKid = { ...unlocked, [slot]: def.id };
+      store.kids.set(next.id, next);
+      return next;
     },
   },
   parent: {

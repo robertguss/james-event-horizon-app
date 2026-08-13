@@ -76,9 +76,11 @@ export function LevelUpView({
           to { opacity: 1; transform: translateY(0) rotate(0deg); }
         }
         @media (prefers-reduced-motion: reduce) {
+          .eh-level-up-banner,
           .motion-safe\\:animate-\\[popIn_500ms_ease-out\\],
           .motion-safe\\:animate-\\[rise_900ms_ease-out\\] {
             animation: none !important;
+            transform: none !important;
           }
         }
       `}</style>

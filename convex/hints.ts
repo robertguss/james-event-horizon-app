@@ -12,10 +12,7 @@
 
 import { v } from "convex/values";
 import { action } from "./_generated/server";
-import {
-  DEFAULT_XAI_MODEL,
-  resolveSocraticHint,
-} from "./lib/xaiHint";
+import { DEFAULT_XAI_MODEL, resolveSocraticHint } from "./lib/xaiHint";
 
 export const getSocraticHint = action({
   args: {
@@ -32,13 +29,13 @@ export const getSocraticHint = action({
     source: v.union(v.literal("grok"), v.literal("static")),
   }),
   handler: async (_ctx, args) => {
-    // Default model is grok-3-mini via XAI_MODEL env or DEFAULT_XAI_MODEL.
     const apiKey = process.env.XAI_API_KEY;
     const model = process.env.XAI_MODEL ?? DEFAULT_XAI_MODEL;
+    const step = Math.min(4, Math.max(1, Math.floor(args.step)));
 
     return await resolveSocraticHint({
       request: {
-        step: args.step,
+        step,
         questionPrompt: args.questionPrompt,
         questionType: args.questionType,
         passageExcerpt: args.passageExcerpt,

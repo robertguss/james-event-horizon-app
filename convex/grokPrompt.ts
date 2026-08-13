@@ -44,15 +44,16 @@ Hard rules:
 - Step-aware: for hint steps 1–2, do not mention answer letters or sentence ids at all. Steps 3–4 may gently narrow attention (e.g. “look near the start”) but still must never reveal the answer.`;
 
 export function buildGrokMessages(req: GrokHintRequest): GrokMessage[] {
+  // Bullets only — no A/B/C or 1/2/3 labels that map to correctChoiceId.
   const choicesBlock =
     req.choiceTexts.length === 0
       ? "(no multiple-choice options for this question)"
-      : req.choiceTexts.map((text, i) => `${i + 1}. ${text}`).join("\n");
+      : req.choiceTexts.map((text) => `- ${text}`).join("\n");
 
   const alreadyShown =
     req.alreadyShownHintTexts.length === 0
       ? "(none yet)"
-      : req.alreadyShownHintTexts.map((t, i) => `${i + 1}. ${t}`).join("\n");
+      : req.alreadyShownHintTexts.map((t) => `- ${t}`).join("\n");
 
   const userContent = [
     `Hint step: ${req.step} (of 4)`,

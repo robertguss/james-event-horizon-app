@@ -127,15 +127,11 @@ describe("fixture Mission 1 E2E", () => {
     }
   });
 
-  it("Q2 hint ladder texts do not present B as the answer letter", () => {
+  it("Q2 hint ladder texts do not contain answer letter B", () => {
     const q2 = mission01.questions.find((q) => q.id === "q2_main_idea");
     expect(q2).toBeTruthy();
     for (const text of q2!.hints) {
-      // Avoid answer-letter leaks like "selecting B" / "answer B" / "choose B"
-      expect(text).not.toMatch(
-        /\b(?:selecting|answer|choose|choice|letter)\s+B\b/i,
-      );
-      expect(text).not.toMatch(/\bB\b(?=\s*[.!]|$)/);
+      expect(text).not.toMatch(/\bB\b/);
     }
   });
 

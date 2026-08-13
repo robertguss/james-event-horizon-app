@@ -2,13 +2,21 @@ import { defineConfig } from "vite";
 import viteReact from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
+import { nitro } from "nitro/vite";
 
 export default defineConfig({
   server: {
     port: 3000,
   },
   envPrefix: ["VITE_"],
-  plugins: [tailwindcss(), tanstackStart({ srcDirectory: "app" }), viteReact()],
+  plugins: [
+    tailwindcss(),
+    tanstackStart({ srcDirectory: "app" }),
+    // Node entry so CLERK_SECRET_KEY is read at runtime (not inlined/stripped
+    // from Nitro's web/edge snapshot). Secret stays Vercel-only, never VITE_.
+    nitro({ preset: "vercel", vercel: { entryFormat: "node" } }),
+    viteReact(),
+  ],
   resolve: {
     tsconfigPaths: true,
     alias: [

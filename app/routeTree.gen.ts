@@ -13,8 +13,10 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthenticatedAcademyRouteImport } from './routes/_authenticated/academy'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedDebriefRouteImport } from './routes/_authenticated/debrief'
 import { Route as AuthenticatedHangarRouteImport } from './routes/_authenticated/hangar'
 import { Route as AuthenticatedHubRouteImport } from './routes/_authenticated/hub'
+import { Route as AuthenticatedLevelUpRouteImport } from './routes/_authenticated/level-up'
 import { Route as AuthenticatedLibraryRouteImport } from './routes/_authenticated/library'
 import { Route as AuthenticatedMissionsRouteImport } from './routes/_authenticated/missions'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
@@ -22,6 +24,7 @@ import { Route as ApiHealthRouteImport } from './routes/api/health'
 import { Route as DesignHubRouteImport } from './routes/design.hub'
 import { Route as LoginSplatRouteImport } from './routes/login.$'
 import { Route as SignupSplatRouteImport } from './routes/signup.$'
+import { Route as AuthenticatedMissionIdRouteImport } from './routes/_authenticated/mission.$id'
 import { Route as AuthenticatedParentIndexRouteImport } from './routes/_authenticated/parent/index'
 import { Route as AuthenticatedParentGateRouteImport } from './routes/_authenticated/parent/gate'
 
@@ -44,6 +47,11 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedDebriefRoute = AuthenticatedDebriefRouteImport.update({
+  id: '/debrief',
+  path: '/debrief',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedHangarRoute = AuthenticatedHangarRouteImport.update({
   id: '/hangar',
   path: '/hangar',
@@ -52,6 +60,11 @@ const AuthenticatedHangarRoute = AuthenticatedHangarRouteImport.update({
 const AuthenticatedHubRoute = AuthenticatedHubRouteImport.update({
   id: '/hub',
   path: '/hub',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedLevelUpRoute = AuthenticatedLevelUpRouteImport.update({
+  id: '/level-up',
+  path: '/level-up',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedLibraryRoute = AuthenticatedLibraryRouteImport.update({
@@ -89,6 +102,11 @@ const SignupSplatRoute = SignupSplatRouteImport.update({
   path: '/signup/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedMissionIdRoute = AuthenticatedMissionIdRouteImport.update({
+  id: '/mission/$id',
+  path: '/mission/$id',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedParentIndexRoute =
   AuthenticatedParentIndexRouteImport.update({
     id: '/parent/',
@@ -105,8 +123,10 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/academy': typeof AuthenticatedAcademyRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/debrief': typeof AuthenticatedDebriefRoute
   '/hangar': typeof AuthenticatedHangarRoute
   '/hub': typeof AuthenticatedHubRoute
+  '/level-up': typeof AuthenticatedLevelUpRoute
   '/library': typeof AuthenticatedLibraryRoute
   '/missions': typeof AuthenticatedMissionsRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
@@ -114,6 +134,7 @@ export interface FileRoutesByFullPath {
   '/design/hub': typeof DesignHubRoute
   '/login/$': typeof LoginSplatRoute
   '/signup/$': typeof SignupSplatRoute
+  '/mission/$id': typeof AuthenticatedMissionIdRoute
   '/parent/gate': typeof AuthenticatedParentGateRoute
   '/parent/': typeof AuthenticatedParentIndexRoute
 }
@@ -121,8 +142,10 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/academy': typeof AuthenticatedAcademyRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/debrief': typeof AuthenticatedDebriefRoute
   '/hangar': typeof AuthenticatedHangarRoute
   '/hub': typeof AuthenticatedHubRoute
+  '/level-up': typeof AuthenticatedLevelUpRoute
   '/library': typeof AuthenticatedLibraryRoute
   '/missions': typeof AuthenticatedMissionsRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
@@ -130,6 +153,7 @@ export interface FileRoutesByTo {
   '/design/hub': typeof DesignHubRoute
   '/login/$': typeof LoginSplatRoute
   '/signup/$': typeof SignupSplatRoute
+  '/mission/$id': typeof AuthenticatedMissionIdRoute
   '/parent/gate': typeof AuthenticatedParentGateRoute
   '/parent': typeof AuthenticatedParentIndexRoute
 }
@@ -139,8 +163,10 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/_authenticated/academy': typeof AuthenticatedAcademyRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/debrief': typeof AuthenticatedDebriefRoute
   '/_authenticated/hangar': typeof AuthenticatedHangarRoute
   '/_authenticated/hub': typeof AuthenticatedHubRoute
+  '/_authenticated/level-up': typeof AuthenticatedLevelUpRoute
   '/_authenticated/library': typeof AuthenticatedLibraryRoute
   '/_authenticated/missions': typeof AuthenticatedMissionsRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
@@ -148,6 +174,7 @@ export interface FileRoutesById {
   '/design/hub': typeof DesignHubRoute
   '/login/$': typeof LoginSplatRoute
   '/signup/$': typeof SignupSplatRoute
+  '/_authenticated/mission/$id': typeof AuthenticatedMissionIdRoute
   '/_authenticated/parent/gate': typeof AuthenticatedParentGateRoute
   '/_authenticated/parent/': typeof AuthenticatedParentIndexRoute
 }
@@ -157,8 +184,10 @@ export interface FileRouteTypes {
     | '/'
     | '/academy'
     | '/dashboard'
+    | '/debrief'
     | '/hangar'
     | '/hub'
+    | '/level-up'
     | '/library'
     | '/missions'
     | '/onboarding'
@@ -166,6 +195,7 @@ export interface FileRouteTypes {
     | '/design/hub'
     | '/login/$'
     | '/signup/$'
+    | '/mission/$id'
     | '/parent/gate'
     | '/parent/'
   fileRoutesByTo: FileRoutesByTo
@@ -173,8 +203,10 @@ export interface FileRouteTypes {
     | '/'
     | '/academy'
     | '/dashboard'
+    | '/debrief'
     | '/hangar'
     | '/hub'
+    | '/level-up'
     | '/library'
     | '/missions'
     | '/onboarding'
@@ -182,6 +214,7 @@ export interface FileRouteTypes {
     | '/design/hub'
     | '/login/$'
     | '/signup/$'
+    | '/mission/$id'
     | '/parent/gate'
     | '/parent'
   id:
@@ -190,8 +223,10 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/_authenticated/academy'
     | '/_authenticated/dashboard'
+    | '/_authenticated/debrief'
     | '/_authenticated/hangar'
     | '/_authenticated/hub'
+    | '/_authenticated/level-up'
     | '/_authenticated/library'
     | '/_authenticated/missions'
     | '/_authenticated/onboarding'
@@ -199,6 +234,7 @@ export interface FileRouteTypes {
     | '/design/hub'
     | '/login/$'
     | '/signup/$'
+    | '/_authenticated/mission/$id'
     | '/_authenticated/parent/gate'
     | '/_authenticated/parent/'
   fileRoutesById: FileRoutesById
@@ -242,6 +278,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/debrief': {
+      id: '/_authenticated/debrief'
+      path: '/debrief'
+      fullPath: '/debrief'
+      preLoaderRoute: typeof AuthenticatedDebriefRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/hangar': {
       id: '/_authenticated/hangar'
       path: '/hangar'
@@ -254,6 +297,13 @@ declare module '@tanstack/react-router' {
       path: '/hub'
       fullPath: '/hub'
       preLoaderRoute: typeof AuthenticatedHubRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/level-up': {
+      id: '/_authenticated/level-up'
+      path: '/level-up'
+      fullPath: '/level-up'
+      preLoaderRoute: typeof AuthenticatedLevelUpRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/library': {
@@ -305,6 +355,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SignupSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/mission/$id': {
+      id: '/_authenticated/mission/$id'
+      path: '/mission/$id'
+      fullPath: '/mission/$id'
+      preLoaderRoute: typeof AuthenticatedMissionIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/parent/': {
       id: '/_authenticated/parent/'
       path: '/parent'
@@ -325,11 +382,14 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAcademyRoute: typeof AuthenticatedAcademyRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedDebriefRoute: typeof AuthenticatedDebriefRoute
   AuthenticatedHangarRoute: typeof AuthenticatedHangarRoute
   AuthenticatedHubRoute: typeof AuthenticatedHubRoute
+  AuthenticatedLevelUpRoute: typeof AuthenticatedLevelUpRoute
   AuthenticatedLibraryRoute: typeof AuthenticatedLibraryRoute
   AuthenticatedMissionsRoute: typeof AuthenticatedMissionsRoute
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
+  AuthenticatedMissionIdRoute: typeof AuthenticatedMissionIdRoute
   AuthenticatedParentGateRoute: typeof AuthenticatedParentGateRoute
   AuthenticatedParentIndexRoute: typeof AuthenticatedParentIndexRoute
 }
@@ -337,11 +397,14 @@ interface AuthenticatedRouteRouteChildren {
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAcademyRoute: AuthenticatedAcademyRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedDebriefRoute: AuthenticatedDebriefRoute,
   AuthenticatedHangarRoute: AuthenticatedHangarRoute,
   AuthenticatedHubRoute: AuthenticatedHubRoute,
+  AuthenticatedLevelUpRoute: AuthenticatedLevelUpRoute,
   AuthenticatedLibraryRoute: AuthenticatedLibraryRoute,
   AuthenticatedMissionsRoute: AuthenticatedMissionsRoute,
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
+  AuthenticatedMissionIdRoute: AuthenticatedMissionIdRoute,
   AuthenticatedParentGateRoute: AuthenticatedParentGateRoute,
   AuthenticatedParentIndexRoute: AuthenticatedParentIndexRoute,
 }

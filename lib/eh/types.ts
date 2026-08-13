@@ -15,22 +15,141 @@ export type MissionSummary = {
   id: string;
   title: string;
   planet: string;
+  planetId: string;
   gradeBand: "3-5";
   estimatedMinutes: number;
   objective: string;
 };
 
+export type EvidenceRule = "exact" | "anyOf";
+
+export type QuestionType =
+  | "locate"
+  | "main_idea_mc"
+  | "vocab_in_context_mc"
+  | "infer_mc"
+  | "exit_main_idea_mc";
+
+export type XpKind = "question" | "exit";
+
+export type MissionQuestion = {
+  id: string;
+  order: number;
+  type: QuestionType;
+  xpKind: XpKind;
+  prompt: string;
+  choices?: { id: string; text: string }[];
+  correctChoiceId?: string;
+  correctEvidenceIds: string[];
+  evidenceRule: EvidenceRule;
+  stemSentenceId?: string;
+  requiresChoiceAndEvidence?: boolean;
+  hints: [string, string, string, string];
+  distractorTraps?: string[];
+};
+
 export type MissionDetail = MissionSummary & {
   skillTags: string[];
+  status: "draft" | "published";
   sentences: { id: string; text: string }[];
-  questions: Array<{
-    id: string;
-    type: string;
-    prompt: string;
-    correct?: string;
-    choices?: { id: string; text: string }[];
-    stemSentenceId?: string;
-  }>;
+  questions: MissionQuestion[];
+  scoring: {
+    questionXp: { 0: number; 1: number; 2: number; 3: number };
+    exitTicketXp: number;
+    missionCompleteXp: number;
+    firstDailyXp: number;
+  };
+};
+
+export type QuestionResult = {
+  questionKey: string;
+  correct: boolean;
+  hintsUsed: number;
+  evidenceId?: string;
+  choiceId?: string;
+  xpAwarded: number;
+};
+
+export type Attempt = {
+  id: string;
+  kidId: string;
+  missionId: string;
+  status: "active" | "completed";
+  startedAt: number;
+  completedAt?: number;
+  currentQuestionIndex: number;
+  questionResults: QuestionResult[];
+  /** hints used on the current (unanswered) question */
+  currentHintsUsed: number;
+  xpEarned: number;
+  firstDailyBonus: boolean;
+};
+
+export type XpLedgerEntry = {
+  id: string;
+  kidId: string;
+  attemptId?: string;
+  reason: "question" | "exit_ticket" | "mission_complete" | "first_daily";
+  delta: number;
+  balanceAfter: number;
+  createdAt: number;
+};
+
+export type HintEvent = {
+  id: string;
+  attemptId: string;
+  questionKey: string;
+  step: number;
+  source: "static" | "grok";
+  text: string;
+  createdAt: number;
+};
+
+export type SubmitAnswerInput = {
+  attemptId: string;
+  questionKey: string;
+  evidenceId?: string;
+  choiceId?: string;
+  /** Client may claim correct — server/pure grader MUST ignore this. */
+  claimedCorrect?: boolean;
+};
+
+export type SubmitAnswerResult = {
+  correct: boolean;
+  xpAwarded: number;
+  hintsUsed: number;
+  feedback: string;
+  attempt: Attempt;
+  /** Next question index, or null when all graded correct */
+  nextQuestionIndex: number | null;
+};
+
+export type HintInput = {
+  attemptId: string;
+  questionKey: string;
+};
+
+export type HintResult = {
+  step: number;
+  text: string;
+  source: "static" | "grok";
+  glowEvidenceIds: string[];
+  attempt: Attempt;
+};
+
+export type CompleteResult = {
+  attempt: Attempt;
+  kid: EhKid;
+  xpBreakdown: {
+    questions: number;
+    exitTicket: number;
+    missionComplete: number;
+    firstDaily: number;
+    total: number;
+  };
+  leveledUp: boolean;
+  previousLevel: number;
+  ledger: XpLedgerEntry[];
 };
 
 export type ParentProgress = {
@@ -70,8 +189,11 @@ export type EhData = {
     get(missionId: string): Promise<MissionDetail | null>;
   };
   attempts: {
-    // Slice 1: stubs only (no mission runtime)
-    getActive(kidId: string, missionId: string): Promise<null>;
+    getActive(kidId: string, missionId: string): Promise<Attempt | null>;
+    start(kidId: string, missionId: string): Promise<Attempt>;
+    submitAnswer(input: SubmitAnswerInput): Promise<SubmitAnswerResult>;
+    requestHint(input: HintInput): Promise<HintResult>;
+    complete(input: { attemptId: string }): Promise<CompleteResult>;
   };
   parent: {
     verifyPin(pin: string): Promise<boolean>;

@@ -28,6 +28,7 @@ export type {
   MissionSummary,
 } from "./types";
 export { FIXTURE_PARENT_PIN } from "./auth/fixtureAuth";
+export { resetFixture } from "./adapters/fixtureAdapter";
 export {
   assertEhModeBootable,
   getEhMode,

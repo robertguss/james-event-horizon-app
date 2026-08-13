@@ -1,52 +1,68 @@
 import type { EhData } from "../types";
 
 /**
- * Morning adapter stub. Slice 1 overnight uses fixtureAdapter.
+ * Morning adapter stub. Overnight uses fixtureAdapter.
  * Wire to Convex API after Mac `VITE_EH_DATA=convex` flip.
  */
+function morningOnly(): never {
+  throw new Error("convexAdapter: use VITE_EH_DATA=fixture overnight");
+}
+
 export const convexAdapter: EhData = {
   mode: "convex",
   auth: {
     async getSession() {
-      throw new Error("convexAdapter: use VITE_EH_DATA=fixture overnight");
+      return morningOnly();
     },
     async selectKid() {
-      throw new Error("convexAdapter: use VITE_EH_DATA=fixture overnight");
+      return morningOnly();
     },
   },
   kids: {
     async list() {
-      throw new Error("convexAdapter: morning only");
+      return morningOnly();
     },
     async get() {
-      throw new Error("convexAdapter: morning only");
+      return morningOnly();
     },
     async create() {
-      throw new Error("convexAdapter: morning only");
+      return morningOnly();
     },
   },
   missions: {
     async list() {
-      throw new Error("convexAdapter: morning only");
+      return morningOnly();
     },
     async get() {
-      throw new Error("convexAdapter: morning only");
+      return morningOnly();
     },
   },
   attempts: {
     async getActive() {
-      return null;
+      return morningOnly();
+    },
+    async start() {
+      return morningOnly();
+    },
+    async submitAnswer() {
+      return morningOnly();
+    },
+    async requestHint() {
+      return morningOnly();
+    },
+    async complete() {
+      return morningOnly();
     },
   },
   parent: {
     async verifyPin() {
-      throw new Error("convexAdapter: morning only");
+      return morningOnly();
     },
     async setPin() {
-      throw new Error("convexAdapter: morning only");
+      return morningOnly();
     },
     async progress() {
-      throw new Error("convexAdapter: morning only");
+      return morningOnly();
     },
   },
   setup: {

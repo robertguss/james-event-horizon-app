@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$repo_root"
+
+export PATH="$HOME/.local/bin:$PATH"
+
+for executable in node aube aubr aubx; do
+  if ! command -v "$executable" >/dev/null; then
+    printf 'Missing required executable after orb resume: %s\n' "$executable" >&2
+    exit 1
+  fi
+done
+
+if [[ ! -d node_modules ]]; then
+  printf 'Missing node_modules after orb resume; rerun .agents/setup.\n' >&2
+  exit 1
+fi
+
+printf 'Orb resume checks complete; fixture mode requires no service authentication.\n'

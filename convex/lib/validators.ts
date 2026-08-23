@@ -151,6 +151,22 @@ export const missionQuestionValidator = v.object({
   distractorTraps: v.optional(v.array(v.string())),
 });
 
+export const missionReflectionValidator = v.object({
+  mapPrompt: v.string(),
+  cards: v.array(
+    v.object({
+      id: v.string(),
+      text: v.string(),
+    }),
+  ),
+  correctOrder: v.array(v.string()),
+  captainLogPrompt: v.string(),
+  sentenceStarters: v.array(v.string()),
+  parentGuide: v.string(),
+  rewardTitle: v.string(),
+  rewardDescription: v.string(),
+});
+
 export const missionDetailValidator = v.object({
   id: v.string(),
   title: v.string(),
@@ -164,6 +180,10 @@ export const missionDetailValidator = v.object({
     v.literal("stub"),
     v.literal("blackHole"),
   ),
+  presentation: v.optional(
+    v.union(v.literal("adventure"), v.literal("scripture")),
+  ),
+  sourceNote: v.optional(v.string()),
   skillTags: v.array(v.string()),
   status: v.union(
     v.literal("draft"),
@@ -177,6 +197,7 @@ export const missionDetailValidator = v.object({
     }),
   ),
   questions: v.array(missionQuestionValidator),
+  reflection: v.optional(missionReflectionValidator),
   scoring: v.object({
     // Hint-count keys are "0".."3". v.object field names cannot start with a digit.
     questionXp: v.record(v.string(), v.number()),
@@ -184,4 +205,16 @@ export const missionDetailValidator = v.object({
     missionCompleteXp: v.number(),
     firstDailyXp: v.number(),
   }),
+});
+
+export const parentRecordingValidator = v.object({
+  id: v.id("missionReflections"),
+  kidId: v.id("kids"),
+  missionId: v.string(),
+  missionTitle: v.string(),
+  createdAt: v.number(),
+  durationSeconds: v.number(),
+  mimeType: v.string(),
+  audioUrl: v.string(),
+  parentGuide: v.string(),
 });

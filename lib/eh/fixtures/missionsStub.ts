@@ -1,5 +1,6 @@
 import type { MissionDetail } from "../types";
 import { mission01 } from "./mission01";
+import { WEEK_01_MISSIONS } from "./week01";
 
 const STUB_SCORING = mission01.scoring;
 
@@ -131,6 +132,7 @@ export const STUB_MISSIONS: readonly MissionDetail[] = [
 
 /** All published/stub missions known to the fixture catalog. */
 export const ALL_FIXTURE_MISSIONS: readonly MissionDetail[] = [
+  ...WEEK_01_MISSIONS,
   mission01,
   ...STUB_MISSIONS,
 ];

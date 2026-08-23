@@ -26,6 +26,7 @@ import {
 import { reduceComplete, reduceHint, reduceSubmit } from "../pure/attempt";
 import { levelForXp, xpFloorForLevel } from "../pure/level";
 import { assertMissionPlayable, summarizeMission } from "../pure/missionLock";
+import { assertCorrectConnectionMap } from "../pure/reflection";
 import {
   computeWeakSkillTags,
   skillTagForQuestionType,
@@ -38,9 +39,12 @@ import type {
   EhKid,
   HintEvent,
   MissionDetail,
+  ParentRecording,
   QuestionResult,
   XpLedgerEntry,
 } from "../types";
+
+type FixtureRecording = ParentRecording & { attemptId: string };
 
 type Store = {
   pin: string;
@@ -51,6 +55,7 @@ type Store = {
   missionsCompleted: Map<string, number>;
   /** BH completion timestamps (ms) per kid — weekly cap window. */
   bhCompletions: Map<string, number[]>;
+  recordings: Map<string, FixtureRecording>;
   reminderEnabled: boolean;
   /** Injectable clock for weekly-cap tests. */
   nowMs?: number;
@@ -121,6 +126,7 @@ function emptyStore(reminderEnabled = false): Store {
     hintEvents: [],
     missionsCompleted: new Map(),
     bhCompletions: new Map(),
+    recordings: new Map(),
     reminderEnabled,
   };
 }
@@ -507,6 +513,41 @@ export const fixtureAdapter: EhData = {
       };
     },
   },
+  reflections: {
+    async save(input) {
+      const store = getStore();
+      const attempt = getAttemptOrThrow(input.attemptId);
+      if (attempt.missionId !== input.missionId) {
+        throw new Error("Reflection does not match this mission");
+      }
+      const mission = missionById(input.missionId);
+      if (!mission) throw new Error("Mission not found");
+      assertCorrectConnectionMap(mission, input.mapCardIds);
+
+      const previous = [...store.recordings.values()].find(
+        (recording) => recording.attemptId === input.attemptId,
+      );
+      if (previous) {
+        URL.revokeObjectURL(previous.audioUrl);
+        store.recordings.delete(previous.id);
+      }
+
+      if (!input.recording) return;
+      const recordingId = nextId("recording");
+      store.recordings.set(recordingId, {
+        id: recordingId,
+        attemptId: attempt.id,
+        kidId: attempt.kidId,
+        missionId: mission.id,
+        missionTitle: mission.title,
+        createdAt: now(),
+        durationSeconds: input.recording.durationSeconds,
+        mimeType: input.recording.mimeType,
+        audioUrl: URL.createObjectURL(input.recording.blob),
+        parentGuide: mission.reflection?.parentGuide ?? "",
+      });
+    },
+  },
   cosmetics: {
     async equipCosmetic(input) {
       const store = getStore();
@@ -585,6 +626,19 @@ export const fixtureAdapter: EhData = {
     },
     async setReminderEnabled(enabled) {
       getStore().reminderEnabled = enabled;
+    },
+    async listRecordings(kidId) {
+      return [...getStore().recordings.values()]
+        .filter((recording) => recording.kidId === kidId)
+        .sort((a, b) => b.createdAt - a.createdAt)
+        .map(({ attemptId: _attemptId, ...recording }) => recording);
+    },
+    async deleteRecording(recordingId) {
+      const store = getStore();
+      const recording = store.recordings.get(recordingId);
+      if (!recording) return;
+      URL.revokeObjectURL(recording.audioUrl);
+      store.recordings.delete(recordingId);
     },
   },
   setup: {
@@ -689,6 +743,7 @@ export function getFixtureDebugState() {
     bhCompletions: Object.fromEntries(
       [...store.bhCompletions.entries()].map(([k, v]) => [k, [...v]]),
     ),
+    recordings: [...store.recordings.values()],
     reminderEnabled: store.reminderEnabled,
   };
 }

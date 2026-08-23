@@ -75,6 +75,20 @@ export default defineSchema({
     .index("by_kid_mission", ["kidId", "missionId"])
     .index("by_kid_status", ["kidId", "status"]),
 
+  missionReflections: defineTable({
+    kidId: v.id("kids"),
+    attemptId: v.id("attempts"),
+    missionId: v.string(),
+    mapCardIds: v.array(v.string()),
+    audioStorageId: v.optional(v.id("_storage")),
+    audioMimeType: v.optional(v.string()),
+    audioDurationSeconds: v.optional(v.number()),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_attemptId", ["attemptId"])
+    .index("by_kid_createdAt", ["kidId", "createdAt"]),
+
   hintEvents: defineTable({
     attemptId: v.id("attempts"),
     questionKey: v.string(),

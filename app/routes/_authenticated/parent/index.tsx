@@ -9,7 +9,12 @@ import { lazy, Suspense, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { isFixtureMode, useEh, type ParentStats } from "@/lib/eh/data";
+import {
+  isFixtureMode,
+  useEh,
+  type ParentRecording,
+  type ParentStats,
+} from "@/lib/eh/data";
 import { clearParentSession, isParentUnlocked } from "@/lib/parent-session";
 
 const ParentSignOutButton = lazy(async () => {
@@ -26,11 +31,15 @@ function ParentPage() {
   const navigate = useNavigate();
   const [unlocked, setUnlocked] = useState<boolean | null>(null);
   const [stats, setStats] = useState<ParentStats | null>(null);
+  const [recordings, setRecordings] = useState<ParentRecording[]>([]);
   const [statsError, setStatsError] = useState<string | null>(null);
   const [nameDraft, setNameDraft] = useState("");
   const [namePending, setNamePending] = useState(false);
   const [nameError, setNameError] = useState<string | null>(null);
   const [reminderPending, setReminderPending] = useState(false);
+  const [deletingRecordingId, setDeletingRecordingId] = useState<string | null>(
+    null,
+  );
   const fixture = isFixtureMode();
 
   useEffect(() => {
@@ -41,11 +50,14 @@ function ParentPage() {
     if (!unlocked || !kid) return;
     let cancelled = false;
     setStatsError(null);
-    void data.parent
-      .getParentStats(kid.id)
-      .then((next) => {
+    void Promise.all([
+      data.parent.getParentStats(kid.id),
+      data.parent.listRecordings(kid.id),
+    ])
+      .then(([next, nextRecordings]) => {
         if (cancelled) return;
         setStats(next);
+        setRecordings(nextRecordings);
         setNameDraft(next.displayName);
       })
       .catch((err: unknown) => {
@@ -101,6 +113,22 @@ function ParentPage() {
       setStats(next);
     } finally {
       setReminderPending(false);
+    }
+  };
+
+  const deleteRecording = async (recording: ParentRecording) => {
+    const confirmed = window.confirm(
+      `Delete the Captain’s Log for “${recording.missionTitle}”? This cannot be undone.`,
+    );
+    if (!confirmed) return;
+    setDeletingRecordingId(recording.id);
+    try {
+      await data.parent.deleteRecording(recording.id);
+      setRecordings((current) =>
+        current.filter((entry) => entry.id !== recording.id),
+      );
+    } finally {
+      setDeletingRecordingId(null);
     }
   };
 
@@ -167,6 +195,70 @@ function ParentPage() {
               Level {stats.level} · {stats.xp} XP
             </p>
           ) : null}
+        </section>
+
+        <section className="space-y-4 rounded-[28px] bg-eh-surface-elevated/90 p-6 ring-1 ring-eh-border-glass">
+          <div>
+            <p className="text-sm font-bold tracking-wide text-eh-on-surface-muted uppercase">
+              Captain’s Log inbox
+            </p>
+            <h2 className="mt-1 text-2xl font-extrabold">
+              {recordings.length} recording{recordings.length === 1 ? "" : "s"}
+            </h2>
+            <p className="mt-1 text-sm text-eh-on-surface-muted">
+              Listen for James’s main idea and the connections he explains.
+            </p>
+          </div>
+
+          {recordings.length === 0 ? (
+            <p className="rounded-2xl bg-eh-surface p-4 text-sm font-semibold text-eh-on-surface-muted">
+              New recordings will appear here after a mission. Recording is
+              always optional.
+            </p>
+          ) : (
+            <ul className="space-y-4">
+              {recordings.map((recording) => (
+                <li
+                  key={recording.id}
+                  className="space-y-3 rounded-2xl bg-eh-surface p-4 ring-1 ring-eh-border-glass"
+                >
+                  <div>
+                    <p className="font-extrabold">{recording.missionTitle}</p>
+                    <p className="text-xs font-semibold text-eh-on-surface-muted">
+                      {new Date(recording.createdAt).toLocaleDateString()} ·{" "}
+                      {recording.durationSeconds} sec
+                    </p>
+                  </div>
+                  <audio
+                    className="w-full"
+                    controls
+                    preload="metadata"
+                    src={recording.audioUrl}
+                    aria-label={`Captain’s Log for ${recording.missionTitle}`}
+                  />
+                  {recording.parentGuide ? (
+                    <p className="text-sm leading-relaxed text-eh-on-surface-muted">
+                      <span className="font-extrabold text-eh-tertiary">
+                        Listen for:
+                      </span>
+                      {recording.parentGuide}
+                    </p>
+                  ) : null}
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    className="h-10 rounded-full px-4 text-sm font-bold text-[#FF8AA2]"
+                    disabled={deletingRecordingId === recording.id}
+                    onClick={() => void deleteRecording(recording)}
+                  >
+                    {deletingRecordingId === recording.id
+                      ? "Deleting…"
+                      : "Delete recording"}
+                  </Button>
+                </li>
+              ))}
+            </ul>
+          )}
         </section>
 
         <section className="space-y-4 rounded-[28px] bg-eh-surface-elevated/90 p-6 ring-1 ring-eh-border-glass">

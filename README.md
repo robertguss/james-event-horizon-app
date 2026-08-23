@@ -5,6 +5,8 @@ Read to explore — son-facing reading comprehension PWA (grades ~3–5)
 ## Docs
 
 - [Product brief](docs/PRODUCT-BRIEF.md)
+- [Content strategy and first-season plan](docs/CONTENT-STRATEGY.md)
+- [Week 1, Day 1 content pack](docs/missions/week-01-day-01.md)
 - [Design system (`DESIGN.md`)](DESIGN.md)
 - [v1 overnight implementation plan](docs/EVENT-HORIZON-V1-IMPLEMENTATION-PLAN.md)
   (on `main` via #3 @ `8fba320`)

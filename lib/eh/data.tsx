@@ -31,6 +31,7 @@ export type {
   EhMode,
   EquipCosmeticInput,
   MissionSummary,
+  ParentRecording,
   ParentStats,
 } from "./types";
 export { FIXTURE_PARENT_PIN } from "./auth/fixtureAuth";

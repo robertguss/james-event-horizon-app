@@ -13,6 +13,7 @@ import type {
   HintResult,
   MissionDetail,
   MissionSummary,
+  ParentRecording,
   ParentStats,
   SubmitAnswerInput,
   SubmitAnswerResult,
@@ -66,6 +67,10 @@ function asKidId(kidId: string): Id<"kids"> {
 
 function asAttemptId(attemptId: string): Id<"attempts"> {
   return attemptId as Id<"attempts">;
+}
+
+function asRecordingId(recordingId: string): Id<"missionReflections"> {
+  return recordingId as Id<"missionReflections">;
 }
 
 /**
@@ -237,6 +242,40 @@ export function createConvexAdapter(client: ConvexEhClient): EhData {
         };
       },
     },
+    reflections: {
+      async save(input): Promise<void> {
+        let audioStorageId: Id<"_storage"> | undefined;
+        if (input.recording) {
+          const uploadUrl = (await client.mutation(
+            api.reflections.generateUploadUrl,
+            {},
+          )) as string;
+          const uploadResponse = await fetch(uploadUrl, {
+            method: "POST",
+            headers: {
+              "Content-Type": input.recording.mimeType,
+            },
+            body: input.recording.blob,
+          });
+          if (!uploadResponse.ok) {
+            throw new Error("Could not upload Captain’s Log recording");
+          }
+          const uploaded = (await uploadResponse.json()) as {
+            storageId: Id<"_storage">;
+          };
+          audioStorageId = uploaded.storageId;
+        }
+
+        await client.mutation(api.reflections.save, {
+          attemptId: asAttemptId(input.attemptId),
+          missionId: input.missionId,
+          mapCardIds: input.mapCardIds,
+          audioStorageId,
+          audioMimeType: input.recording?.mimeType,
+          audioDurationSeconds: input.recording?.durationSeconds,
+        });
+      },
+    },
     cosmetics: {
       async equipCosmetic(input: EquipCosmeticInput): Promise<EhKid> {
         const kid = (await client.mutation(api.kids.equipCosmetic, {
@@ -289,6 +328,16 @@ export function createConvexAdapter(client: ConvexEhClient): EhData {
       },
       async setReminderEnabled(enabled: boolean): Promise<void> {
         await client.mutation(api.parents.setReminderEnabled, { enabled });
+      },
+      async listRecordings(kidId: string): Promise<ParentRecording[]> {
+        return (await client.query(api.reflections.listRecordings, {
+          kidId: asKidId(kidId),
+        })) as ParentRecording[];
+      },
+      async deleteRecording(recordingId: string): Promise<void> {
+        await client.mutation(api.reflections.deleteRecording, {
+          recordingId: asRecordingId(recordingId),
+        });
       },
     },
     setup: {

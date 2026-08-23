@@ -29,6 +29,7 @@ import type * as lib_validators from "../lib/validators.js";
 import type * as lib_xaiHint from "../lib/xaiHint.js";
 import type * as missions from "../missions.js";
 import type * as parents from "../parents.js";
+import type * as reflections from "../reflections.js";
 import type * as seed from "../seed.js";
 import type * as setup from "../setup.js";
 
@@ -60,6 +61,7 @@ declare const fullApi: ApiFromModules<{
   "lib/xaiHint": typeof lib_xaiHint;
   missions: typeof missions;
   parents: typeof parents;
+  reflections: typeof reflections;
   seed: typeof seed;
   setup: typeof setup;
 }>;

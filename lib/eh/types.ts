@@ -62,14 +62,28 @@ export type MissionQuestion = {
   distractorTraps?: string[];
 };
 
+export type MissionReflection = {
+  mapPrompt: string;
+  cards: { id: string; text: string }[];
+  correctOrder: string[];
+  captainLogPrompt: string;
+  sentenceStarters: string[];
+  parentGuide: string;
+  rewardTitle: string;
+  rewardDescription: string;
+};
+
 export type MissionDetail = Omit<
   MissionSummary,
   "locked" | "lockReason" | "lockMessage"
 > & {
+  presentation?: "adventure" | "scripture";
+  sourceNote?: string;
   skillTags: string[];
   status: "draft" | "published" | "stub";
   sentences: { id: string; text: string }[];
   questions: MissionQuestion[];
+  reflection?: MissionReflection;
   scoring: {
     questionXp: { 0: number; 1: number; 2: number; 3: number };
     exitTicketXp: number;
@@ -188,6 +202,29 @@ export type CompleteResult = {
   newSectorStamps: string[];
 };
 
+export type SaveMissionReflectionInput = {
+  attemptId: string;
+  missionId: string;
+  mapCardIds: string[];
+  recording?: {
+    blob: Blob;
+    durationSeconds: number;
+    mimeType: string;
+  };
+};
+
+export type ParentRecording = {
+  id: string;
+  kidId: string;
+  missionId: string;
+  missionTitle: string;
+  createdAt: number;
+  durationSeconds: number;
+  mimeType: string;
+  audioUrl: string;
+  parentGuide: string;
+};
+
 export type ParentStats = {
   kidId: string;
   displayName: string;
@@ -241,6 +278,9 @@ export type EhData = {
     requestHint(input: HintInput): Promise<HintResult>;
     complete(input: { attemptId: string }): Promise<CompleteResult>;
   };
+  reflections: {
+    save(input: SaveMissionReflectionInput): Promise<void>;
+  };
   cosmetics: {
     equipCosmetic(input: EquipCosmeticInput): Promise<EhKid>;
   };
@@ -250,6 +290,8 @@ export type EhData = {
     getParentStats(kidId: string): Promise<ParentStats>;
     updateKidName(kidId: string, displayName: string): Promise<EhKid>;
     setReminderEnabled(enabled: boolean): Promise<void>;
+    listRecordings(kidId: string): Promise<ParentRecording[]>;
+    deleteRecording(recordingId: string): Promise<void>;
   };
   setup: {
     /** Create kid if needed + set parent PIN (fixture setPin / Convex completeOnboarding). */

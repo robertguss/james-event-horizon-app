@@ -21,6 +21,11 @@ type CompleteSnapshot = {
   xp: number;
   streakDays: number;
   newSectorStamps?: string[];
+  reflectionReward?: {
+    title: string;
+    description: string;
+    presentation?: "adventure" | "scripture";
+  };
 };
 
 export const Route = createFileRoute("/_authenticated/debrief")({
@@ -103,6 +108,22 @@ function DebriefPage() {
                 );
               })}
             </div>
+          </div>
+        ) : null}
+
+        {snap?.reflectionReward ? (
+          <div className="mt-4 rounded-2xl border-2 border-eh-tertiary bg-[#FFF1BE] p-4 text-eh-on-reading">
+            <p className="text-sm font-extrabold tracking-wide text-[#6D5517] uppercase">
+              {snap.reflectionReward.presentation === "scripture"
+                ? "Scripture Archive"
+                : "Observatory part restored"}
+            </p>
+            <p className="mt-1 text-xl font-extrabold">
+              {snap.reflectionReward.title}
+            </p>
+            <p className="mt-1 font-semibold text-eh-on-reading/75">
+              {snap.reflectionReward.description}
+            </p>
           </div>
         ) : null}
 

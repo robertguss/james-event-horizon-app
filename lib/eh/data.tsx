@@ -1,4 +1,4 @@
-import { useConvex } from "convex/react";
+import { useConvex, useConvexAuth } from "convex/react";
 import {
   createContext,
   useCallback,
@@ -94,7 +94,10 @@ type EhContextValue = {
 
 const EhContext = createContext<EhContextValue | null>(null);
 
-function useEhState(data: EhData): EhContextValue {
+function useEhState(
+  data: EhData,
+  authenticated: boolean | null = true,
+): EhContextValue {
   const [ready, setReady] = useState(false);
   const [kid, setKid] = useState<EhKid | null>(null);
   const [missions, setMissions] = useState<MissionSummary[]>([]);
@@ -117,8 +120,12 @@ function useEhState(data: EhData): EhContextValue {
   }, [data]);
 
   useEffect(() => {
+    if (authenticated === null) {
+      setReady(false);
+      return;
+    }
     void refresh();
-  }, [refresh]);
+  }, [authenticated, refresh]);
 
   const ensureKid = useCallback(
     async (input?: { displayName: string; gradeBand: "3-5" }) => {
@@ -184,11 +191,12 @@ function FixtureEhProvider({ children }: { children: ReactNode }) {
 /** Hosted path — must render under ConvexProviderWithClerk. */
 function ConvexEhProvider({ children }: { children: ReactNode }) {
   const convex = useConvex();
+  const { isLoading, isAuthenticated } = useConvexAuth();
   const data = useMemo(
     () => createConvexAdapter(convex as unknown as ConvexEhClient),
     [convex],
   );
-  const value = useEhState(data);
+  const value = useEhState(data, isLoading ? null : isAuthenticated);
   return <EhContext.Provider value={value}>{children}</EhContext.Provider>;
 }
 

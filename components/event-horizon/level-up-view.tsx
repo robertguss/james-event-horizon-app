@@ -23,8 +23,8 @@ export function LevelUpView({
         aria-hidden
       />
 
-      <div className="relative z-10 flex min-h-svh flex-col items-center justify-center gap-8 px-6 py-10 text-center">
-        <div className="eh-level-up-banner inline-flex items-center gap-3 rounded-full border-4 border-eh-tertiary bg-eh-primary px-8 py-3 text-2xl font-extrabold text-white shadow-[0_10px_28px_rgba(11,8,24,0.45)] motion-safe:animate-[popIn_500ms_ease-out]">
+      <div className="relative z-10 flex min-h-svh flex-col items-center justify-center gap-6 px-4 py-8 text-center sm:gap-8 sm:px-6 sm:py-10">
+        <div className="eh-level-up-banner inline-flex items-center gap-2 rounded-full border-4 border-eh-tertiary bg-eh-primary px-5 py-3 text-xl font-extrabold text-white shadow-[0_10px_28px_rgba(11,8,24,0.45)] motion-safe:animate-[popIn_500ms_ease-out] sm:gap-3 sm:px-8 sm:text-2xl">
           <span aria-hidden className="text-eh-tertiary">
             ★
           </span>
@@ -42,7 +42,7 @@ export function LevelUpView({
           <p className="text-lg font-bold text-eh-on-surface-muted">
             Explorer advanced
           </p>
-          <p className="mt-2 text-4xl font-extrabold text-eh-tertiary">
+          <p className="mt-2 text-3xl font-extrabold text-eh-tertiary sm:text-4xl">
             Level {previousLevel} → {level}
           </p>
           <p className="mt-2 text-base font-semibold text-eh-on-surface">
@@ -50,16 +50,16 @@ export function LevelUpView({
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center justify-center gap-3">
+        <div className="flex w-full max-w-sm flex-col items-center justify-center gap-3 sm:w-auto sm:max-w-none sm:flex-row sm:flex-wrap">
           <Link
             to="/debrief"
-            className="eh-button-check inline-flex h-12 items-center justify-center rounded-full px-6 text-base font-extrabold text-white"
+            className="eh-button-check inline-flex h-12 w-full items-center justify-center rounded-full px-6 text-base font-extrabold text-white sm:w-auto"
           >
             See debrief
           </Link>
           <Link
             to="/hub"
-            className="eh-button-hint inline-flex h-12 items-center justify-center rounded-full px-6 text-base font-extrabold"
+            className="eh-button-hint inline-flex h-12 w-full items-center justify-center rounded-full px-6 text-base font-extrabold sm:w-auto"
           >
             Back to hub
           </Link>
@@ -92,7 +92,7 @@ function RocketMark() {
   return (
     <svg
       viewBox="0 0 160 160"
-      className="h-40 w-40 drop-shadow-[0_12px_24px_rgba(240,199,94,0.35)]"
+      className="size-32 drop-shadow-[0_12px_24px_rgba(240,199,94,0.35)] sm:size-40"
       aria-hidden
     >
       <path

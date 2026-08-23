@@ -53,12 +53,12 @@ function OnboardingPage() {
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,#C77DFF44,transparent_50%),linear-gradient(180deg,#1B1430,#241B3D)]"
         aria-hidden
       />
-      <main className="relative mx-auto flex min-h-svh w-full max-w-lg flex-col justify-center gap-8 px-6 py-12">
+      <main className="relative mx-auto flex min-h-svh w-full max-w-lg flex-col justify-center gap-6 px-4 py-8 sm:gap-8 sm:px-6 sm:py-12">
         <div className="space-y-3">
           <p className="text-sm font-bold tracking-wide text-eh-primary uppercase">
             Event Horizon
           </p>
-          <h1 className="text-4xl font-extrabold tracking-tight">
+          <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">
             Create your explorer
           </h1>
           <p className="text-eh-on-surface-muted">
@@ -69,7 +69,7 @@ function OnboardingPage() {
 
         <form
           onSubmit={(event) => void onSubmit(event)}
-          className="space-y-5 rounded-[28px] bg-eh-surface-elevated/90 p-6 ring-1 ring-eh-border-glass"
+          className="space-y-5 rounded-[24px] bg-eh-surface-elevated/90 p-5 ring-1 ring-eh-border-glass sm:rounded-[28px] sm:p-6"
         >
           <div className="space-y-2">
             <Label htmlFor="displayName">Explorer name</Label>

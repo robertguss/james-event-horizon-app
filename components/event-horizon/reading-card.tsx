@@ -12,7 +12,7 @@ export function ReadingCard({ children, className }: ReadingCardProps) {
   return (
     <div
       className={cn(
-        "eh-reading-card w-full max-w-2xl rounded-[36px] px-6 py-7 sm:px-8 sm:py-8",
+        "eh-reading-card w-full max-w-2xl rounded-[28px] px-4 py-5 sm:rounded-[36px] sm:px-8 sm:py-8",
         className,
       )}
     >

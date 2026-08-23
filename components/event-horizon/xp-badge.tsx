@@ -49,7 +49,7 @@ export function XpBadge({ xpTotal, className }: XpBadgeProps) {
       <button
         type="button"
         onClick={goParentGate}
-        className="grid size-10 place-items-center rounded-full bg-eh-surface/70 text-eh-on-surface-muted ring-1 ring-eh-border-glass"
+        className="grid size-12 place-items-center rounded-full bg-eh-surface/70 text-eh-on-surface-muted ring-1 ring-eh-border-glass"
         aria-label="Parent settings"
       >
         <Settings2 className="size-4" />

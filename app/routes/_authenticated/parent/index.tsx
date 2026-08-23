@@ -133,12 +133,12 @@ function ParentPage() {
   };
 
   return (
-    <div className="min-h-svh bg-eh-neutral text-eh-on-surface">
+    <div className="relative min-h-svh overflow-x-clip bg-eh-neutral text-eh-on-surface">
       <div
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_0%,#2EC4B622,transparent_40%),linear-gradient(180deg,#1B1430,#241B3D)]"
         aria-hidden
       />
-      <main className="relative mx-auto flex min-h-svh w-full max-w-lg flex-col gap-6 px-6 py-10">
+      <main className="relative mx-auto flex min-h-svh w-full max-w-lg flex-col gap-5 px-4 py-6 sm:gap-6 sm:px-6 sm:py-10">
         <header className="space-y-1">
           <p className="text-sm font-bold tracking-wide text-eh-on-surface-muted uppercase">
             Parent area
@@ -152,7 +152,7 @@ function ParentPage() {
           </p>
         ) : null}
 
-        <section className="space-y-4 rounded-[28px] bg-eh-surface-elevated/90 p-6 ring-1 ring-eh-border-glass">
+        <section className="space-y-4 rounded-[24px] bg-eh-surface-elevated/90 p-5 ring-1 ring-eh-border-glass sm:rounded-[28px] sm:p-6">
           <div className="grid grid-cols-2 gap-4">
             <StatBlock
               label="Missions done"
@@ -197,7 +197,7 @@ function ParentPage() {
           ) : null}
         </section>
 
-        <section className="space-y-4 rounded-[28px] bg-eh-surface-elevated/90 p-6 ring-1 ring-eh-border-glass">
+        <section className="space-y-4 rounded-[24px] bg-eh-surface-elevated/90 p-5 ring-1 ring-eh-border-glass sm:rounded-[28px] sm:p-6">
           <div>
             <p className="text-sm font-bold tracking-wide text-eh-on-surface-muted uppercase">
               Captain’s Log inbox
@@ -261,10 +261,10 @@ function ParentPage() {
           )}
         </section>
 
-        <section className="space-y-4 rounded-[28px] bg-eh-surface-elevated/90 p-6 ring-1 ring-eh-border-glass">
+        <section className="space-y-4 rounded-[24px] bg-eh-surface-elevated/90 p-5 ring-1 ring-eh-border-glass sm:rounded-[28px] sm:p-6">
           <div className="space-y-2">
             <Label htmlFor="explorerName">Explorer name</Label>
-            <div className="flex gap-2">
+            <div className="flex flex-col gap-2 sm:flex-row">
               <Input
                 id="explorerName"
                 value={nameDraft}
@@ -275,7 +275,7 @@ function ParentPage() {
               <Button
                 type="button"
                 disabled={namePending}
-                className="h-12 shrink-0 rounded-full px-5 font-extrabold"
+                className="h-12 w-full shrink-0 rounded-full px-5 font-extrabold sm:w-auto"
                 onClick={() => void saveName()}
               >
                 {namePending ? "Saving…" : "Save"}
@@ -288,7 +288,7 @@ function ParentPage() {
             ) : null}
           </div>
 
-          <div className="flex items-center justify-between gap-4">
+          <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="font-extrabold">Daily reminder</p>
               <p className="text-sm text-eh-on-surface-muted">
@@ -300,7 +300,7 @@ function ParentPage() {
               variant="outline"
               disabled={reminderPending || stats == null}
               aria-pressed={stats?.reminderEnabled ?? false}
-              className="h-12 rounded-full px-5 font-extrabold"
+              className="h-12 w-full rounded-full px-5 font-extrabold sm:w-auto"
               onClick={() =>
                 void toggleReminder(!(stats?.reminderEnabled ?? false))
               }
@@ -311,7 +311,7 @@ function ParentPage() {
         </section>
 
         <div className="mt-auto flex flex-col gap-3">
-          <Link to="/hub">
+          <Link to="/hub" className="block w-full">
             <Button className="h-14 w-full rounded-full font-extrabold">
               Back to kid hub
             </Button>
@@ -355,7 +355,7 @@ function StatBlock({ label, value }: { label: string; value: string }) {
       <p className="text-sm font-bold text-eh-on-surface-muted uppercase">
         {label}
       </p>
-      <p className="mt-2 text-3xl font-extrabold">{value}</p>
+      <p className="mt-2 text-2xl font-extrabold sm:text-3xl">{value}</p>
     </div>
   );
 }

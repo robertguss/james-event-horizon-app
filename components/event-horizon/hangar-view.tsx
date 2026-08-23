@@ -23,18 +23,20 @@ export function HangarView({ kid, busyId, error, onEquip }: HangarViewProps) {
   );
 
   return (
-    <div className="relative min-h-svh overflow-hidden bg-eh-neutral text-eh-on-surface">
+    <div className="relative min-h-svh overflow-x-clip bg-eh-neutral text-eh-on-surface">
       <div
         className="eh-hangar-nebula pointer-events-none absolute inset-0"
         aria-hidden
       />
 
-      <div className="relative mx-auto flex min-h-svh w-full max-w-3xl flex-col gap-6 px-5 py-8">
+      <div className="relative mx-auto flex min-h-svh w-full max-w-3xl flex-col gap-5 px-4 py-6 sm:gap-6 sm:px-6 sm:py-8">
         <header className="flex items-center justify-between gap-4">
-          <h1 className="text-3xl font-extrabold tracking-tight">Hangar</h1>
+          <h1 className="text-2xl font-extrabold tracking-tight sm:text-3xl">
+            Hangar
+          </h1>
           <Link
             to="/hub"
-            className="rounded-full bg-eh-primary px-4 py-2 text-sm font-extrabold text-eh-on-primary"
+            className="inline-flex min-h-12 items-center justify-center rounded-full bg-eh-primary px-5 py-2 text-sm font-extrabold text-eh-on-primary"
           >
             Hub
           </Link>
@@ -100,7 +102,7 @@ function ShipPreview({ paint }: { paint: CosmeticDef | undefined }) {
   const swatch = paint?.swatch ?? "#2EC4B6";
   return (
     <div
-      className="relative flex h-44 w-44 items-center justify-center rounded-full border-4 border-eh-border-glass shadow-[0_16px_40px_rgba(11,8,24,0.45)]"
+      className="relative flex size-36 items-center justify-center rounded-full border-4 border-eh-border-glass shadow-[0_16px_40px_rgba(11,8,24,0.45)] sm:size-44"
       style={{
         background: `radial-gradient(circle at 35% 30%, ${swatch}aa, #2E2450 70%)`,
       }}
@@ -108,7 +110,7 @@ function ShipPreview({ paint }: { paint: CosmeticDef | undefined }) {
       <img
         src={paint?.artSrc ?? "/art/ship_base.webp"}
         alt=""
-        className="h-28 w-28 object-contain drop-shadow-[0_8px_16px_rgba(11,8,24,0.5)]"
+        className="size-24 object-contain drop-shadow-[0_8px_16px_rgba(11,8,24,0.5)] sm:size-28"
       />
     </div>
   );
@@ -133,7 +135,7 @@ function CosmeticTile({
 
   return (
     <li
-      className="flex items-center gap-3 rounded-3xl border border-eh-border-glass bg-eh-surface-elevated/80 px-3 py-3"
+      className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-3 rounded-3xl border border-eh-border-glass bg-eh-surface-elevated/80 px-3 py-3 sm:grid-cols-[auto_minmax(0,1fr)_auto]"
       style={{ borderColor: unlocked ? `${cosmetic.swatch}88` : undefined }}
     >
       <img
@@ -155,12 +157,12 @@ function CosmeticTile({
           type="button"
           disabled={!unlocked || equipped || busy}
           onClick={() => onEquip(cosmetic.id)}
-          className="eh-button-check shrink-0 rounded-full px-4 py-2 text-sm font-extrabold text-white disabled:opacity-40"
+          className="eh-button-check col-span-2 min-h-12 w-full rounded-full px-4 py-2 text-sm font-extrabold text-white disabled:opacity-40 sm:col-span-1 sm:min-h-0 sm:w-auto"
         >
           {equipped ? "On" : busy ? "…" : "Equip"}
         </button>
       ) : (
-        <span className="shrink-0 rounded-full bg-eh-secondary px-3 py-1 text-xs font-extrabold text-eh-on-secondary">
+        <span className="col-span-2 inline-flex min-h-12 w-full items-center justify-center rounded-full bg-eh-secondary px-3 py-1 text-xs font-extrabold text-eh-on-secondary sm:col-span-1 sm:min-h-0 sm:w-auto">
           {unlocked ? "Stamp" : "Locked"}
         </span>
       )}

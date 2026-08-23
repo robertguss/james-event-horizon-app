@@ -209,10 +209,10 @@ export function MissionReflection({
   const scripture = mission.presentation === "scripture";
 
   return (
-    <div className="flex flex-1 flex-col items-center justify-center py-4">
+    <div className="flex flex-1 flex-col items-center justify-center py-2 sm:py-4">
       <section
         className={cn(
-          "w-full max-w-2xl rounded-[32px] border-4 p-5 shadow-2xl sm:p-7",
+          "w-full max-w-2xl rounded-[24px] border-4 p-4 shadow-2xl sm:rounded-[32px] sm:p-7",
           scripture
             ? "border-[#9A7A45] bg-[#FBF3DF] text-[#2D2419]"
             : "border-eh-primary bg-eh-surface-elevated/95 text-eh-on-surface",
@@ -226,7 +226,7 @@ export function MissionReflection({
         >
           {scripture ? "Scripture response" : "Observatory repair"}
         </p>
-        <h2 className="mt-1 text-3xl font-extrabold">
+        <h2 className="mt-1 text-2xl font-extrabold sm:text-3xl">
           {stage === "map" ? "Connection Map" : "Captain’s Log"}
         </h2>
 
@@ -244,7 +244,7 @@ export function MissionReflection({
                     <li
                       key={`slot-${index}`}
                       className={cn(
-                        "flex min-h-16 items-center gap-3 rounded-2xl border-2 border-dashed px-3 py-2",
+                        "flex min-h-16 items-start gap-3 rounded-2xl border-2 border-dashed px-3 py-2 sm:items-center",
                         scripture
                           ? "border-[#B99A67] bg-white/50"
                           : "border-eh-border-glass bg-eh-surface",
@@ -263,11 +263,13 @@ export function MissionReflection({
                       {card ? (
                         <button
                           type="button"
-                          className="flex flex-1 items-center justify-between gap-3 text-left font-bold"
+                          className="flex min-w-0 flex-1 items-center justify-between gap-3 text-left font-bold"
                           onClick={() => removeCard(card.id)}
                           aria-label={`Remove ${card.text}`}
                         >
-                          {card.text}
+                          <span className="min-w-0 flex-1 break-words">
+                            {card.text}
+                          </span>
                           <X className="size-5 shrink-0" aria-hidden />
                         </button>
                       ) : (

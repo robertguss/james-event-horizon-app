@@ -36,10 +36,10 @@ function MissionsPage() {
 
   return (
     <KidShell title="Missions">
-      <div className="space-y-4">
+      <div className="flex flex-col gap-4">
         {missions.length === 0 ? (
-          <div className="eh-reading-card rounded-[36px] p-7">
-            <p className="text-xl font-semibold leading-relaxed text-eh-on-reading">
+          <div className="eh-reading-card rounded-[28px] p-5 sm:rounded-[36px] sm:p-7">
+            <p className="text-lg leading-relaxed font-semibold text-eh-on-reading sm:text-xl">
               No missions charted yet.
             </p>
           </div>
@@ -50,16 +50,16 @@ function MissionsPage() {
               data-testid={`mission-row-${mission.id}`}
               data-locked={mission.locked ? "true" : "false"}
               data-kind={mission.kind}
-              className="eh-reading-card rounded-[36px] p-7"
+              className="eh-reading-card rounded-[28px] p-5 sm:rounded-[36px] sm:p-7"
             >
               <p className="text-sm font-bold tracking-wide text-eh-primary uppercase">
                 {kindLabel(mission)}
               </p>
-              <h2 className="mt-2 text-2xl font-extrabold text-eh-on-reading">
+              <h2 className="mt-2 text-xl font-extrabold text-eh-on-reading sm:text-2xl">
                 {mission.title}
               </h2>
               <p className="mt-2 text-eh-on-reading/80">{mission.planet}</p>
-              <p className="mt-4 text-lg leading-relaxed text-eh-on-reading">
+              <p className="mt-4 text-base leading-relaxed text-eh-on-reading sm:text-lg">
                 {mission.objective}
               </p>
               <p className="mt-3 text-sm font-semibold text-eh-on-reading/70">

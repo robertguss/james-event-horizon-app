@@ -60,7 +60,7 @@ function DebriefPage() {
 
   return (
     <KidShell title="Debrief">
-      <div className="eh-reading-card space-y-4 rounded-[36px] p-7">
+      <div className="eh-reading-card flex flex-col gap-4 rounded-[28px] p-5 sm:rounded-[36px] sm:p-7">
         <p className="text-sm font-bold tracking-wide text-eh-primary uppercase">
           Mission complete
         </p>
@@ -127,24 +127,24 @@ function DebriefPage() {
           </div>
         ) : null}
 
-        <div className="mt-6 flex flex-wrap gap-3">
+        <div className="mt-2 flex flex-col gap-3 sm:mt-6 sm:flex-row sm:flex-wrap">
           {snap?.leveledUp ? (
             <Link
               to="/level-up"
-              className="eh-button-hint inline-flex h-12 items-center justify-center rounded-full px-6 font-extrabold"
+              className="eh-button-hint inline-flex h-12 w-full items-center justify-center rounded-full px-6 font-extrabold sm:w-auto"
             >
               Level Up
             </Link>
           ) : null}
           <Link
             to="/hub"
-            className="eh-button-check inline-flex h-12 items-center justify-center rounded-full px-6 font-extrabold text-white"
+            className="eh-button-check inline-flex h-12 w-full items-center justify-center rounded-full px-6 font-extrabold text-white sm:w-auto"
           >
             Hub
           </Link>
           <Link
             to="/missions"
-            className="inline-flex h-12 items-center justify-center rounded-full bg-eh-secondary px-6 font-extrabold text-eh-on-secondary"
+            className="inline-flex h-12 w-full items-center justify-center rounded-full bg-eh-secondary px-6 font-extrabold text-eh-on-secondary sm:w-auto"
           >
             Missions
           </Link>

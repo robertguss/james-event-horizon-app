@@ -73,6 +73,10 @@ export function MissionReader({ missionId }: MissionReaderProps) {
     };
   }, [ready, kid, data, missionId]);
 
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "auto" });
+  }, [phase, attempt?.currentQuestionIndex]);
+
   if (!ready || !kid) {
     return (
       <div className="grid min-h-svh place-items-center bg-eh-neutral text-eh-on-surface">
@@ -192,7 +196,7 @@ export function MissionReader({ missionId }: MissionReaderProps) {
   const scripture = mission.presentation === "scripture";
 
   return (
-    <div className="relative min-h-svh overflow-hidden bg-eh-neutral text-eh-on-surface">
+    <div className="relative min-h-svh overflow-x-clip bg-eh-neutral text-eh-on-surface">
       {/* Nebula atmosphere — CSS only, no WebGL canvas */}
       <div
         className={cn(
@@ -211,8 +215,8 @@ export function MissionReader({ missionId }: MissionReaderProps) {
         aria-hidden
       />
 
-      <div className="relative z-10 mx-auto flex min-h-svh w-full max-w-3xl flex-col px-4 py-5 sm:px-6">
-        <header className="mb-4 flex flex-col items-center gap-2 text-center">
+      <div className="relative z-10 mx-auto flex min-h-svh w-full max-w-3xl flex-col px-3 py-4 sm:px-6 sm:py-5">
+        <header className="mb-4 flex flex-col items-center gap-2 pt-14 text-center sm:pt-0">
           <h1
             className={cn(
               "text-3xl tracking-tight text-eh-tertiary sm:text-4xl",
@@ -236,7 +240,7 @@ export function MissionReader({ missionId }: MissionReaderProps) {
             {!scripture ? <span aria-hidden>★</span> : null}
           </div>
           {!scripture ? (
-            <div className="absolute top-4 right-4">
+            <div className="absolute top-3 right-3 sm:top-4 sm:right-4">
               <XpBadge xpTotal={kid.xp} />
             </div>
           ) : null}
@@ -311,7 +315,7 @@ export function MissionReader({ missionId }: MissionReaderProps) {
         ) : null}
 
         {phase === "question" && question ? (
-          <div className="flex flex-1 flex-col items-center gap-4 pb-28">
+          <div className="flex flex-1 flex-col items-center gap-4 pb-32">
             <ReadingCard
               className={cn("relative", scripture && "eh-scripture-card")}
             >
@@ -324,7 +328,7 @@ export function MissionReader({ missionId }: MissionReaderProps) {
                 Question {attempt.currentQuestionIndex + 1} of{" "}
                 {mission.questions.length}
               </p>
-              <p className="mb-4 text-xl leading-relaxed font-bold text-eh-on-reading">
+              <p className="mb-4 text-lg leading-relaxed font-bold text-eh-on-reading sm:text-xl">
                 {stripMdBold(question.prompt)}
               </p>
               <Passage
@@ -409,12 +413,12 @@ export function MissionReader({ missionId }: MissionReaderProps) {
             ) : null}
 
             {/* Five-pill bottom bar: Check · 3 choices · Hint (gold) */}
-            <div className="fixed inset-x-0 bottom-0 z-20 border-t border-white/10 bg-eh-neutral/85 px-3 py-3 backdrop-blur-md">
-              <div className="mx-auto flex max-w-3xl flex-wrap items-center justify-center gap-2 sm:gap-3">
+            <div className="fixed inset-x-0 bottom-0 z-20 border-t border-white/10 bg-eh-neutral/85 px-2 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] backdrop-blur-md sm:px-3">
+              <div className="mx-auto flex max-w-3xl flex-nowrap items-center justify-center gap-1 min-[360px]:gap-2 sm:gap-3">
                 {scripture ? (
                   <button
                     type="button"
-                    className="inline-flex h-12 min-w-[5.5rem] items-center justify-center rounded-lg bg-[#72562D] px-4 font-extrabold text-white"
+                    className="inline-flex h-12 min-w-16 items-center justify-center rounded-lg bg-[#72562D] px-2 font-extrabold text-white min-[360px]:min-w-20 min-[360px]:px-3 sm:min-w-[5.5rem] sm:px-4"
                     onClick={() => void onCheck()}
                     disabled={busy}
                   >
@@ -466,8 +470,8 @@ export function MissionReader({ missionId }: MissionReaderProps) {
                           aria-hidden
                           className={
                             accent === "gold"
-                              ? "eh-button-hint inline-flex h-12 min-w-[4.5rem] items-center justify-center rounded-full px-4"
-                              : "eh-button-check inline-flex h-12 min-w-[4.5rem] items-center justify-center rounded-full px-4"
+                              ? "eh-button-hint hidden h-12 min-w-[4.5rem] items-center justify-center rounded-full px-4 sm:inline-flex"
+                              : "eh-button-check hidden h-12 min-w-[4.5rem] items-center justify-center rounded-full px-4 sm:inline-flex"
                           }
                         />
                       ))
@@ -475,7 +479,7 @@ export function MissionReader({ missionId }: MissionReaderProps) {
                 {scripture ? (
                   <button
                     type="button"
-                    className="inline-flex h-12 min-w-[5.5rem] items-center justify-center rounded-lg border-2 border-[#B99A67] bg-[#FBF3DF] px-4 font-extrabold text-[#72562D]"
+                    className="inline-flex h-12 min-w-16 items-center justify-center rounded-lg border-2 border-[#B99A67] bg-[#FBF3DF] px-2 font-extrabold text-[#72562D] min-[360px]:min-w-20 min-[360px]:px-3 sm:min-w-[5.5rem] sm:px-4"
                     onClick={() => void onHint()}
                     disabled={busy}
                   >
@@ -544,7 +548,7 @@ function Passage({
   onSelect?: (id: string) => void;
 }) {
   return (
-    <div className="space-y-3 text-[22px] leading-[1.65] font-semibold text-eh-on-reading">
+    <div className="flex flex-col gap-3 text-xl leading-[1.6] font-semibold text-eh-on-reading sm:text-[22px] sm:leading-[1.65]">
       {sentences.map((sentence) => {
         const glowing = glowIds.includes(sentence.id);
         const selected = selectedId === sentence.id;

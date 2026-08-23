@@ -36,22 +36,22 @@ export function HubView({
         <HubHitTarget
           to="/missions"
           label="Missions"
-          className="top-[4%] left-[3%] hidden h-[26%] w-[22%] max-w-[220px] lg:landscape:block"
+          className="eh-hub-hotspot top-[4%] left-[3%] h-[26%] w-[22%] max-w-[220px]"
         />
         <HubHitTarget
           to="/hangar"
           label="Hangar"
-          className="top-[4%] right-[3%] hidden h-[26%] w-[22%] max-w-[220px] lg:landscape:block"
+          className="eh-hub-hotspot top-[4%] right-[3%] h-[26%] w-[22%] max-w-[220px]"
         />
         <HubHitTarget
           to="/library"
           label="Library"
-          className="bottom-[4%] left-[3%] hidden h-[26%] w-[22%] max-w-[220px] lg:landscape:block"
+          className="eh-hub-hotspot bottom-[4%] left-[3%] h-[26%] w-[22%] max-w-[220px]"
         />
         <HubHitTarget
           to="/academy"
           label="Academy"
-          className="right-[3%] bottom-[4%] hidden h-[26%] w-[22%] max-w-[220px] lg:landscape:block"
+          className="eh-hub-hotspot right-[3%] bottom-[4%] h-[26%] w-[22%] max-w-[220px]"
         />
 
         <div className="absolute top-[calc(0.75rem+env(safe-area-inset-top))] right-3 z-20 flex items-center gap-2 sm:right-4">
@@ -65,7 +65,7 @@ export function HubView({
 
         <nav
           aria-label="Explorer destinations"
-          className="absolute inset-x-3 bottom-[calc(0.75rem+env(safe-area-inset-bottom))] z-20 grid grid-cols-2 gap-2 landscape:grid-cols-4 sm:inset-x-5 sm:mx-auto sm:max-w-3xl lg:landscape:hidden"
+          className="eh-hub-destinations absolute inset-x-3 bottom-[calc(0.75rem+env(safe-area-inset-bottom))] z-20 grid-cols-2 gap-2 landscape:grid-cols-4 sm:inset-x-5 sm:mx-auto sm:max-w-3xl"
         >
           <MobileHubLink to="/missions" label="Missions" tone="teal" />
           <MobileHubLink to="/hangar" label="Hangar" tone="teal" />

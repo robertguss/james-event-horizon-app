@@ -55,11 +55,7 @@ export function HubView({
         />
 
         <div className="absolute top-[calc(0.75rem+env(safe-area-inset-top))] right-3 z-20 flex items-center gap-2 sm:right-4">
-          <ShipPaintChip
-            name={paint?.name ?? "Teal Hull"}
-            swatch={swatch}
-            artSrc={paint?.artSrc}
-          />
+          <ShipPaintChip name={paint?.name ?? "Teal Hull"} swatch={swatch} />
           <XpBadge xpTotal={xpTotal} />
         </div>
 
@@ -110,28 +106,19 @@ function MobileHubLink({
   );
 }
 
-function ShipPaintChip({
-  name,
-  swatch,
-  artSrc,
-}: {
-  name: string;
-  swatch: string;
-  artSrc?: string;
-}) {
+function ShipPaintChip({ name, swatch }: { name: string; swatch: string }) {
   return (
     <div
       className="flex items-center gap-2 rounded-full border-2 border-eh-border-glass bg-eh-surface/80 px-2 py-1 shadow-[0_6px_16px_rgba(11,8,24,0.35)] backdrop-blur-sm"
       title={name}
     >
       <span
-        className="inline-flex size-8 items-center justify-center overflow-hidden rounded-full"
-        style={{ background: swatch }}
-      >
-        {artSrc ? (
-          <img src={artSrc} alt="" className="size-7 object-contain" />
-        ) : null}
-      </span>
+        className="inline-flex size-8 items-center justify-center overflow-hidden rounded-full border border-white/25 shadow-[inset_0_2px_0_rgba(255,255,255,0.35)]"
+        style={{
+          background: `radial-gradient(circle at 30% 25%, rgba(255,255,255,0.55), transparent 22%), linear-gradient(145deg, ${swatch}, #241B3D)`,
+        }}
+        aria-hidden
+      />
       <span className="max-w-[7rem] truncate pr-1 text-xs font-extrabold text-eh-on-surface">
         {name}
       </span>

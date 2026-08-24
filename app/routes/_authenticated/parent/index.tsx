@@ -1,9 +1,4 @@
-import {
-  createFileRoute,
-  Link,
-  Navigate,
-  useNavigate,
-} from "@tanstack/react-router";
+import { createFileRoute, Navigate, useNavigate } from "@tanstack/react-router";
 import { lazy, Suspense, useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -311,11 +306,15 @@ function ParentPage() {
         </section>
 
         <div className="mt-auto flex flex-col gap-3">
-          <Link to="/hub" className="block w-full">
-            <Button className="h-14 w-full rounded-full font-extrabold">
-              Back to kid hub
-            </Button>
-          </Link>
+          <Button
+            className="h-14 w-full rounded-full font-extrabold"
+            onClick={() => {
+              clearParentSession();
+              void navigate({ to: "/hub" });
+            }}
+          >
+            Back to kid hub
+          </Button>
           {fixture ? (
             <Button
               variant="outline"
@@ -332,17 +331,6 @@ function ParentPage() {
               <ParentSignOutButton />
             </Suspense>
           )}
-          <Button
-            type="button"
-            variant="ghost"
-            className="h-12 w-full rounded-full"
-            onClick={() => {
-              clearParentSession();
-              void navigate({ to: "/hub" });
-            }}
-          >
-            Lock parent area
-          </Button>
         </div>
       </main>
     </div>
